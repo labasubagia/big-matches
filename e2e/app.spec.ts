@@ -196,9 +196,19 @@ test("schedules shows all matches including the past with bucket background colo
 	await expect(page.getByText("Played")).toBeVisible();
 	await expect(page.getByText("Upcoming")).toBeVisible();
 	await expect(page.getByText("• Time TBD", { exact: true })).toBeVisible();
+	// Fixture date-range heading mirrors the Overview page.
+	await expect(
+		page.getByText(/Fixtures \d{4}-\d{2}-\d{2} → \d{4}-\d{2}-\d{2}/),
+	).toBeVisible();
 
-	// A finished past match shows its score.
-	await expect(page.getByText("1 - 0")).toBeVisible();
+	// A finished past match shows its inline score between the teams.
+	const pastRow = page
+		.locator("li")
+		.filter({ hasText: "Manchester United" })
+		.filter({ hasText: "Manchester City" })
+		.first();
+	await expect(pastRow).toContainText("1");
+	await expect(pastRow).toContainText("0");
 
 	// Far matches (timed and TBD) are included on the schedules page.
 	await expect(rowMatching(page, ["Liverpool", "Chelsea"])).toBeVisible();
@@ -206,7 +216,6 @@ test("schedules shows all matches including the past with bucket background colo
 	await expect(rowMatching(page, ["Real Madrid", "Barcelona"])).toHaveCount(2);
 
 	// Past rows are light gray; all other rows are white.
-	const pastRow = page.locator("li").filter({ hasText: "1 - 0" }).first();
 	await expect(pastRow).toHaveCSS("background-color", "rgb(240, 240, 240)");
 
 	const farRow = rowMatching(page, ["Liverpool", "Chelsea"]);

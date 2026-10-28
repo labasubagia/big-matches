@@ -42,6 +42,9 @@ function Schedules() {
 			<h1>All Big Matches</h1>
 			<BucketLegend />
 			<MatchFilters {...filters} />
+			<h2 style={{ fontSize: "1.1rem" }}>
+				Fixtures {filters.fromStr} → {filters.toStr}
+			</h2>
 			{ready && allMatches.length === 0 ? (
 				<p>No fixtures match the current filters.</p>
 			) : (

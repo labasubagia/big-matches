@@ -52,31 +52,18 @@ function Crest({ url, name }: { url?: string; name: string }) {
 	);
 }
 
-function Score({ m }: { m: Match }) {
-	const { fullTime, winner } = m.score ?? {};
-	if (fullTime?.home == null || fullTime.away == null) return null;
-	const homeWon = winner === "HOME_TEAM";
-	const awayWon = winner === "AWAY_TEAM";
-	return (
-		<span>
-			<span
-				style={homeWon ? { color: WINNER_COLOR, fontWeight: 600 } : undefined}
-			>
-				{fullTime.home}
-			</span>
-			{" - "}
-			<span
-				style={awayWon ? { color: WINNER_COLOR, fontWeight: 600 } : undefined}
-			>
-				{fullTime.away}
-			</span>
-		</span>
-	);
-}
-
 function MatchRow({ m }: { m: Match }) {
 	const past = matchBucket(m) === "past";
 	const tbd = isTBD(m);
+	const { fullTime, winner } = m.score ?? {};
+	const homeScore = fullTime?.home;
+	const awayScore = fullTime?.away;
+	const homeWon = winner === "HOME_TEAM";
+	const awayWon = winner === "AWAY_TEAM";
+	const scoreStyle = (won: boolean) =>
+		won
+			? { color: WINNER_COLOR, fontWeight: 600 }
+			: { fontWeight: 600 };
 	const style = {
 		...rowStyle,
 		background: past ? PAST_BG : "#ffffff",
@@ -86,7 +73,13 @@ function MatchRow({ m }: { m: Match }) {
 		<li style={style}>
 			<Crest url={m.homeTeam.crest} name={m.homeTeam.name} />
 			<span>{m.homeTeam.name}</span>
+			{homeScore != null && (
+				<span style={scoreStyle(homeWon)}>{homeScore}</span>
+			)}
 			<span style={{ opacity: 0.55 }}>v</span>
+			{awayScore != null && (
+				<span style={scoreStyle(awayWon)}>{awayScore}</span>
+			)}
 			<span>{m.awayTeam.name}</span>
 			<Crest url={m.awayTeam.crest} name={m.awayTeam.name} />
 			<span
@@ -97,7 +90,6 @@ function MatchRow({ m }: { m: Match }) {
 					gap: "0.5rem",
 				}}
 			>
-				<Score m={m} />
 				<span
 					style={{
 						fontSize: "0.85em",
