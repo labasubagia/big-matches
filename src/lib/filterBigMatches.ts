@@ -9,6 +9,12 @@ export type Match = {
 	awayTeam: { id: number; name: string };
 };
 
+export type Team = {
+	id: number;
+	name: string;
+	competition: string;
+};
+
 // Keep only fixtures where BOTH teams are in the selected list.
 // Mutual pairings only; matches against non-selected teams are dropped.
 export function filterBigMatches(

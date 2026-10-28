@@ -1,54 +1,67 @@
 # Big Matches
 
-Simple MVP site that shows only fixtures between teams in a selected list (mutual pairings).
+Single-page site showing only fixtures between teams in a selected list (mutual pairings).
 Matches against non-selected teams are excluded.
+
+## How data works
+
+The app is fully static. A generation script (`scripts/generate-data.mjs`) fetches teams
+and matches from Football-Data.org and writes them to `src/lib/fixtures.json`. The frontend
+imports that JSON at build time — there is **no runtime API access** and no key in the
+browser or build.
+
+CI regenerates the data (`.github/workflows/deploy.yml`):
+
+- Teams: refreshed **weekly** (rosters change per season).
+- Matches: refreshed **daily** (fixture date/reschedule changes).
+- Both land in the same JSON file; total upstream calls per run ≤ 7 (1 aggregate matches
+  fetch + 6 per-competition team fetches), under the free tier's 10 req/min limit.
+
+Competitions scanned: Premier League, La Liga, Serie A, Bundesliga, Ligue 1, UEFA
+Champions League. UEL is excluded: Football-Data.org serves it only on a paid plan.
 
 ## Setup
 
 1. `npm install`
-2. Get a free key at https://www.football-data.org/ and set it:
-   `cp .env.example .env` then populate `FOOTBALL_DATA_API_KEY`.
-3. `npm run dev` → http://localhost:3000
+2. Get a free key at https://www.football-data.org/ and set `FOOTBALL_DATA_API_KEY`
+   (`.env.example` → `.env`).
+3. Refresh local data: `npm run data:gen`
+4. `npm run dev` → http://localhost:3000
+
+Until you run `npm run data:gen`, the committed placeholder `src/lib/fixtures.json`
+contains empty data.
 
 ## Selecting teams
 
-Use the on-page picker: teams are grouped by competition (Premier League, La Liga,
-Serie A, Bundesliga, Ligue 1); tick the ones you want to follow. Your selection is
-saved in the browser (localStorage, key `big-matches-selected`) and restored on next visit.
+Use the on-page picker: teams are grouped by the competition they play in (Premier
+League, La Liga, Serie A, Bundesliga, Ligue 1, UEFA Champions League); tick the ones
+you want to follow. Your selection is saved in the browser (localStorage, key
+`big-matches-selected`) and restored on next visit.
 
-To add or prune teams, edit `src/config/teams.ts` (the `teamCatalog` array) using
-Football-Data.org team ids. Competitions scanned are set in `competitionCodes`
-(UCL, EPL, La Liga, Serie A, Bundesliga, Ligue 1). UEL is excluded: Football-Data.org
-serves it only on a paid plan. Matches are fetched once at build time (prerender)
-and embedded in the static page; the server-side cache spares the free-tier rate
-limit (10 req/min) during local development.
-
-If a selected team id is wrong, a warning prints in the dev server log:
+If a selected team id never appears in the data, a warning prints in the log:
 `selected teams never appeared in fetched fixtures (check team ids): …`
 
-Unit tests: `npm test` (vitest, colocated `*.test.ts`).
+## Tests
 
-End-to-end tests: `npm run test:e2e` (Playwright). The Football-Data API is mocked
-by a local server (`e2e/mock-api.mjs`), so no real key is needed; the app's dev
-server runs against it on port 3100. Chromium must be installed once:
-`npx playwright install chromium`. Runs on push to `main` via `.github/workflows/ci.yml`.
+- Unit: `npm test` (vitest, colocated `*.test.ts`).
+- End-to-end: `npm run test:e2e` (Playwright). The runner starts a mock
+  (`e2e/mock-api.mjs`), generates fixtures from it via `npm run data:gen`, then runs
+  the dev server against the generated data. No real key needed. Chromium must be
+  installed once: `npx playwright install chromium`.
 
 ## Deployment (GitHub Pages)
 
-The site is static: TanStack Start prerenders the route at build time, so match
-data is fetched from Football-Data during the build and baked into the HTML (no
-runtime server). On push to `main`, `.github/workflows/deploy.yml` builds and
-publishes to GitHub Pages.
+Push to `main` triggers `.github/workflows/deploy.yml`: generate data → build (TanStack
+Start prerenders the route with the data embedded) → publish to
+`https://<user>.github.io/big-matches/`. A daily scheduled run refreshes match data;
+rosters refresh weekly (same workflow, `schedule` trigger).
 
-The Football-Data key must be available to the build:
-
-1. Add `FOOTBALL_DATA_API_KEY` to the repository secrets
-   (Settings → Secrets and variables → Actions).
-2. Push to `main` — the workflow deploys to `https://<user>.github.io/big-matches/`.
+The Football-Data key is required only by the generator in CI — add
+`FOOTBALL_DATA_API_KEY` to the repository secrets (Settings → Secrets and variables →
+Actions).
 
 The route lives under `/big-matches/` (`base` in `vite.config.ts` and router
-`basepath`), matching the repo name. Matches are fetched once during prerender and
-embedded; client-side filtering and selection still work as described above.
+`basepath`), matching the repo name.
 
 ## Verified team ids
 

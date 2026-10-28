@@ -10,6 +10,7 @@
 		"check": "biome check",
 		"format": "biome format --write",
 		"test:e2e": "node e2e/run.mjs",
+		"data:gen": "node scripts/generate-data.mjs",
 		"prepare": "husky",
 		"lint-staged": {
 			"*": "biome check --staged --no-errors-on-unmatched"

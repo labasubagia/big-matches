@@ -1,4 +1,4 @@
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import http from "node:http";
 
 function waitFor(port, path, timeoutMs = 60_000) {
@@ -37,12 +37,24 @@ function start(name, env, port, path) {
 
 try {
 	await start("node e2e/mock-api.mjs", {}, 3333, "/health");
-	await start(
-		"npm run dev -- --port 3100 --host 127.0.0.1",
-		{
+
+	// Generate the static fixtures from the mock before the dev server starts, so
+	// the app's JSON import has data. Exercises scripts/generate-data.mjs too.
+	const gen = spawnSync("node", ["scripts/generate-data.mjs"], {
+		env: {
+			...process.env,
 			FOOTBALL_DATA_API_KEY: "test-key",
 			FOOTBALL_DATA_API_BASE: "http://127.0.0.1:3333",
 		},
+		stdio: "inherit",
+	});
+	if (gen.status !== 0) {
+		throw new Error(`data generation failed (exit ${gen.status})`);
+	}
+
+	await start(
+		"npm run dev -- --port 3100 --host 127.0.0.1",
+		{},
 		3100,
 		"/big-matches/",
 	);
