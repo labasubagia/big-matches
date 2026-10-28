@@ -36,13 +36,19 @@ function writeSelection(ids: number[]) {
   }
 }
 
-function fmtDate(utc: string): string {
-  return new Date(utc).toLocaleString(undefined, {
+
+function fmtDate(m: Match): string {
+  const tbd = m.status === 'SCHEDULED' && m.utcDate.includes('T00:00:00Z')
+  const date = new Date(m.utcDate).toLocaleDateString(undefined, {
     day: 'numeric',
     month: 'short',
+  })
+  if (tbd) return `${date} (time TBD)`
+  const time = new Date(m.utcDate).toLocaleTimeString(undefined, {
     hour: '2-digit',
     minute: '2-digit',
   })
+  return `${date} ${time}`
 }
 
 function fmtStatus(m: Match): string {
@@ -161,7 +167,7 @@ function Home() {
                     {m.homeTeam.name} vs {m.awayTeam.name}
                   </span>
                   <span style={{ color: '#666' }}>
-                    {fmtDate(m.utcDate)} {fmtStatus(m)}
+                    {fmtDate(m)} {fmtStatus(m)}
                   </span>
                 </li>
               ))}
