@@ -15,10 +15,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Verify data generation
-        run: npm run data:gen
-        env:
-          FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
+      - name: Write mock fixtures
+        run: node e2e/write-fixtures.mjs
       - run: npm run check
       - run: npm run build
       - run: npm test

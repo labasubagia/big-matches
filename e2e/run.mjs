@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 import fs from "node:fs";
 import http from "node:http";
+import { buildFixtures } from "./build-fixtures.mjs";
 
 function waitFor(port, path, timeoutMs = 60_000) {
 	const start = Date.now();
@@ -22,27 +23,6 @@ function waitFor(port, path, timeoutMs = 60_000) {
 		};
 		tryOnce();
 	});
-}
-
-const DAY_MS = 86_400_000;
-
-// The committed mock file stores dates as day-offsets from "now" (__dayOffset)
-// so the past/near/far buckets stay valid no matter when the suite runs. A
-// __tbd match is forced to midnight (TBD detection relies on that).
-function buildFixtures(template) {
-	const now = Date.now();
-	return {
-		...template,
-		matches: template.matches.map((m) => {
-			if (m.__dayOffset === undefined) return m;
-			const { __dayOffset, __tbd, utcDate, ...rest } = m;
-			const iso = new Date(now + __dayOffset * DAY_MS).toISOString();
-			const fixed = __tbd
-				? iso.replace(/T\d{2}:\d{2}:\d{2}Z$/, "T00:00:00Z")
-				: iso;
-			return { ...rest, utcDate: fixed };
-		}),
-	};
 }
 
 const MOCK_FIXTURES = new URL("./fixtures.mock.json", import.meta.url);
