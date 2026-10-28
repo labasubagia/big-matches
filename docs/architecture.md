@@ -59,8 +59,3 @@ The route lives under `/big-matches/` (`base` in `vite.config.ts` and router
 The Football-Data key is required only by the generator, in CI:
 `FOOTBALL_DATA_API_KEY` as a repository secret.
 
-## Verified team ids
-
-Real Madrid 86, Barcelona 81, Liverpool 64, Inter 108, Atlético Madrid 78,
-Chelsea 61, Manchester United 66, Manchester City 65, PSG 524.
-All ids in the on-page picker are verified against the live Football-Data API.
