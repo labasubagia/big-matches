@@ -54,6 +54,13 @@ function Nav() {
 				>
 					Schedules
 				</Link>
+				<Link
+					to="/faq"
+					style={navLinkStyle}
+					activeProps={{ style: { ...navLinkStyle, background: "#eee" } }}
+				>
+					FAQ
+				</Link>
 			</div>
 		</nav>
 	);

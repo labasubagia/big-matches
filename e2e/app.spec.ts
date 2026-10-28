@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { FAQ_ENTRIES } from "../src/lib/faqContent";
 
 // Match rows render each team name as its own element. Scope row assertions to
 // the <li> that contains both names.
@@ -226,4 +227,33 @@ test("schedules shows all matches including the past with bucket background colo
 		"color",
 		"rgb(232, 98, 12)",
 	);
+});
+test("faq page shows dropdown Q&As and allows multiple open at once", async ({
+	page,
+}) => {
+	await page.goto("/big-matches/faq");
+	await expect(page.getByRole("heading", { name: "FAQ" })).toBeVisible();
+	// The FAQ is reachable from the top-level nav.
+	const navLink = page.getByRole("link", { name: "FAQ" });
+	await expect(navLink).toBeVisible();
+	await expect(navLink).toHaveAttribute("href", "/big-matches/faq");
+
+	// Each Q&A is a dropdown (native <details>).
+
+	// Each Q&A is a dropdown (native <details>).
+	const details = page.locator("details");
+	await expect(details).toHaveCount(FAQ_ENTRIES.length);
+
+	// Native <details> are independently toggleable -> multiple open at once.
+	const first = details.nth(0);
+	const second = details.nth(1);
+	await first.locator("summary").click();
+	await second.locator("summary").click();
+	await expect(first).toContainText("Europa League");
+	await expect(second).toContainText("league cup");
+
+	// The free-competitions entry lists the 12 free-plan codes.
+	const third = details.nth(2);
+	await third.locator("summary").click();
+	await expect(third).toContainText("Premier League (PL)");
 });
