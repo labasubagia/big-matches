@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 // .github/workflows/deploy.yml). Teams refresh weekly, matches daily; both are
 // written to a single JSON file. Matches are the full season for each
 // competition (the aggregate /matches endpoint only returns upcoming fixtures).
-// Calls are paced 7s apart and retry once on 429: up to 12 requests/run stays
+// Calls are paced 12s apart and retry once on 429: max ~5 requests/run stays
 // within the free-tier 10 req/min budget.
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -19,7 +19,7 @@ const CODES = ["PL", "PD", "SA", "BL1", "FL1", "CL"];
 const TEAMS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 let lastRequestMs = 0;
-const REQUEST_GAP_MS = 7000;
+const REQUEST_GAP_MS = 12000;
 async function throttle() {
 	const wait = lastRequestMs
 		? Math.max(0, REQUEST_GAP_MS - (Date.now() - lastRequestMs))
