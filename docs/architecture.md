@@ -33,9 +33,7 @@ on an absent file. With empty data the app shows an error prompting
 
 ## Team selection state
 
-Stored under localStorage key `big-matches-selected`. If a selected team id never
-appears in the data, a warning prints: `selected teams never appeared in fetched
-fixtures (check team ids): …`.
+Stored under localStorage key `big-matches-selected`.
 
 ## Testing
 

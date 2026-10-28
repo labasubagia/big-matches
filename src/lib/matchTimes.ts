@@ -7,6 +7,11 @@ export type MatchBucket = "past" | "near" | "far";
 const MONTHS_MS = 90 * 24 * 60 * 60 * 1000;
 
 export function isTBD(m: Match): boolean {
+	// Verified against the live v4 API: a fixture whose kickoff time is still
+	// undecided is stored with a midnight placeholder (`utcDate` …T00:00:00Z)
+	// under status SCHEDULED; once date+time are set it flips to TIMED with a
+	// real time. The zero-time marker is the reliable discriminator — status
+	// alone is not (a filtered SCHEDULED list can include timed fixtures).
 	if (m.status !== "SCHEDULED") return false;
 	const d = new Date(m.utcDate);
 	return (
@@ -28,6 +33,12 @@ export function matchBucket(m: Match, now: number = Date.now()): MatchBucket {
 export function withinRange(m: Match, from: number, to: number): boolean {
 	const t = new Date(m.utcDate).getTime();
 	return t >= from && t <= to;
+}
+
+// Epoch ms at local midnight for a `YYYY-MM-DD` date string. Date-only
+// strings parse as UTC, so build the datetime form to get local semantics.
+export function localMidnightMs(isoDate: string): number {
+	return new Date(`${isoDate}T00:00:00`).getTime();
 }
 
 const COMPETITION_LABELS: Record<string, string> = {
@@ -64,6 +75,7 @@ export function fmtDate(m: Match): string {
 	const date = new Date(m.utcDate).toLocaleDateString(undefined, {
 		day: "numeric",
 		month: "short",
+		year: "numeric",
 	});
 	if (tbd) return `${date} (time TBD)`;
 	const time = new Date(m.utcDate).toLocaleTimeString(undefined, {

@@ -1,5 +1,4 @@
 import Fuse from "fuse.js";
-import { DEFAULT_SELECTED_IDS } from "../config/teams";
 export type Match = {
 	id: number;
 	utcDate: string;
@@ -20,17 +19,6 @@ export type Team = {
 };
 
 // Keep only fixtures where BOTH teams are in the selected list.
-// Mutual pairings only; matches against non-selected teams are dropped.
-export function filterBigMatches(
-	matches: Match[],
-	selectedIds: ReadonlySet<number> = new Set(DEFAULT_SELECTED_IDS),
-): Match[] {
-	return matches.filter(
-		(m) => selectedIds.has(m.homeTeam.id) && selectedIds.has(m.awayTeam.id),
-	);
-}
-
-// Overview search-filter semantics:
 // - no search teams: fall back to mutual pairings among the global selection
 // - one search team: every match of that team vs any globally selected team
 // - two or more: only matches between the search-selected teams
