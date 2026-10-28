@@ -38,7 +38,7 @@ function start(name, env, port, path) {
 try {
 	await start("node e2e/mock-api.mjs", {}, 3333, "/health");
 	await start(
-		"npm run dev -- --port 3100",
+		"npm run dev -- --port 3100 --host 127.0.0.1",
 		{
 			FOOTBALL_DATA_API_KEY: "test-key",
 			FOOTBALL_DATA_API_BASE: "http://127.0.0.1:3333",
