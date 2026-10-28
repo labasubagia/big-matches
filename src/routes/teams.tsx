@@ -4,6 +4,7 @@ import type { Team } from "../lib/filterBigMatches";
 import { loadFixtures } from "../lib/loadFixtures";
 import { teamCrests } from "../lib/matchTimes";
 import { useSelection } from "../lib/useSelection";
+import { useTeamSearch } from "../lib/useTeamSearch";
 
 export const Route = createFileRoute("/teams")({
 	component: Teams,
@@ -34,11 +35,12 @@ function groupLabel(name: string): string {
 function Teams() {
 	const { matches, teams } = Route.useLoaderData();
 	const { selected, ready, toggle } = useSelection(teams);
+	const { query, setQuery, candidates } = useTeamSearch(teams);
 	const crests = useMemo(() => teamCrests(matches), [matches]);
 
 	const groups = useMemo(() => {
 		const map = new Map<string, Team[]>();
-		for (const t of teams) {
+		for (const t of candidates) {
 			const list = map.get(t.competition);
 			if (list) list.push(t);
 			else map.set(t.competition, [t]);
@@ -53,7 +55,7 @@ function Teams() {
 					groupIndex(a.name) - groupIndex(b.name) ||
 					a.name.localeCompare(b.name),
 			);
-	}, [teams]);
+	}, [candidates]);
 
 	return (
 		<main
@@ -72,6 +74,14 @@ function Teams() {
 			<p style={{ color: "#666", fontSize: "0.85rem" }}>
 				{ready ? `${selected.length} teams selected` : "Loading…"}
 			</p>
+
+			<input
+				type="search"
+				placeholder="Search all clubs…"
+				value={query}
+				onChange={(e) => setQuery(e.target.value)}
+				style={{ width: "100%", marginBottom: "1rem", padding: "0.3rem" }}
+			/>
 
 			{groups.map((g) => (
 				<section key={g.name} style={{ marginBottom: "1.25rem" }}>
@@ -105,6 +115,7 @@ function Teams() {
 											cursor: "pointer",
 											fontSize: "0.9rem",
 											textAlign: "left",
+											minHeight: "3rem",
 										}}
 									>
 										{crests.get(t.id) ? (

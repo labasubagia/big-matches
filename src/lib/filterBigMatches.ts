@@ -58,3 +58,12 @@ export function filterOverviewMatches(
 		(m) => globalIds.has(m.homeTeam.id) && globalIds.has(m.awayTeam.id),
 	);
 }
+
+// Filter teams by case-insensitive name substring. Shared by the Overview /
+// Schedules club search and the Teams page search. Preserves input order and
+// duplicate entries (a team may appear under several competitions).
+export function filterTeamsByName(teams: Team[], query: string): Team[] {
+	const q = query.trim().toLowerCase();
+	if (!q) return teams;
+	return teams.filter((t) => t.name.toLowerCase().includes(q));
+}

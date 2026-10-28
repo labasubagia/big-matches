@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
 	filterBigMatches,
 	filterOverviewMatches,
+	filterTeamsByName,
 	type Match,
+	type Team,
 } from "./filterBigMatches";
 
 function match(overrides: Partial<Match> = {}): Match {
@@ -50,6 +52,29 @@ describe("filterBigMatches", () => {
 
 	it("returns empty array for empty input", () => {
 		expect(filterBigMatches([])).toEqual([]);
+	});
+});
+
+describe("filterTeamsByName", () => {
+	const teams: Team[] = [
+		{ id: 86, name: "Real Madrid", competition: "PD" },
+		{ id: 81, name: "Barcelona", competition: "PD" },
+		{ id: 81, name: "Barcelona", competition: "CL" },
+		{ id: 64, name: "Liverpool", competition: "PL" },
+	];
+
+	it("returns all teams when query is empty", () => {
+		expect(filterTeamsByName(teams, "")).toEqual(teams);
+		expect(filterTeamsByName(teams, "   ")).toEqual(teams);
+	});
+
+	it("filters case-insensitively by substring", () => {
+		expect(filterTeamsByName(teams, "mad").map((t) => t.name)).toEqual([
+			"Real Madrid",
+		]);
+	});
+	it("preserves duplicate entries across competitions", () => {
+		expect(filterTeamsByName(teams, "barcelona")).toHaveLength(2);
 	});
 });
 
