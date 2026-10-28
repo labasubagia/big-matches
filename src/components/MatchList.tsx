@@ -82,11 +82,21 @@ function MatchRow({ m }: { m: Match }) {
 		<li style={style}>
 			<Crest url={m.homeTeam.crest} name={m.homeTeam.name} />
 			<span>{m.homeTeam.name}</span>
-			<Score m={m} />
+			<span style={{ opacity: 0.55 }}>v</span>
 			<span>{m.awayTeam.name}</span>
 			<Crest url={m.awayTeam.crest} name={m.awayTeam.name} />
-			<span style={{ marginLeft: "auto", fontSize: "0.85em", opacity: 0.85 }}>
-				{competitionLabel(m)} · {fmtDate(m)} {fmtStatus(m)}
+			<span
+				style={{
+					marginLeft: "auto",
+					display: "flex",
+					alignItems: "center",
+					gap: "0.5rem",
+				}}
+			>
+				<Score m={m} />
+				<span style={{ fontSize: "0.85em", opacity: 0.85 }}>
+					{competitionLabel(m)} · {fmtDate(m)} {fmtStatus(m)}
+				</span>
 			</span>
 		</li>
 	);
