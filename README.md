@@ -12,8 +12,13 @@ Matches against non-selected teams are excluded.
 
 ## Selecting teams
 
-Edit `src/config/teams.ts`: add `{ id, name }` entries with Football-Data.org team ids.
-Competitions scanned are set in `competitionCodes` (UCL, UEL, EPL, La Liga, Serie A, Bundesliga, Ligue 1).
+Use the on-page picker: teams are grouped by competition (Premier League, La Liga,
+Serie A, Bundesliga, Ligue 1); tick the ones you want to follow. Your selection is
+saved in the browser (localStorage, key `big-matches-selected`) and restored on next visit.
+
+To add or prune teams, edit `src/config/teams.ts` (the `teamCatalog` array) using
+Football-Data.org team ids. Competitions scanned are set in `competitionCodes`
+(UCL, UEL, EPL, La Liga, Serie A, Bundesliga, Ligue 1).
 
 If a selected team id is wrong, a warning prints in the dev server log:
 `selected teams never appeared in fetched fixtures (check team ids): …`
@@ -25,4 +30,5 @@ If a selected team id is wrong, a warning prints in the dev server log:
 ## Verified team ids
 
 Real Madrid 86, Barcelona 81, Liverpool 64, Inter 108, Atlético Madrid 78,
-Chelsea 61, Manchester United 66, Manchester City 65, PSG 524 (crest-verified).
+Chelsea 61, Manchester United 66, Manchester City 65, PSG 524.
+All ids in the on-page picker are verified against the live Football-Data API.

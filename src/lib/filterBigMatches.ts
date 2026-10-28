@@ -1,4 +1,4 @@
-import { selectedTeamIds } from '../config/teams'
+import { DEFAULT_SELECTED_IDS } from '../config/teams'
 
 export type Match = {
   id: number
@@ -11,8 +11,11 @@ export type Match = {
 
 // Keep only fixtures where BOTH teams are in the selected list.
 // Mutual pairings only; matches against non-selected teams are dropped.
-export function filterBigMatches(matches: Match[]): Match[] {
+export function filterBigMatches(
+  matches: Match[],
+  selectedIds: ReadonlySet<number> = new Set(DEFAULT_SELECTED_IDS),
+): Match[] {
   return matches.filter(
-    (m) => selectedTeamIds.has(m.homeTeam.id) && selectedTeamIds.has(m.awayTeam.id),
+    (m) => selectedIds.has(m.homeTeam.id) && selectedIds.has(m.awayTeam.id),
   )
 }
