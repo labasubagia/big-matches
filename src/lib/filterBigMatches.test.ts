@@ -61,6 +61,7 @@ describe("filterTeamsByName", () => {
 		{ id: 81, name: "Barcelona", competition: "PD" },
 		{ id: 81, name: "Barcelona", competition: "CL" },
 		{ id: 64, name: "Liverpool", competition: "PL" },
+		{ id: 57, name: "Arsenal", competition: "PL" },
 	];
 
 	it("returns all teams when query is empty", () => {
@@ -73,8 +74,19 @@ describe("filterTeamsByName", () => {
 			"Real Madrid",
 		]);
 	});
+
 	it("preserves duplicate entries across competitions", () => {
 		expect(filterTeamsByName(teams, "barcelona")).toHaveLength(2);
+	});
+
+	it("matches near-miss typos", () => {
+		expect(filterTeamsByName(teams, "asenal").map((t) => t.name)).toEqual([
+			"Arsenal",
+		]);
+	});
+
+	it("does not match unrelated names", () => {
+		expect(filterTeamsByName(teams, "jupiter")).toEqual([]);
 	});
 });
 
