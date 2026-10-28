@@ -1,5 +1,7 @@
-import { spawn, spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
+import fs from "node:fs";
 import http from "node:http";
+import { buildFixtures } from "./build-fixtures.mjs";
 
 function waitFor(port, path, timeoutMs = 60_000) {
 	const start = Date.now();
@@ -23,41 +25,32 @@ function waitFor(port, path, timeoutMs = 60_000) {
 	});
 }
 
-const children = [];
-function start(name, env, port, path) {
-	const child = spawn(name, {
-		shell: true,
-		detached: true,
-		env: { ...process.env, ...env },
-		stdio: ["ignore", "inherit", "inherit"],
-	});
-	children.push(child);
-	return waitFor(port, path);
-}
+const MOCK_FIXTURES = new URL("./fixtures.mock.json", import.meta.url);
+const FIXTURES = new URL("../src/lib/fixtures.json", import.meta.url);
 
+let dev;
+let original;
 try {
-	await start("node e2e/mock-api.mjs", {}, 3333, "/health");
-
-	// Generate the static fixtures from the mock before the dev server starts, so
-	// the app's JSON import has data. Exercises scripts/generate-data.mjs too.
-	const gen = spawnSync("node", ["scripts/generate-data.mjs"], {
-		env: {
-			...process.env,
-			FOOTBALL_DATA_API_KEY: "test-key",
-			FOOTBALL_DATA_API_BASE: "http://127.0.0.1:3333",
-		},
-		stdio: "inherit",
-	});
-	if (gen.status !== 0) {
-		throw new Error(`data generation failed (exit ${gen.status})`);
+	// Use committed mock fixtures instead of booting the mock API and running the
+	// generator: fast and deterministic. The real fixtures file is restored below.
+	try {
+		original = fs.readFileSync(FIXTURES);
+	} catch {
+		// src/lib/fixtures.json is gitignored and may be absent (e.g. CI).
 	}
+	const template = JSON.parse(fs.readFileSync(MOCK_FIXTURES, "utf8"));
+	fs.writeFileSync(FIXTURES, JSON.stringify(buildFixtures(template), null, 2));
 
-	await start(
-		"npm run dev -- --port 3100 --host 127.0.0.1",
-		{},
-		3100,
-		"/big-matches/",
+	dev = spawn(
+		"npm",
+		["run", "dev", "--", "--port", "3100", "--host", "127.0.0.1"],
+		{
+			shell: true,
+			detached: true,
+			stdio: ["ignore", "inherit", "inherit"],
+		},
 	);
+	await waitFor(3100, "/big-matches/");
 
 	const code = await new Promise((resolve) => {
 		const pw = spawn("npx", ["playwright", "test"], { stdio: "inherit" });
@@ -65,11 +58,12 @@ try {
 	});
 	process.exitCode = code ?? 1;
 } finally {
-	for (const child of children) {
+	if (dev) {
 		try {
-			process.kill(-child.pid, "SIGTERM");
+			process.kill(-dev.pid, "SIGTERM");
 		} catch {
 			// process group already gone
 		}
 	}
+	if (original) fs.writeFileSync(FIXTURES, original);
 }

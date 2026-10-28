@@ -4,9 +4,13 @@ export type Match = {
 	id: number;
 	utcDate: string;
 	status: string;
-	competition: { name: string };
-	homeTeam: { id: number; name: string };
-	awayTeam: { id: number; name: string };
+	competition: { name: string; code?: string };
+	homeTeam: { id: number; name: string; crest?: string };
+	awayTeam: { id: number; name: string; crest?: string };
+	score?: {
+		winner?: string | null;
+		fullTime?: { home?: number | null; away?: number | null };
+	};
 };
 
 export type Team = {
