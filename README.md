@@ -28,8 +28,9 @@ Champions League. UEL is excluded: Football-Data.org serves it only on a paid pl
 3. Refresh local data: `npm run data:gen`
 4. `npm run dev` → http://localhost:3000
 
-Until you run `npm run data:gen`, the committed placeholder `src/lib/fixtures.json`
-contains empty data.
+Until you run `npm run data:gen`, `src/lib/fixtures.example.json` (committed) is copied
+over `src/lib/fixtures.json` when it is missing — `npm run dev`/`npm run build` do this
+automatically, so the app starts with empty data instead of failing.
 
 ## Selecting teams
 
