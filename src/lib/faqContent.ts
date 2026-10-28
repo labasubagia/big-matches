@@ -73,4 +73,9 @@ export const FAQ_ENTRIES: FaqEntry[] = [
 		answer:
 			"Only the top 5 European leagues — Premier League, La Liga, Serie A, Bundesliga, and Ligue 1 — plus the UEFA Champions League are scanned. A club from another league, such as the Eredivisie, Primeira Liga, or Süper Lig, appears only when it has qualified for the Champions League.",
 	},
+	{
+		question: "Can I get reminders or notifications for matches?",
+		answer:
+			"Not yet — Big Matches does not send reminders or notifications. It is planned as a future feature.",
+	},
 ];

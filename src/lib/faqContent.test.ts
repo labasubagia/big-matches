@@ -79,4 +79,10 @@ describe("FAQ_ENTRIES", () => {
 			"Why do I only see UCL and top 5 league teams?",
 		);
 	});
+	it("documents the absence of reminders/notifications", () => {
+		const questions = FAQ_ENTRIES.map((e) => e.question);
+		expect(questions).toContain(
+			"Can I get reminders or notifications for matches?",
+		);
+	});
 });
