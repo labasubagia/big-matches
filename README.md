@@ -26,8 +26,12 @@ limit (10 req/min) during local development.
 If a selected team id is wrong, a warning prints in the dev server log:
 `selected teams never appeared in fetched fixtures (check team ids): …`
 
-## Tests
+Unit tests: `npm test` (vitest, colocated `*.test.ts`).
 
+End-to-end tests: `npm run test:e2e` (Playwright). The Football-Data API is mocked
+by a local server (`e2e/mock-api.mjs`), so no real key is needed; the app's dev
+server runs against it on port 3100. Chromium must be installed once:
+`npx playwright install chromium`. Runs on push to `main` via `.github/workflows/ci.yml`.
 
 ## Deployment (GitHub Pages)
 
