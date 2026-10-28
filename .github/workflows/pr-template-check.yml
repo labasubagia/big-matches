@@ -1,0 +1,28 @@
+name: PR Template Check
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  check-template:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check required headings
+        shell: bash
+        run: |
+          python3 - <<'EOF'
+          import json, os, sys
+
+          with open(os.environ["GITHUB_EVENT_PATH"]) as f:
+              body = json.load(f)["pull_request"]["body"] or ""
+
+          required = ["## Summary", "## Changes", "## Testing"]
+          missing = [h for h in required if h not in body]
+
+          if missing:
+              print(f"Missing required heading(s): {', '.join(missing)}")
+              sys.exit(1)
+
+          print("All required headings present.")
+          EOF
