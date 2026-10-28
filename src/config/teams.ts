@@ -58,5 +58,6 @@ export const teamCatalog: Team[] = [
 // Default selection shown on first visit (before the user changes it).
 export const DEFAULT_SELECTED_IDS = [86, 81, 64, 108, 524, 78, 61, 66, 65]
 
-// Competition codes we care about: UCL, UEL, EPL, La Liga, Serie A, Bundesliga, Ligue 1.
-export const competitionCodes = ['CL', 'EL', 'PL', 'PD', 'SA', 'BL1', 'FL1']
+// Competition codes we care about: UCL, EPL, La Liga, Serie A, Bundesliga, Ligue 1.
+// UEL is not included: Football-Data.org serves it only on a paid plan (HTTP 403 on free tier).
+export const competitionCodes = ['CL', 'PL', 'PD', 'SA', 'BL1', 'FL1']

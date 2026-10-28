@@ -18,7 +18,9 @@ saved in the browser (localStorage, key `big-matches-selected`) and restored on 
 
 To add or prune teams, edit `src/config/teams.ts` (the `teamCatalog` array) using
 Football-Data.org team ids. Competitions scanned are set in `competitionCodes`
-(UCL, UEL, EPL, La Liga, Serie A, Bundesliga, Ligue 1).
+(UCL, EPL, La Liga, Serie A, Bundesliga, Ligue 1). UEL is excluded: Football-Data.org
+serves it only on a paid plan. Matches are fetched once and cached on the server for 5
+minutes, so refreshes don't hit the free-tier rate limit (10 req/min).
 
 If a selected team id is wrong, a warning prints in the dev server log:
 `selected teams never appeared in fetched fixtures (check team ids): …`

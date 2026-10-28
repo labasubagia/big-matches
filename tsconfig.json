@@ -2,8 +2,8 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "moduleResolution": "Bundler",
-    "module": "ESNext",
-    "target": "ES2022",
+    "target": "ES2024",
+    "lib": ["ES2024", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
     "strictNullChecks": true,
     "types": ["node", "vite/client"]
