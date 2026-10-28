@@ -1,10 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { MatchList } from "../components/MatchList";
-import { filterBigMatches, type Match, type Team } from "../lib/filterBigMatches";
+import {
+	filterBigMatches,
+	type Match,
+	type Team,
+} from "../lib/filterBigMatches";
+import fixturesJson from "../lib/fixtures.json";
 import { futureWithinMonths } from "../lib/matchTimes";
 import { useSelection } from "../lib/useSelection";
-import fixturesJson from "../lib/fixtures.json";
 
 export const Route = createFileRoute("/")({
 	component: Home,
@@ -45,8 +49,8 @@ function Home() {
 
 			<section style={{ marginBottom: "1.5rem" }}>
 				<p style={{ color: "#666" }}>
-					Select your big teams on the <Link to="/teams">Teams page</Link> — only
-					matches between two selected teams are shown.
+					Select your big teams on the <Link to="/teams">Teams page</Link> —
+					only matches between two selected teams are shown.
 				</p>
 			</section>
 

@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
-import http from "node:http";
 import fs from "node:fs";
+import http from "node:http";
 
 function waitFor(port, path, timeoutMs = 60_000) {
 	const start = Date.now();
@@ -53,7 +53,11 @@ let original;
 try {
 	// Use committed mock fixtures instead of booting the mock API and running the
 	// generator: fast and deterministic. The real fixtures file is restored below.
-	original = fs.readFileSync(FIXTURES);
+	try {
+		original = fs.readFileSync(FIXTURES);
+	} catch {
+		// src/lib/fixtures.json is gitignored and may be absent (e.g. CI).
+	}
 	const template = JSON.parse(fs.readFileSync(MOCK_FIXTURES, "utf8"));
 	fs.writeFileSync(FIXTURES, JSON.stringify(buildFixtures(template), null, 2));
 

@@ -3,7 +3,10 @@ import { expect, test } from "@playwright/test";
 // Match rows render each team name as its own element. Scope row assertions to
 // the <li> that contains both names.
 function rowMatching(page, names) {
-	return page.locator("li").filter({ hasText: names[0] }).filter({ hasText: names[1] });
+	return page
+		.locator("li")
+		.filter({ hasText: names[0] })
+		.filter({ hasText: names[1] });
 }
 
 test("overview shows next-3-month future matches and links to the teams page", async ({
@@ -11,7 +14,9 @@ test("overview shows next-3-month future matches and links to the teams page", a
 }) => {
 	await page.goto("/big-matches/");
 
-	await expect(page.getByRole("heading", { name: "Big Matches" })).toBeVisible();
+	await expect(
+		page.getByRole("heading", { name: "Big Matches" }),
+	).toBeVisible();
 
 	// The overview links to the teams page for selection (no pickers here).
 	const teamsLink = page.getByRole("link", { name: "Teams page" });
@@ -20,7 +25,9 @@ test("overview shows next-3-month future matches and links to the teams page", a
 
 	// Near-future mutual fixture appears exactly once (the finished past game
 	// with the same pairing is excluded from the overview).
-	await expect(rowMatching(page, ["Manchester United", "Manchester City"])).toHaveCount(1);
+	await expect(
+		rowMatching(page, ["Manchester United", "Manchester City"]),
+	).toHaveCount(1);
 
 	// Beyond 3 months -> hidden on the overview.
 	await expect(rowMatching(page, ["Liverpool", "Chelsea"])).toHaveCount(0);
@@ -30,12 +37,18 @@ test("overview shows next-3-month future matches and links to the teams page", a
 	await expect(rowMatching(page, ["Real Madrid", "Barcelona"])).toHaveCount(1);
 });
 
-test("teams page groups teams by competition in canonical order", async ({ page }) => {
+test("teams page groups teams by competition in canonical order", async ({
+	page,
+}) => {
 	await page.goto("/big-matches/teams");
 
-	await expect(page.getByRole("heading", { name: "Select Big Teams" })).toBeVisible();
+	await expect(
+		page.getByRole("heading", { name: "Select Big Teams" }),
+	).toBeVisible();
 
-	const headings = await page.getByRole("heading", { level: 2 }).allTextContents();
+	const headings = await page
+		.getByRole("heading", { level: 2 })
+		.allTextContents();
 	const expectedOrder = ["EPL", "La Liga", "Serie A", "Bundesliga", "Ligue 1"];
 	const positions = expectedOrder.map((label) => headings.indexOf(label));
 	for (const p of positions) {
@@ -46,7 +59,9 @@ test("teams page groups teams by competition in canonical order", async ({ page 
 	}
 });
 
-test("clicking a team selects it with a light orange highlight", async ({ page }) => {
+test("clicking a team selects it with a light orange highlight", async ({
+	page,
+}) => {
 	await page.goto("/big-matches/teams");
 
 	const arsenal = page.getByRole("button", { name: /Arsenal/ }).first();
@@ -83,7 +98,9 @@ test("schedules shows all matches including the past with bucket background colo
 }) => {
 	await page.goto("/big-matches/schedules");
 
-	await expect(page.getByRole("heading", { name: "All Big Matches" })).toBeVisible();
+	await expect(
+		page.getByRole("heading", { name: "All Big Matches" }),
+	).toBeVisible();
 
 	// Legend highlights the three buckets.
 	await expect(page.getByText("Played")).toBeVisible();

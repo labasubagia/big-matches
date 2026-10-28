@@ -3,8 +3,8 @@ import {
 	competitionLabel,
 	fmtDate,
 	fmtStatus,
-	matchBucket,
 	type MatchBucket,
+	matchBucket,
 } from "../lib/matchTimes";
 
 const BUCKET_STYLE: Record<MatchBucket, { background: string; color: string }> =
@@ -64,11 +64,15 @@ function Score({ m }: { m: Match }) {
 	const awayWon = winner === "AWAY_TEAM";
 	return (
 		<span>
-			<span style={homeWon ? { color: WINNER_COLOR, fontWeight: 600 } : undefined}>
+			<span
+				style={homeWon ? { color: WINNER_COLOR, fontWeight: 600 } : undefined}
+			>
 				{fullTime.home}
 			</span>
 			{" - "}
-			<span style={awayWon ? { color: WINNER_COLOR, fontWeight: 600 } : undefined}>
+			<span
+				style={awayWon ? { color: WINNER_COLOR, fontWeight: 600 } : undefined}
+			>
 				{fullTime.away}
 			</span>
 		</span>
@@ -122,7 +126,14 @@ export function BucketLegend() {
 	return (
 		<div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
 			{items.map(([bucket, label]) => (
-				<span key={bucket} style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
+				<span
+					key={bucket}
+					style={{
+						display: "inline-flex",
+						alignItems: "center",
+						gap: "0.35rem",
+					}}
+				>
 					<span
 						style={{
 							width: 14,

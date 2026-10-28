@@ -24,15 +24,13 @@ function match(overrides: Partial<Match> = {}): Match {
 
 describe("matchBucket", () => {
 	it("classifies finished matches as past", () => {
-		expect(
-			matchBucket(match({ status: "FINISHED" }), NOW),
-		).toBe("past");
+		expect(matchBucket(match({ status: "FINISHED" }), NOW)).toBe("past");
 	});
 
 	it("classifies a passed date as past even if not finished", () => {
-		expect(
-			matchBucket(match({ utcDate: "2026-08-01T20:00:00Z" }), NOW),
-		).toBe("past");
+		expect(matchBucket(match({ utcDate: "2026-08-01T20:00:00Z" }), NOW)).toBe(
+			"past",
+		);
 	});
 
 	it("classifies a match within 3 months as near", () => {
@@ -40,9 +38,9 @@ describe("matchBucket", () => {
 	});
 
 	it("classifies a match beyond 3 months as far", () => {
-		expect(
-			matchBucket(match({ utcDate: "2027-04-15T20:00:00Z" }), NOW),
-		).toBe("far");
+		expect(matchBucket(match({ utcDate: "2027-04-15T20:00:00Z" }), NOW)).toBe(
+			"far",
+		);
 	});
 
 	it("classifies a TBD scheduled match as far", () => {
@@ -68,10 +66,7 @@ describe("futureWithinMonths", () => {
 
 	it("drops matches beyond the window", () => {
 		expect(
-			futureWithinMonths(
-				match({ utcDate: "2027-06-01T20:00:00Z" }),
-				NOW,
-			),
+			futureWithinMonths(match({ utcDate: "2027-06-01T20:00:00Z" }), NOW),
 		).toBe(false);
 	});
 });
@@ -79,7 +74,11 @@ describe("futureWithinMonths", () => {
 describe("competitionLabel", () => {
 	it("maps known codes to short labels", () => {
 		expect(competitionLabel(match())).toBe("EPL");
-		expect(competitionLabel(match({ competition: { name: "UEFA Champions League", code: "CL" } }))).toBe("UCL");
+		expect(
+			competitionLabel(
+				match({ competition: { name: "UEFA Champions League", code: "CL" } }),
+			),
+		).toBe("UCL");
 	});
 
 	it("falls back to the competition name for unknown codes", () => {
@@ -91,7 +90,9 @@ describe("competitionLabel", () => {
 
 describe("isTBD", () => {
 	it("flags scheduled matches with midnight kickoff", () => {
-		expect(isTBD(match({ status: "SCHEDULED", utcDate: "2026-12-01T00:00:00Z" }))).toBe(true);
+		expect(
+			isTBD(match({ status: "SCHEDULED", utcDate: "2026-12-01T00:00:00Z" })),
+		).toBe(true);
 		expect(isTBD(match())).toBe(false);
 	});
 });

@@ -1,9 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { BucketLegend, MatchList } from "../components/MatchList";
-import { filterBigMatches, type Match, type Team } from "../lib/filterBigMatches";
-import { useSelection } from "../lib/useSelection";
+import {
+	filterBigMatches,
+	type Match,
+	type Team,
+} from "../lib/filterBigMatches";
 import fixturesJson from "../lib/fixtures.json";
+import { useSelection } from "../lib/useSelection";
 
 export const Route = createFileRoute("/schedules")({
 	component: Schedules,

@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import type { Match, Team } from "../lib/filterBigMatches";
+import fixturesJson from "../lib/fixtures.json";
 import { teamCrests } from "../lib/matchTimes";
 import { useSelection } from "../lib/useSelection";
-import fixturesJson from "../lib/fixtures.json";
 
 export const Route = createFileRoute("/teams")({
 	component: Teams,
@@ -69,8 +69,8 @@ function Teams() {
 		>
 			<h1>Select Big Teams</h1>
 			<p style={{ color: "#666" }}>
-				Click a team to add or remove it. Only matches between two selected teams
-				are shown.
+				Click a team to add or remove it. Only matches between two selected
+				teams are shown.
 			</p>
 			<p style={{ color: "#666", fontSize: "0.85rem" }}>
 				{ready ? `${selected.length} teams selected` : "Loading…"}
