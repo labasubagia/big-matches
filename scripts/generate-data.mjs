@@ -18,10 +18,21 @@ const KEY = process.env.FOOTBALL_DATA_API_KEY;
 const CODES = ["PL", "PD", "SA", "BL1", "FL1", "CL"];
 const TEAMS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
+let lastRequestMs = 0;
+const REQUEST_GAP_MS = 7000;
+async function throttle() {
+	const wait = lastRequestMs
+		? Math.max(0, REQUEST_GAP_MS - (Date.now() - lastRequestMs))
+		: 0;
+	if (wait > 0) await sleep(wait);
+	lastRequestMs = Date.now();
+}
+
 async function fetchJson(p, isRetry = false) {
 	if (!KEY) {
 		throw new Error("FOOTBALL_DATA_API_KEY not set");
 	}
+	await throttle();
 	let res;
 	try {
 		res = await fetch(`${API_URL}${p}`, {
@@ -81,7 +92,6 @@ async function fetchMatches() {
 		} catch (e) {
 			console.error(`skip matches for ${code}: ${e.message}`);
 		}
-		await sleep(7000);
 	}
 	return all;
 }
@@ -111,7 +121,6 @@ if (staleTeams) {
 		} catch (e) {
 			console.error(`skip teams for ${code}: ${e.message}`);
 		}
-		await sleep(7000);
 	}
 	// Keep the previous roster if this refresh yielded nothing, so a transient
 	// failure never clobbers good data with an empty list.
