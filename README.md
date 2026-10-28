@@ -30,7 +30,8 @@ Champions League. UEL is excluded: Football-Data.org serves it only on a paid pl
 
 Until you run `npm run data:gen`, `src/lib/fixtures.example.json` (committed) is copied
 over `src/lib/fixtures.json` when it is missing — `npm run dev`/`npm run build` do this
-automatically, so the app starts with empty data instead of failing.
+automatically, so the build doesn't fail on a missing file. With empty data the app
+shows an error prompting you to run `npm run data:gen`.
 
 ## Selecting teams
 
