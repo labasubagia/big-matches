@@ -1,0 +1,894 @@
+{
+  "generatedAt": "2026-10-28T12:33:45.334Z",
+  "teams": [
+    {
+      "id": 57,
+      "name": "Arsenal FC",
+      "competition": "Premier League"
+    },
+    {
+      "id": 58,
+      "name": "Aston Villa FC",
+      "competition": "Premier League"
+    },
+    {
+      "id": 61,
+      "name": "Chelsea FC",
+      "competition": "Premier League"
+    },
+    {
+      "id": 62,
+      "name": "Everton FC",
+      "competition": "Premier League"
+    },
+    {
+      "id": 63,
+      "name": "Fulham FC",
+      "competition": "Premier League"
+    },
+    {
+      "id": 64,
+      "name": "Liverpool FC",
+      "competition": "Premier League"
+    },
+    {
+      "id": 65,
+      "name": "Manchester City FC",
+      "competition": "Premier League"
+    },
+    {
+      "id": 66,
+      "name": "Manchester United FC",
+      "competition": "Premier League"
+    },
+    {
+      "id": 67,
+      "name": "Newcastle United FC",
+      "competition": "Premier League"
+    },
+    {
+      "id": 71,
+      "name": "Sunderland AFC",
+      "competition": "Premier League"
+    },
+    {
+      "id": 73,
+      "name": "Tottenham Hotspur FC",
+      "competition": "Premier League"
+    },
+    {
+      "id": 322,
+      "name": "Hull City AFC",
+      "competition": "Premier League"
+    },
+    {
+      "id": 341,
+      "name": "Leeds United FC",
+      "competition": "Premier League"
+    },
+    {
+      "id": 349,
+      "name": "Ipswich Town FC",
+      "competition": "Premier League"
+    },
+    {
+      "id": 351,
+      "name": "Nottingham Forest FC",
+      "competition": "Premier League"
+    },
+    {
+      "id": 354,
+      "name": "Crystal Palace FC",
+      "competition": "Premier League"
+    },
+    {
+      "id": 397,
+      "name": "Brighton & Hove Albion FC",
+      "competition": "Premier League"
+    },
+    {
+      "id": 402,
+      "name": "Brentford FC",
+      "competition": "Premier League"
+    },
+    {
+      "id": 1044,
+      "name": "AFC Bournemouth",
+      "competition": "Premier League"
+    },
+    {
+      "id": 1076,
+      "name": "Coventry City FC",
+      "competition": "Premier League"
+    },
+    {
+      "id": 77,
+      "name": "Athletic Club",
+      "competition": "Primera Division"
+    },
+    {
+      "id": 78,
+      "name": "Club Atlético de Madrid",
+      "competition": "Primera Division"
+    },
+    {
+      "id": 79,
+      "name": "CA Osasuna",
+      "competition": "Primera Division"
+    },
+    {
+      "id": 80,
+      "name": "RCD Espanyol de Barcelona",
+      "competition": "Primera Division"
+    },
+    {
+      "id": 81,
+      "name": "FC Barcelona",
+      "competition": "Primera Division"
+    },
+    {
+      "id": 82,
+      "name": "Getafe CF",
+      "competition": "Primera Division"
+    },
+    {
+      "id": 84,
+      "name": "Málaga CF",
+      "competition": "Primera Division"
+    },
+    {
+      "id": 86,
+      "name": "Real Madrid CF",
+      "competition": "Primera Division"
+    },
+    {
+      "id": 87,
+      "name": "Rayo Vallecano de Madrid",
+      "competition": "Primera Division"
+    },
+    {
+      "id": 88,
+      "name": "Levante UD",
+      "competition": "Primera Division"
+    },
+    {
+      "id": 90,
+      "name": "Real Betis Balompié",
+      "competition": "Primera Division"
+    },
+    {
+      "id": 92,
+      "name": "Real Sociedad de Fútbol",
+      "competition": "Primera Division"
+    },
+    {
+      "id": 94,
+      "name": "Villarreal CF",
+      "competition": "Primera Division"
+    },
+    {
+      "id": 95,
+      "name": "Valencia CF",
+      "competition": "Primera Division"
+    },
+    {
+      "id": 263,
+      "name": "Deportivo Alavés",
+      "competition": "Primera Division"
+    },
+    {
+      "id": 285,
+      "name": "Elche CF",
+      "competition": "Primera Division"
+    },
+    {
+      "id": 558,
+      "name": "RC Celta de Vigo",
+      "competition": "Primera Division"
+    },
+    {
+      "id": 559,
+      "name": "Sevilla FC",
+      "competition": "Primera Division"
+    },
+    {
+      "id": 560,
+      "name": "RC Deportivo La Coruña",
+      "competition": "Primera Division"
+    },
+    {
+      "id": 5335,
+      "name": "Real Racing Club de Santander",
+      "competition": "Primera Division"
+    },
+    {
+      "id": 98,
+      "name": "AC Milan",
+      "competition": "Serie A"
+    },
+    {
+      "id": 99,
+      "name": "ACF Fiorentina",
+      "competition": "Serie A"
+    },
+    {
+      "id": 100,
+      "name": "AS Roma",
+      "competition": "Serie A"
+    },
+    {
+      "id": 102,
+      "name": "Atalanta BC",
+      "competition": "Serie A"
+    },
+    {
+      "id": 103,
+      "name": "Bologna FC 1909",
+      "competition": "Serie A"
+    },
+    {
+      "id": 104,
+      "name": "Cagliari Calcio",
+      "competition": "Serie A"
+    },
+    {
+      "id": 107,
+      "name": "Genoa CFC",
+      "competition": "Serie A"
+    },
+    {
+      "id": 108,
+      "name": "FC Internazionale Milano",
+      "competition": "Serie A"
+    },
+    {
+      "id": 109,
+      "name": "Juventus FC",
+      "competition": "Serie A"
+    },
+    {
+      "id": 110,
+      "name": "SS Lazio",
+      "competition": "Serie A"
+    },
+    {
+      "id": 112,
+      "name": "Parma Calcio 1913",
+      "competition": "Serie A"
+    },
+    {
+      "id": 113,
+      "name": "SSC Napoli",
+      "competition": "Serie A"
+    },
+    {
+      "id": 115,
+      "name": "Udinese Calcio",
+      "competition": "Serie A"
+    },
+    {
+      "id": 454,
+      "name": "Venezia FC",
+      "competition": "Serie A"
+    },
+    {
+      "id": 470,
+      "name": "Frosinone Calcio",
+      "competition": "Serie A"
+    },
+    {
+      "id": 471,
+      "name": "US Sassuolo Calcio",
+      "competition": "Serie A"
+    },
+    {
+      "id": 586,
+      "name": "Torino FC",
+      "competition": "Serie A"
+    },
+    {
+      "id": 5890,
+      "name": "US Lecce",
+      "competition": "Serie A"
+    },
+    {
+      "id": 5911,
+      "name": "AC Monza",
+      "competition": "Serie A"
+    },
+    {
+      "id": 7397,
+      "name": "Como 1907",
+      "competition": "Serie A"
+    },
+    {
+      "id": 1,
+      "name": "1. FC Köln",
+      "competition": "Bundesliga"
+    },
+    {
+      "id": 2,
+      "name": "TSG 1899 Hoffenheim",
+      "competition": "Bundesliga"
+    },
+    {
+      "id": 3,
+      "name": "Bayer 04 Leverkusen",
+      "competition": "Bundesliga"
+    },
+    {
+      "id": 4,
+      "name": "Borussia Dortmund",
+      "competition": "Bundesliga"
+    },
+    {
+      "id": 5,
+      "name": "FC Bayern München",
+      "competition": "Bundesliga"
+    },
+    {
+      "id": 6,
+      "name": "FC Schalke 04",
+      "competition": "Bundesliga"
+    },
+    {
+      "id": 7,
+      "name": "Hamburger SV",
+      "competition": "Bundesliga"
+    },
+    {
+      "id": 10,
+      "name": "VfB Stuttgart",
+      "competition": "Bundesliga"
+    },
+    {
+      "id": 12,
+      "name": "SV Werder Bremen",
+      "competition": "Bundesliga"
+    },
+    {
+      "id": 15,
+      "name": "1. FSV Mainz 05",
+      "competition": "Bundesliga"
+    },
+    {
+      "id": 16,
+      "name": "FC Augsburg",
+      "competition": "Bundesliga"
+    },
+    {
+      "id": 17,
+      "name": "SC Freiburg",
+      "competition": "Bundesliga"
+    },
+    {
+      "id": 18,
+      "name": "Borussia Mönchengladbach",
+      "competition": "Bundesliga"
+    },
+    {
+      "id": 19,
+      "name": "Eintracht Frankfurt",
+      "competition": "Bundesliga"
+    },
+    {
+      "id": 28,
+      "name": "1. FC Union Berlin",
+      "competition": "Bundesliga"
+    },
+    {
+      "id": 29,
+      "name": "SC Paderborn 07",
+      "competition": "Bundesliga"
+    },
+    {
+      "id": 719,
+      "name": "SV 07 Elversberg",
+      "competition": "Bundesliga"
+    },
+    {
+      "id": 721,
+      "name": "RB Leipzig",
+      "competition": "Bundesliga"
+    },
+    {
+      "id": 511,
+      "name": "Toulouse FC",
+      "competition": "Ligue 1"
+    },
+    {
+      "id": 512,
+      "name": "Stade Brestois 29",
+      "competition": "Ligue 1"
+    },
+    {
+      "id": 516,
+      "name": "Olympique de Marseille",
+      "competition": "Ligue 1"
+    },
+    {
+      "id": 519,
+      "name": "AJ Auxerre",
+      "competition": "Ligue 1"
+    },
+    {
+      "id": 521,
+      "name": "Lille OSC",
+      "competition": "Ligue 1"
+    },
+    {
+      "id": 522,
+      "name": "OGC Nice",
+      "competition": "Ligue 1"
+    },
+    {
+      "id": 523,
+      "name": "Olympique Lyonnais",
+      "competition": "Ligue 1"
+    },
+    {
+      "id": 524,
+      "name": "Paris Saint-Germain FC",
+      "competition": "Ligue 1"
+    },
+    {
+      "id": 525,
+      "name": "FC Lorient",
+      "competition": "Ligue 1"
+    },
+    {
+      "id": 529,
+      "name": "Stade Rennais FC 1901",
+      "competition": "Ligue 1"
+    },
+    {
+      "id": 531,
+      "name": "ES Troyes AC",
+      "competition": "Ligue 1"
+    },
+    {
+      "id": 532,
+      "name": "Angers SCO",
+      "competition": "Ligue 1"
+    },
+    {
+      "id": 533,
+      "name": "Le Havre AC",
+      "competition": "Ligue 1"
+    },
+    {
+      "id": 535,
+      "name": "Le Mans FC",
+      "competition": "Ligue 1"
+    },
+    {
+      "id": 546,
+      "name": "Racing Club de Lens",
+      "competition": "Ligue 1"
+    },
+    {
+      "id": 548,
+      "name": "AS Monaco FC",
+      "competition": "Ligue 1"
+    },
+    {
+      "id": 576,
+      "name": "RC Strasbourg Alsace",
+      "competition": "Ligue 1"
+    },
+    {
+      "id": 1045,
+      "name": "Paris FC",
+      "competition": "Ligue 1"
+    },
+    {
+      "id": 4,
+      "name": "Borussia Dortmund",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 5,
+      "name": "FC Bayern München",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 10,
+      "name": "VfB Stuttgart",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 57,
+      "name": "Arsenal FC",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 58,
+      "name": "Aston Villa FC",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 64,
+      "name": "Liverpool FC",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 65,
+      "name": "Manchester City FC",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 66,
+      "name": "Manchester United FC",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 78,
+      "name": "Club Atlético de Madrid",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 81,
+      "name": "FC Barcelona",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 86,
+      "name": "Real Madrid CF",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 90,
+      "name": "Real Betis Balompié",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 94,
+      "name": "Villarreal CF",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 100,
+      "name": "AS Roma",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 108,
+      "name": "FC Internazionale Milano",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 113,
+      "name": "SSC Napoli",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 498,
+      "name": "Sporting Clube de Portugal",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 503,
+      "name": "FC Porto",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 521,
+      "name": "Lille OSC",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 524,
+      "name": "Paris Saint-Germain FC",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 546,
+      "name": "Racing Club de Lens",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 610,
+      "name": "Galatasaray SK",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 613,
+      "name": "Fenerbahçe SK",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 674,
+      "name": "PSV",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 675,
+      "name": "Feyenoord Rotterdam",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 721,
+      "name": "RB Leipzig",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 851,
+      "name": "Club Brugge KV",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 930,
+      "name": "SK Slavia Praha",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 1887,
+      "name": "FK Shakhtar Donetsk",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 1899,
+      "name": "PAE AEK",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 2016,
+      "name": "LASK Linz",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 5720,
+      "name": "Viking FK",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 5721,
+      "name": "FK Bodø/Glimt",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 7397,
+      "name": "Como 1907",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 7509,
+      "name": "ŠK Slovan Bratislava",
+      "competition": "UEFA Champions League"
+    },
+    {
+      "id": 10233,
+      "name": "Sabah FK",
+      "competition": "UEFA Champions League"
+    }
+  ],
+  "matches": [
+    {
+      "id": 101,
+      "status": "TIMED",
+      "competition": {
+        "name": "Premier League",
+        "code": "PL"
+      },
+      "homeTeam": {
+        "id": 61,
+        "name": "Chelsea",
+        "crest": "https://crests.football-data.org/61.png"
+      },
+      "awayTeam": {
+        "id": 57,
+        "name": "Arsenal",
+        "crest": "https://crests.football-data.org/57.png"
+      },
+      "__dayOffset": 25,
+      "__tbd": false
+    },
+    {
+      "id": 102,
+      "status": "TIMED",
+      "competition": {
+        "name": "Premier League",
+        "code": "PL"
+      },
+      "homeTeam": {
+        "id": 66,
+        "name": "Manchester United",
+        "crest": "https://crests.football-data.org/66.png"
+      },
+      "awayTeam": {
+        "id": 65,
+        "name": "Manchester City",
+        "crest": "https://crests.football-data.org/65.png"
+      },
+      "__dayOffset": 26,
+      "__tbd": false
+    },
+    {
+      "id": 103,
+      "status": "TIMED",
+      "competition": {
+        "name": "Premier League",
+        "code": "PL"
+      },
+      "homeTeam": {
+        "id": 64,
+        "name": "Liverpool",
+        "crest": "https://crests.football-data.org/64.png"
+      },
+      "awayTeam": {
+        "id": 55,
+        "name": "Brentford",
+        "crest": "https://crests.football-data.org/55.png"
+      },
+      "__dayOffset": 27,
+      "__tbd": false
+    },
+    {
+      "id": 110,
+      "status": "FINISHED",
+      "competition": {
+        "name": "Premier League",
+        "code": "PL"
+      },
+      "homeTeam": {
+        "id": 66,
+        "name": "Manchester United",
+        "crest": "https://crests.football-data.org/66.png"
+      },
+      "awayTeam": {
+        "id": 65,
+        "name": "Manchester City",
+        "crest": "https://crests.football-data.org/65.png"
+      },
+      "score": {
+        "winner": "HOME_TEAM",
+        "fullTime": {
+          "home": 1,
+          "away": 0
+        }
+      },
+      "__dayOffset": -7,
+      "__tbd": false
+    },
+    {
+      "id": 111,
+      "status": "TIMED",
+      "competition": {
+        "name": "Premier League",
+        "code": "PL"
+      },
+      "homeTeam": {
+        "id": 64,
+        "name": "Liverpool",
+        "crest": "https://crests.football-data.org/64.png"
+      },
+      "awayTeam": {
+        "id": 61,
+        "name": "Chelsea",
+        "crest": "https://crests.football-data.org/61.png"
+      },
+      "__dayOffset": 150,
+      "__tbd": false
+    },
+    {
+      "id": 201,
+      "status": "TIMED",
+      "competition": {
+        "name": "La Liga",
+        "code": "PD"
+      },
+      "homeTeam": {
+        "id": 86,
+        "name": "Real Madrid",
+        "crest": "https://crests.football-data.org/86.png"
+      },
+      "awayTeam": {
+        "id": 81,
+        "name": "Barcelona",
+        "crest": "https://crests.football-data.org/81.png"
+      },
+      "__dayOffset": 30,
+      "__tbd": false
+    },
+    {
+      "id": 202,
+      "status": "TIMED",
+      "competition": {
+        "name": "La Liga",
+        "code": "PD"
+      },
+      "homeTeam": {
+        "id": 78,
+        "name": "Atlético Madrid",
+        "crest": "https://crests.football-data.org/78.png"
+      },
+      "awayTeam": {
+        "id": 559,
+        "name": "Sevilla",
+        "crest": "https://crests.football-data.org/559.png"
+      },
+      "__dayOffset": 31,
+      "__tbd": false
+    },
+    {
+      "id": 203,
+      "status": "SCHEDULED",
+      "competition": {
+        "name": "La Liga",
+        "code": "PD"
+      },
+      "homeTeam": {
+        "id": 86,
+        "name": "Real Madrid",
+        "crest": "https://crests.football-data.org/86.png"
+      },
+      "awayTeam": {
+        "id": 81,
+        "name": "Barcelona",
+        "crest": "https://crests.football-data.org/81.png"
+      },
+      "__dayOffset": 190,
+      "__tbd": true
+    },
+    {
+      "id": 301,
+      "status": "TIMED",
+      "competition": {
+        "name": "Serie A",
+        "code": "SA"
+      },
+      "homeTeam": {
+        "id": 108,
+        "name": "Inter",
+        "crest": "https://crests.football-data.org/108.png"
+      },
+      "awayTeam": {
+        "id": 109,
+        "name": "Juventus",
+        "crest": "https://crests.football-data.org/109.png"
+      },
+      "__dayOffset": 37,
+      "__tbd": false
+    },
+    {
+      "id": 401,
+      "status": "TIMED",
+      "competition": {
+        "name": "Bundesliga",
+        "code": "BL1"
+      },
+      "homeTeam": {
+        "id": 5,
+        "name": "Bayern München",
+        "crest": "https://crests.football-data.org/5.png"
+      },
+      "awayTeam": {
+        "id": 4,
+        "name": "Borussia Dortmund",
+        "crest": "https://crests.football-data.org/4.png"
+      },
+      "__dayOffset": 40,
+      "__tbd": false
+    },
+    {
+      "id": 501,
+      "status": "TIMED",
+      "competition": {
+        "name": "Ligue 1",
+        "code": "FL1"
+      },
+      "homeTeam": {
+        "id": 524,
+        "name": "PSG",
+        "crest": "https://crests.football-data.org/524.png"
+      },
+      "awayTeam": {
+        "id": 516,
+        "name": "Marseille",
+        "crest": "https://crests.football-data.org/516.png"
+      },
+      "__dayOffset": 45,
+      "__tbd": false
+    }
+  ]
+}
