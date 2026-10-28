@@ -24,6 +24,7 @@ Package manager: **npm** (lockfile `package-lock.json`).
 | `npm run build` | production build, then full TypeScript typecheck |
 | `npm run preview` | preview the production build |
 | `npm test` | run the test suite once |
+| `npm run test:e2e` | Playwright end-to-end tests against a mocked Football-Data API |
 
 Setup: copy `.env.example` to `.env` and set the Football-Data.org API key.
 
