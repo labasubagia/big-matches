@@ -39,6 +39,9 @@ Setup: copy `.env.example` to `.env` and set the Football-Data.org API key.
 - Every change MUST be checked for documentation drift: if it affects any documented behavior, command, config, or convention (including this file), update the affected docs in the same change.
 - This file is the source of truth for repo conventions; keep it accurate when conventions evolve.
 
+## Merging
+- Do NOT merge any pull request without explicit user permission.
+
 ## Important Files
 - `src/router.tsx` — app router setup.
 - `src/routeTree.gen.ts` — **auto-generated** by the router plugin during dev/build. Do not edit.
