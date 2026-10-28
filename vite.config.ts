@@ -3,6 +3,7 @@ import viteReact from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 export default defineConfig({
+	base: "/big-matches/",
 	server: {
 		port: 3000,
 	},
@@ -11,7 +12,10 @@ export default defineConfig({
 	},
 	plugins: [
 		tanstackStart({
-			srcDirectory: "src",
+			prerender: {
+				enabled: true,
+				failOnError: false,
+			},
 		}),
 		viteReact(),
 	],
