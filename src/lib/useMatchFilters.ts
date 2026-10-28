@@ -2,6 +2,7 @@ import type { Dispatch, SetStateAction } from "react";
 import { useMemo, useState } from "react";
 import type { Team } from "./filterBigMatches";
 import { filterTeamsByName } from "./filterBigMatches";
+import { localMidnightMs } from "./matchTimes";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -64,8 +65,8 @@ export function useMatchFilters(
 	};
 
 	const range = useMemo(() => {
-		const from = Date.parse(fromStr);
-		const to = Date.parse(toStr) + DAY_MS - 1;
+		const from = localMidnightMs(fromStr);
+		const to = localMidnightMs(toStr) + DAY_MS - 1;
 		if (Number.isNaN(from) || Number.isNaN(to) || to < from) return null;
 		return { from, to };
 	}, [fromStr, toStr]);

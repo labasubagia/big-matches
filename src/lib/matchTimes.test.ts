@@ -3,6 +3,7 @@ import type { Match } from "./filterBigMatches";
 import {
 	competitionLabel,
 	isTBD,
+	localMidnightMs,
 	matchBucket,
 	teamCrests,
 	withinRange,
@@ -78,6 +79,20 @@ describe("withinRange", () => {
 		).toBe(false);
 	});
 });
+describe("localMidnightMs", () => {
+	it("returns local midnight in the configured timezone", () => {
+		const prevTZ = process.env.TZ;
+		process.env.TZ = "America/Los_Angeles";
+		try {
+			// PDT = UTC−7: local midnight lands on 07:00Z
+			expect(localMidnightMs("2026-10-28")).toBe(
+				Date.parse("2026-10-28T07:00:00Z"),
+			);
+		} finally {
+			process.env.TZ = prevTZ;
+		}
+	});
+});
 
 describe("competitionLabel", () => {
 	it("maps known codes to short labels", () => {
@@ -97,7 +112,7 @@ describe("competitionLabel", () => {
 });
 
 describe("isTBD", () => {
-	it("flags scheduled matches with midnight kickoff", () => {
+	it("flags only SCHEDULED matches with a midnight placeholder time", () => {
 		expect(
 			isTBD(match({ status: "SCHEDULED", utcDate: "2026-12-01T00:00:00Z" })),
 		).toBe(true);
@@ -106,6 +121,13 @@ describe("isTBD", () => {
 				match({ status: "SCHEDULED", utcDate: "2026-12-01T00:00:00.000Z" }),
 			),
 		).toBe(true);
+		// A SCHEDULED match that already carries a real kickoff time is NOT
+		// TBD — verified live: timed fixtures appear as TIMED in the API, but
+		// a filtered SCHEDULED list can still return them, so status alone is
+		// an insufficient signal.
+		expect(
+			isTBD(match({ status: "SCHEDULED", utcDate: "2026-12-01T19:30:00Z" })),
+		).toBe(false);
 		expect(isTBD(match())).toBe(false);
 	});
 });
