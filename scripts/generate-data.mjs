@@ -18,17 +18,28 @@ const KEY = process.env.FOOTBALL_DATA_API_KEY;
 const CODES = ["PL", "PD", "SA", "BL1", "FL1", "CL"];
 const TEAMS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
-async function fetchJson(p) {
+async function fetchJson(p, isRetry = false) {
 	if (!KEY) {
 		throw new Error("FOOTBALL_DATA_API_KEY not set");
 	}
-	const res = await fetch(`${API_URL}${p}`, {
-		headers: { "X-Auth-Token": KEY },
-	});
+	let res;
+	try {
+		res = await fetch(`${API_URL}${p}`, {
+			headers: { "X-Auth-Token": KEY },
+		});
+	} catch (err) {
+		if (isRetry) throw err;
+		console.warn(`network error (${p}); retrying in 10s`);
+		await sleep(10000);
+		return fetchJson(p, true);
+	}
 	if (res.status === 429) {
+		if (isRetry) {
+			throw new Error(`Football-Data API 429 for ${p} (still rate limited)`);
+		}
 		console.warn(`rate limited (${p}); retrying in 10s`);
 		await sleep(10000);
-		return fetchJson(p);
+		return fetchJson(p, true);
 	}
 	if (!res.ok) {
 		const detail = await res.text().catch(() => "");
