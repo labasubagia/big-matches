@@ -6,3 +6,5 @@ dist/
 *.log
 test-results/
 playwright-report/
+
+src/lib/fixtures.json

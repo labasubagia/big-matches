@@ -3,8 +3,8 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build && tsc --noEmit",
+		"dev": "node scripts/ensure-fixtures.mjs && vite dev",
+		"build": "node scripts/ensure-fixtures.mjs && vite build && tsc --noEmit",
 		"preview": "vite preview",
 		"test": "vitest run --exclude \"e2e/**\"",
 		"check": "biome check",

@@ -10,10 +10,17 @@ import fixturesJson from "../lib/fixtures.json";
 
 export const Route = createFileRoute("/")({
 	component: Home,
-	loader: () => ({
-		matches: fixturesJson.matches as Match[],
-		teams: fixturesJson.teams as Team[],
-	}),
+	loader: () => {
+		if (fixturesJson.teams.length === 0 || fixturesJson.matches.length === 0) {
+			throw new Error(
+				"App data missing — run `source .env && npm run data:gen` then restart.",
+			);
+		}
+		return {
+			matches: fixturesJson.matches as Match[],
+			teams: fixturesJson.teams as Team[],
+		};
+	},
 });
 
 const STORAGE_KEY = "big-matches-selected";
