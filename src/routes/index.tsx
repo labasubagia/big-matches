@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { DEFAULT_SELECTED_IDS, teamCatalog } from '../config/teams'
-import { loadBigMatches } from '../lib/api'
-import type { Match } from '../lib/filterBigMatches'
+import { loadAllMatches } from '../lib/api'
+import { filterBigMatches, type Match } from '../lib/filterBigMatches'
 
 export const Route = createFileRoute('/')({
   component: Home,
+  loader: () => loadAllMatches(),
 })
 
 const STORAGE_KEY = 'big-matches-selected'
@@ -63,8 +64,8 @@ function fmtStatus(m: Match): string {
 const competitions = [...new Set(teamCatalog.map((t) => t.competition))]
 
 function Home() {
+  const allMatches = Route.useLoaderData()
   const [selected, setSelected] = useState<number[]>([])
-  const [matches, setMatches] = useState<Match[]>([])
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
@@ -72,21 +73,26 @@ function Home() {
     setReady(true)
   }, [])
 
+  // Warn if a selected team never appears in any fetched match (bad id).
   useEffect(() => {
     if (!ready) return
-    let alive = true
-    setMatches([])
-    loadBigMatches({ data: { selectedIds: selected } })
-      .then((m) => {
-        if (alive) setMatches(m)
-      })
-      .catch(() => {
-        if (alive) setMatches([])
-      })
-    return () => {
-      alive = false
+    const seen = new Set<number>()
+    for (const m of allMatches) {
+      seen.add(m.homeTeam.id)
+      seen.add(m.awayTeam.id)
     }
-  }, [selected, ready])
+    const missing = selected.filter((id) => !seen.has(id))
+    if (missing.length > 0) {
+      console.warn(
+        `[big-matches] selected teams never appeared in fetched fixtures (check team ids): ${missing.join(', ')}`,
+      )
+    }
+  }, [ready, selected, allMatches])
+
+  const matches = useMemo(
+    () => (ready ? filterBigMatches(allMatches, new Set(selected)) : []),
+    [ready, allMatches, selected],
+  )
 
   function toggle(id: number) {
     setSelected((prev) => {
