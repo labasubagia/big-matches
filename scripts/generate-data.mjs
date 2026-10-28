@@ -106,6 +106,5 @@ if (teams.length === 0 && matches.length === 0) {
 	process.exit(1);
 }
 
-const out = { generatedAt: new Date(now).toISOString(), teams, matches };
-writeFileSync(OUT, JSON.stringify(out, null, 2) + "\n");
+writeFileSync(OUT, `${JSON.stringify(out, null, 2)}\n`);
 console.log(`wrote ${OUT}: ${teams.length} teams, ${matches.length} matches`);
