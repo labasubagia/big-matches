@@ -61,9 +61,7 @@ function MatchRow({ m }: { m: Match }) {
 	const homeWon = winner === "HOME_TEAM";
 	const awayWon = winner === "AWAY_TEAM";
 	const scoreStyle = (won: boolean) =>
-		won
-			? { color: WINNER_COLOR, fontWeight: 600 }
-			: { fontWeight: 600 };
+		won ? { color: WINNER_COLOR, fontWeight: 600 } : { fontWeight: 600 };
 	const style = {
 		...rowStyle,
 		background: past ? PAST_BG : "#ffffff",
