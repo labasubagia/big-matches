@@ -1,5 +1,5 @@
+import Fuse from "fuse.js";
 import { DEFAULT_SELECTED_IDS } from "../config/teams";
-
 export type Match = {
 	id: number;
 	utcDate: string;
@@ -57,4 +57,19 @@ export function filterOverviewMatches(
 	return matches.filter(
 		(m) => globalIds.has(m.homeTeam.id) && globalIds.has(m.awayTeam.id),
 	);
+}
+
+// Fuzzy team-name search via Fuse.js. Shares the production matcher across the
+// Overview / Schedules club search and the Teams page search. Preserves input
+// order and duplicate entries for empty queries (a team may appear under
+// several competitions); non-empty queries return relevance-ranked matches.
+export function filterTeamsByName(teams: Team[], query: string): Team[] {
+	const q = query.trim().toLowerCase();
+	if (!q) return teams;
+	const fuse = new Fuse(teams, {
+		keys: ["name"],
+		threshold: 0.3,
+		ignoreLocation: true,
+	});
+	return fuse.search(q).map((r) => r.item);
 }

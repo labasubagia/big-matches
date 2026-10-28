@@ -1,6 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import { useMemo, useState } from "react";
 import type { Team } from "./filterBigMatches";
+import { filterTeamsByName } from "./filterBigMatches";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -40,15 +41,10 @@ export function useMatchFilters(
 	const [selectedTeams, setSelectedTeams] = useState<number[]>([]);
 
 	const candidates = useMemo(() => {
-		const q = query.trim().toLowerCase();
-		const seen = new Set<number>();
 		const selectedSet = new Set(selected);
-		const pool = q
-			? teams.filter(
-					(t) => selectedSet.has(t.id) && t.name.toLowerCase().includes(q),
-				)
-			: teams.filter((t) => selectedSet.has(t.id));
-		return pool.filter((t) => {
+		const seen = new Set<number>();
+		return filterTeamsByName(teams, query).filter((t) => {
+			if (!selectedSet.has(t.id)) return false;
 			if (seen.has(t.id)) return false;
 			seen.add(t.id);
 			return true;
