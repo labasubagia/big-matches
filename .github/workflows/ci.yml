@@ -15,10 +15,12 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Write mock fixtures
+      - name: Write test fixtures (fixtures.mock.json)
         run: node e2e/write-fixtures.mjs
       - run: npm run check
       - run: npm run build
+        env:
+          VITE_FIXTURES: mock
       - run: npm test
   e2e:
     runs-on: ubuntu-latest

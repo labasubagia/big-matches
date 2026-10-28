@@ -10,11 +10,9 @@ export function buildFixtures(template) {
 		matches: template.matches.map((m) => {
 			if (m.__dayOffset === undefined) return m;
 			const { __dayOffset, __tbd, utcDate, ...rest } = m;
-			const iso = new Date(now + __dayOffset * DAY_MS).toISOString();
-			const fixed = __tbd
-				? iso.replace(/T\d{2}:\d{2}:\d{2}Z$/, "T00:00:00Z")
-				: iso;
-			return { ...rest, utcDate: fixed };
+			const d = new Date(now + __dayOffset * DAY_MS);
+			if (__tbd) d.setUTCHours(0, 0, 0, 0);
+			return { ...rest, utcDate: d.toISOString() };
 		}),
 	};
 }

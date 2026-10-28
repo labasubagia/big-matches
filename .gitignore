@@ -8,3 +8,4 @@ test-results/
 playwright-report/
 
 src/lib/fixtures.json
+src/lib/fixtures.mock.json

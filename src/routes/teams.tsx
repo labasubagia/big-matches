@@ -1,16 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
-import type { Match, Team } from "../lib/filterBigMatches";
-import fixturesJson from "../lib/fixtures.json";
+import type { Team } from "../lib/filterBigMatches";
+import { loadFixtures } from "../lib/loadFixtures";
 import { teamCrests } from "../lib/matchTimes";
 import { useSelection } from "../lib/useSelection";
 
 export const Route = createFileRoute("/teams")({
 	component: Teams,
-	loader: () => ({
-		matches: fixturesJson.matches as Match[],
-		teams: fixturesJson.teams as Team[],
-	}),
+	loader: () => loadFixtures(),
 });
 
 // Canonical competition order and short labels, matching the requested

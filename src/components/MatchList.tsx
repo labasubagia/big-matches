@@ -3,16 +3,11 @@ import {
 	competitionLabel,
 	fmtDate,
 	fmtStatus,
-	type MatchBucket,
+	isTBD,
 	matchBucket,
 } from "../lib/matchTimes";
 
-const BUCKET_STYLE: Record<MatchBucket, { background: string; color: string }> =
-	{
-		past: { background: "#9e9e9e", color: "#fff" },
-		near: { background: "#ffffff", color: "#111" },
-		far: { background: "#d0d0d0", color: "#111" },
-	};
+const PAST_BG = "#f0f0f0";
 
 const WINNER_COLOR = "#e8620c";
 
@@ -57,36 +52,32 @@ function Crest({ url, name }: { url?: string; name: string }) {
 	);
 }
 
-function Score({ m }: { m: Match }) {
+function MatchRow({ m }: { m: Match }) {
+	const past = matchBucket(m) === "past";
+	const tbd = isTBD(m);
 	const { fullTime, winner } = m.score ?? {};
-	if (fullTime?.home == null || fullTime.away == null) return null;
+	const homeScore = fullTime?.home;
+	const awayScore = fullTime?.away;
 	const homeWon = winner === "HOME_TEAM";
 	const awayWon = winner === "AWAY_TEAM";
-	return (
-		<span>
-			<span
-				style={homeWon ? { color: WINNER_COLOR, fontWeight: 600 } : undefined}
-			>
-				{fullTime.home}
-			</span>
-			{" - "}
-			<span
-				style={awayWon ? { color: WINNER_COLOR, fontWeight: 600 } : undefined}
-			>
-				{fullTime.away}
-			</span>
-		</span>
-	);
-}
-
-function MatchRow({ m }: { m: Match }) {
-	const bucket = matchBucket(m);
-	const style = { ...rowStyle, ...BUCKET_STYLE[bucket] };
+	const scoreStyle = (won: boolean) =>
+		won ? { color: WINNER_COLOR, fontWeight: 600 } : { fontWeight: 600 };
+	const style = {
+		...rowStyle,
+		background: past ? PAST_BG : "#ffffff",
+		color: "#111",
+	};
 	return (
 		<li style={style}>
 			<Crest url={m.homeTeam.crest} name={m.homeTeam.name} />
 			<span>{m.homeTeam.name}</span>
+			{homeScore != null && (
+				<span style={scoreStyle(homeWon)}>{homeScore}</span>
+			)}
 			<span style={{ opacity: 0.55 }}>v</span>
+			{awayScore != null && (
+				<span style={scoreStyle(awayWon)}>{awayScore}</span>
+			)}
 			<span>{m.awayTeam.name}</span>
 			<Crest url={m.awayTeam.crest} name={m.awayTeam.name} />
 			<span
@@ -97,8 +88,13 @@ function MatchRow({ m }: { m: Match }) {
 					gap: "0.5rem",
 				}}
 			>
-				<Score m={m} />
-				<span style={{ fontSize: "0.85em", opacity: 0.85 }}>
+				<span
+					style={{
+						fontSize: "0.85em",
+						opacity: tbd ? 1 : 0.85,
+						color: tbd ? WINNER_COLOR : undefined,
+					}}
+				>
 					{competitionLabel(m)} · {fmtDate(m)} {fmtStatus(m)}
 				</span>
 			</span>
@@ -118,35 +114,48 @@ export function MatchList({ matches }: { matches: Match[] }) {
 }
 
 export function BucketLegend() {
-	const items: Array<[MatchBucket, string]> = [
-		["past", "Played"],
-		["near", "Next 3 months"],
-		["far", "Later or time TBD"],
-	];
 	return (
 		<div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-			{items.map(([bucket, label]) => (
+			<span
+				style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}
+			>
 				<span
-					key={bucket}
 					style={{
-						display: "inline-flex",
-						alignItems: "center",
-						gap: "0.35rem",
+						width: 14,
+						height: 14,
+						border: "1px solid #ccc",
+						borderRadius: 3,
+						background: PAST_BG,
+						display: "inline-block",
 					}}
-				>
-					<span
-						style={{
-							width: 14,
-							height: 14,
-							border: "1px solid #ccc",
-							borderRadius: 3,
-							background: BUCKET_STYLE[bucket].background,
-							display: "inline-block",
-						}}
-					/>
-					{label}
-				</span>
-			))}
+				/>
+				Played
+			</span>
+			<span
+				style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}
+			>
+				<span
+					style={{
+						width: 14,
+						height: 14,
+						border: "1px solid #ccc",
+						borderRadius: 3,
+						background: "#ffffff",
+						display: "inline-block",
+					}}
+				/>
+				Upcoming
+			</span>
+			<span
+				style={{
+					display: "inline-flex",
+					alignItems: "center",
+					gap: "0.35rem",
+					color: WINNER_COLOR,
+				}}
+			>
+				• Time TBD
+			</span>
 		</div>
 	);
 }

@@ -26,21 +26,16 @@ function waitFor(port, path, timeoutMs = 60_000) {
 }
 
 const MOCK_FIXTURES = new URL("./fixtures.mock.json", import.meta.url);
-const FIXTURES = new URL("../src/lib/fixtures.json", import.meta.url);
+// Test-scoped mock fixtures; the real src/lib/fixtures.json is never touched.
+const MOCK_OUT = new URL("../src/lib/fixtures.mock.json", import.meta.url);
 
 let dev;
-let original;
 try {
-	// Use committed mock fixtures instead of booting the mock API and running the
-	// generator: fast and deterministic. The real fixtures file is restored below.
-	try {
-		original = fs.readFileSync(FIXTURES);
-	} catch {
-		// src/lib/fixtures.json is gitignored and may be absent (e.g. CI).
-	}
 	const template = JSON.parse(fs.readFileSync(MOCK_FIXTURES, "utf8"));
-	fs.writeFileSync(FIXTURES, JSON.stringify(buildFixtures(template), null, 2));
+	fs.writeFileSync(MOCK_OUT, JSON.stringify(buildFixtures(template), null, 2));
 
+	// VITE_FIXTURES=mock makes the app load fixtures.mock.json (see
+	// src/lib/loadFixtures.ts); mode stays "development" so TanStack dev routing works.
 	dev = spawn(
 		"npm",
 		["run", "dev", "--", "--port", "3100", "--host", "127.0.0.1"],
@@ -48,6 +43,7 @@ try {
 			shell: true,
 			detached: true,
 			stdio: ["ignore", "inherit", "inherit"],
+			env: { ...process.env, VITE_FIXTURES: "mock" },
 		},
 	);
 	await waitFor(3100, "/big-matches/");
@@ -65,5 +61,4 @@ try {
 			// process group already gone
 		}
 	}
-	if (original) fs.writeFileSync(FIXTURES, original);
 }

@@ -7,7 +7,11 @@ export type MatchBucket = "past" | "near" | "far";
 const MONTHS_MS = 90 * 24 * 60 * 60 * 1000;
 
 export function isTBD(m: Match): boolean {
-	return m.status === "SCHEDULED" && m.utcDate.includes("T00:00:00Z");
+	if (m.status !== "SCHEDULED") return false;
+	const d = new Date(m.utcDate);
+	return (
+		d.getUTCHours() === 0 && d.getUTCMinutes() === 0 && d.getUTCSeconds() === 0
+	);
 }
 
 export function matchBucket(m: Match, now: number = Date.now()): MatchBucket {
