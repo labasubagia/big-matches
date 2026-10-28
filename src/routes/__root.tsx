@@ -18,35 +18,43 @@ function Nav() {
 	return (
 		<nav
 			style={{
-				display: "flex",
-				gap: "0.5rem",
-				padding: "0.75rem 1rem",
 				borderBottom: "1px solid #e0e0e0",
 				fontFamily: "system-ui, sans-serif",
 			}}
 		>
-			<Link
-				to="/"
-				style={navLinkStyle}
-				activeOptions={{ exact: true }}
-				activeProps={{ style: { ...navLinkStyle, background: "#eee" } }}
+			<div
+				style={{
+					display: "flex",
+					gap: "0.5rem",
+					maxWidth: 760,
+					margin: "0 auto",
+					padding: "0.75rem 1rem",
+					width: "100%",
+				}}
 			>
-				Overview
-			</Link>
-			<Link
-				to="/teams"
-				style={navLinkStyle}
-				activeProps={{ style: { ...navLinkStyle, background: "#eee" } }}
-			>
-				Teams
-			</Link>
-			<Link
-				to="/schedules"
-				style={navLinkStyle}
-				activeProps={{ style: { ...navLinkStyle, background: "#eee" } }}
-			>
-				Schedules
-			</Link>
+				<Link
+					to="/"
+					style={navLinkStyle}
+					activeOptions={{ exact: true }}
+					activeProps={{ style: { ...navLinkStyle, background: "#eee" } }}
+				>
+					Overview
+				</Link>
+				<Link
+					to="/teams"
+					style={navLinkStyle}
+					activeProps={{ style: { ...navLinkStyle, background: "#eee" } }}
+				>
+					Teams
+				</Link>
+				<Link
+					to="/schedules"
+					style={navLinkStyle}
+					activeProps={{ style: { ...navLinkStyle, background: "#eee" } }}
+				>
+					Schedules
+				</Link>
+			</div>
 		</nav>
 	);
 }
