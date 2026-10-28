@@ -1,26 +1,32 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { DEFAULT_SELECTED_IDS, teamCatalog } from "../config/teams";
-import { loadAllMatches } from "../lib/api";
-import { filterBigMatches, type Match } from "../lib/filterBigMatches";
+import { DEFAULT_SELECTED_IDS } from "../config/teams";
+import {
+	filterBigMatches,
+	type Match,
+	type Team,
+} from "../lib/filterBigMatches";
+import fixturesJson from "../lib/fixtures.json";
 
 export const Route = createFileRoute("/")({
 	component: Home,
-	loader: () => loadAllMatches(),
+	loader: () => ({
+		matches: fixturesJson.matches as Match[],
+		teams: fixturesJson.teams as Team[],
+	}),
 });
 
 const STORAGE_KEY = "big-matches-selected";
 
-function readSavedSelection(): number[] {
+function readSavedSelection(validIds: ReadonlySet<number>): number[] {
 	if (typeof window === "undefined") return DEFAULT_SELECTED_IDS;
 	try {
 		const raw = window.localStorage.getItem(STORAGE_KEY);
 		if (!raw) return DEFAULT_SELECTED_IDS;
 		const parsed = JSON.parse(raw) as unknown;
 		if (Array.isArray(parsed)) {
-			const valid = new Set(teamCatalog.map((t) => t.id));
 			const ids = parsed.filter(
-				(n): n is number => typeof n === "number" && valid.has(n),
+				(n): n is number => typeof n === "number" && validIds.has(n),
 			);
 			if (ids.length > 0) return ids;
 		}
@@ -68,23 +74,21 @@ function fmtStatus(m: Match): string {
 	}
 }
 
-const competitions = [...new Set(teamCatalog.map((t) => t.competition))];
-
 function Home() {
-	const allMatches = Route.useLoaderData();
+	const { matches: fixtures, teams } = Route.useLoaderData();
 	const [selected, setSelected] = useState<number[]>([]);
 	const [ready, setReady] = useState(false);
 
 	useEffect(() => {
-		setSelected(readSavedSelection());
+		setSelected(readSavedSelection(new Set(teams.map((t) => t.id))));
 		setReady(true);
-	}, []);
+	}, [teams]);
 
 	// Warn if a selected team never appears in any fetched match (bad id).
 	useEffect(() => {
 		if (!ready) return;
 		const seen = new Set<number>();
-		for (const m of allMatches) {
+		for (const m of fixtures) {
 			seen.add(m.homeTeam.id);
 			seen.add(m.awayTeam.id);
 		}
@@ -94,11 +98,16 @@ function Home() {
 				`[big-matches] selected teams never appeared in fetched fixtures (check team ids): ${missing.join(", ")}`,
 			);
 		}
-	}, [ready, selected, allMatches]);
+	}, [ready, selected, fixtures]);
 
 	const matches = useMemo(
-		() => (ready ? filterBigMatches(allMatches, new Set(selected)) : []),
-		[ready, allMatches, selected],
+		() => (ready ? filterBigMatches(fixtures, new Set(selected)) : []),
+		[ready, fixtures, selected],
+	);
+
+	const competitions = useMemo(
+		() => [...new Set(teams.map((t) => t.competition))],
+		[teams],
 	);
 
 	function toggle(id: number) {
@@ -149,8 +158,9 @@ function Home() {
 							<legend style={{ fontWeight: 600, padding: 0 }}>
 								{competition}
 							</legend>
-							{teamCatalog
+							{teams
 								.filter((t) => t.competition === competition)
+								.sort((a, b) => a.name.localeCompare(b.name))
 								.map((t) => (
 									<label
 										key={t.id}

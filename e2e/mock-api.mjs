@@ -80,6 +80,34 @@ const FIXTURES = {
 	CL: [],
 };
 
+// Derive a team roster per competition from the fixture payloads, mirroring the
+// real API's /competitions/:code/teams shape.
+const COMPETITION_NAMES = {
+	PL: "Premier League",
+	PD: "La Liga",
+	SA: "Serie A",
+	BL1: "Bundesliga",
+	FL1: "Ligue 1",
+	CL: "UEFA Champions League",
+};
+const TEAMS = Object.fromEntries(
+	Object.entries(FIXTURES).map(([code, fixtures]) => {
+		const seen = new Map();
+		for (const m of fixtures) {
+			for (const side of [m.homeTeam, m.awayTeam]) {
+				if (!seen.has(side.id)) seen.set(side.id, { ...side });
+			}
+		}
+		return [
+			code,
+			{
+				competition: { name: COMPETITION_NAMES[code] },
+				teams: [...seen.values()],
+			},
+		];
+	}),
+);
+
 const port = Number(process.env.MOCK_API_PORT ?? 3333);
 
 const server = createServer((req, res) => {
@@ -87,6 +115,12 @@ const server = createServer((req, res) => {
 	if (url.pathname === "/health") {
 		res.writeHead(200);
 		res.end("ok");
+		return;
+	}
+	const teamsM = /^\/competitions\/([^/]+)\/teams$/.exec(url.pathname);
+	if (teamsM) {
+		res.writeHead(200, { "Content-Type": "application/json" });
+		res.end(JSON.stringify(TEAMS[teamsM[1]] ?? { competition: {}, teams: [] }));
 		return;
 	}
 	const m = /^\/competitions\/([^/]+)\/matches$/.exec(url.pathname);

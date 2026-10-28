@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * *"
 
 permissions:
   contents: read
@@ -27,9 +29,11 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run build
+      - name: Generate static data (teams weekly, matches daily)
+        run: npm run data:gen
         env:
           FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
+      - run: npm run build
       - run: cp dist/client/index.html dist/client/404.html
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

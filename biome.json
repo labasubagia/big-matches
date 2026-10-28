@@ -6,7 +6,13 @@
 		"useIgnoreFile": true
 	},
 	"files": {
-		"includes": ["**", "!!**/dist", "!!**/routeTree.gen.ts", "!!**/*.md"]
+		"includes": [
+			"**",
+			"!!**/dist",
+			"!!**/routeTree.gen.ts",
+			"!!**/*.md",
+			"!!**/fixtures.json"
+		]
 	},
 	"formatter": {
 		"enabled": true,
