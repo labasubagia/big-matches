@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
 // Generates the static data file the app reads at build time. Run in CI (see
 // .github/workflows/deploy.yml). Teams refresh weekly, matches daily; both are
 // written to a single JSON file. Matches are the full season for each
@@ -69,7 +70,7 @@ async function fetchMatches() {
 		} catch (e) {
 			console.error(`skip matches for ${code}: ${e.message}`);
 		}
-			await sleep(7000);
+		await sleep(7000);
 	}
 	return all;
 }
@@ -99,7 +100,7 @@ if (staleTeams) {
 		} catch (e) {
 			console.error(`skip teams for ${code}: ${e.message}`);
 		}
-			await sleep(7000);
+		await sleep(7000);
 	}
 	// Keep the previous roster if this refresh yielded nothing, so a transient
 	// failure never clobbers good data with an empty list.
