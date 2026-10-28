@@ -6,6 +6,7 @@ import {
 	Scripts,
 } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import "../styles.css";
 
 const navLinkStyle: React.CSSProperties = {
 	color: "inherit",

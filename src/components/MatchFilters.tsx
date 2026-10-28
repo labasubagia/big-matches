@@ -1,98 +1,40 @@
 import type { MatchFilterState } from "../lib/useMatchFilters";
+import { DateRangePicker } from "./date-range-picker";
+import { TeamCombobox } from "./team-combobox";
+import { Button } from "./ui/button";
 
 export function MatchFilters(f: MatchFilterState) {
 	return (
-		<section style={{ position: "relative", marginBottom: "1.5rem" }}>
-			<button
-				type="button"
+		<section className="relative mb-6">
+			<Button
+				variant="outline"
 				onClick={() => f.setOpen((o) => !o)}
 				aria-expanded={f.open}
-				style={{ cursor: "pointer" }}
 			>
 				Filters
 				{f.selectedTeams.length > 0 ? ` (${f.selectedTeams.length})` : ""}
-			</button>
+			</Button>
 
 			{f.open && (
-				<div
-					style={{
-						marginTop: "0.4rem",
-						padding: "0.75rem",
-						border: "1px solid #ccc",
-						borderRadius: 8,
-						background: "#fff",
-						boxShadow: "0 2px 8px rgba(0,0,0,.15)",
-					}}
-				>
-					<div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-						<label style={{ fontSize: "0.9rem" }}>
-							From{" "}
-							<input
-								type="date"
-								value={f.fromStr}
-								onChange={(e) => f.setFromStr(e.target.value)}
-							/>
-						</label>
-						<label style={{ fontSize: "0.9rem" }}>
-							To{" "}
-							<input
-								type="date"
-								value={f.toStr}
-								onChange={(e) => f.setToStr(e.target.value)}
-							/>
-						</label>
-					</div>
-
-					<input
-						type="search"
-						placeholder="Search teams…"
-						value={f.query}
-						onChange={(e) => f.setQuery(e.target.value)}
-						style={{ marginTop: "0.6rem", width: "100%" }}
+				<div className="mt-1.5 grid gap-3 rounded-lg border border-neutral-300 bg-white p-3 shadow-md">
+					<DateRangePicker
+						fromStr={f.fromStr}
+						toStr={f.toStr}
+						onFromChange={f.setFromStr}
+						onToChange={f.setToStr}
 					/>
-					<ul
-						style={{
-							listStyle: "none",
-							padding: 0,
-							margin: "0.4rem 0",
-							maxHeight: 200,
-							overflowY: "auto",
-							border: "1px solid #eee",
-							borderRadius: 6,
-						}}
-					>
-						{f.candidates.map((t) => {
-							const checked = f.selectedTeams.includes(t.id);
-							return (
-								<li key={t.id}>
-									<label
-										style={{
-											display: "flex",
-											gap: "0.4rem",
-											padding: "0.2rem 0.5rem",
-										}}
-									>
-										<input
-											type="checkbox"
-											checked={checked}
-											onChange={() => f.toggleTeam(t.id)}
-										/>
-										{t.name}
-									</label>
-								</li>
-							);
-						})}
-					</ul>
-
-					<div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-						<button
-							type="button"
-							onClick={f.reset}
-							style={{ cursor: "pointer" }}
-						>
+					<TeamCombobox
+						candidates={f.candidates}
+						selectedTeams={f.selectedTeams}
+						toggleTeam={f.toggleTeam}
+						query={f.query}
+						setQuery={f.setQuery}
+					/>
+					<div className="flex items-center gap-2">
+						<Button variant="ghost" size="sm" onClick={f.reset}>
 							Reset
-						</button>
-						<span style={{ fontSize: "0.85rem", color: "#666" }}>
+						</Button>
+						<span className="text-[0.85rem] text-muted-foreground">
 							{f.selectedTeams.length === 0
 								? "All selected big teams"
 								: f.selectedTeams.length === 1

@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
 import type { Team } from "../lib/filterBigMatches";
 import { loadFixtures } from "../lib/loadFixtures";
 import { teamCrests } from "../lib/matchTimes";
@@ -75,12 +77,12 @@ function Teams() {
 				{ready ? `${selected.length} teams selected` : "Loading…"}
 			</p>
 
-			<input
+			<Input
 				type="search"
 				placeholder="Search all clubs…"
 				value={query}
 				onChange={(e) => setQuery(e.target.value)}
-				style={{ width: "100%", marginBottom: "1rem", padding: "0.3rem" }}
+				className="mb-4 w-full"
 			/>
 
 			{groups.map((g) => (
@@ -99,24 +101,11 @@ function Teams() {
 							const isSelected = selected.includes(t.id);
 							return (
 								<li key={t.id}>
-									<button
-										type="button"
+									<Button
+										variant={isSelected ? "default" : "outline"}
 										onClick={() => toggle(t.id)}
 										aria-pressed={isSelected}
-										style={{
-											width: "100%",
-											display: "flex",
-											alignItems: "center",
-											gap: "0.4rem",
-											padding: "0.4rem",
-											border: `1px solid ${isSelected ? "#e8a44d" : "#ccc"}`,
-											borderRadius: 6,
-											background: isSelected ? "#ffd9a0" : "#fff",
-											cursor: "pointer",
-											fontSize: "0.9rem",
-											textAlign: "left",
-											minHeight: "3rem",
-										}}
+										className="w-full justify-start gap-2 px-2 text-left text-[0.9rem] min-h-12"
 									>
 										{crests.get(t.id) ? (
 											<img
@@ -144,7 +133,7 @@ function Teams() {
 											</span>
 										)}
 										<span>{t.name}</span>
-									</button>
+									</Button>
 								</li>
 							);
 						})}
