@@ -249,11 +249,11 @@ test("faq page shows dropdown Q&As and allows multiple open at once", async ({
 	const second = details.nth(1);
 	await first.locator("summary").click();
 	await second.locator("summary").click();
-	await expect(first).toContainText("Europa League");
-	await expect(second).toContainText("league cup");
+	await expect(first).toContainText("Premier League (PL)"); // free-plan list
+	await expect(second).toContainText("top 5");
 
-	// The free-competitions entry lists the 12 free-plan codes.
+	// Paywall entries render in their own dropdowns.
 	const third = details.nth(2);
 	await third.locator("summary").click();
-	await expect(third).toContainText("Premier League (PL)");
+	await expect(third).toContainText("Europa League");
 });

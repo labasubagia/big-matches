@@ -32,6 +32,18 @@ export const FREE_COMPETITIONS: ReadonlyArray<{
 
 export const FAQ_ENTRIES: FaqEntry[] = [
 	{
+		question: "Which competitions are included?",
+		answer: "The free plan includes exactly 12 competitions:",
+		items: FREE_COMPETITIONS.map((c) => `${c.name} (${c.code})`),
+		footer:
+			"Everything else — including the UEFA Europa League and league cups — needs a paid subscription.",
+	},
+	{
+		question: "Why do I only see UCL and top 5 league teams?",
+		answer:
+			"Only the top 5 European leagues — Premier League, La Liga, Serie A, Bundesliga, and Ligue 1 — plus the UEFA Champions League are scanned. A club from another league, such as the Eredivisie, Primeira Liga, or Süper Lig, appears only when it has qualified for the Champions League.",
+	},
+	{
 		question: "Why don't I see UEFA Europa League matches?",
 		answer:
 			"Football-Data.org only serves the Europa League on a paid tier. The free plan covers 12 competitions (listed below); requesting UEL data returns HTTP 403.",
@@ -40,12 +52,6 @@ export const FAQ_ENTRIES: FaqEntry[] = [
 		question: "Why are domestic league cups missing?",
 		answer:
 			"Cup competitions such as the English Football League Cup and other domestic league cups require a paid tier. The free plan includes no cup competitions.",
-	},
-	{
-		question: "Which competitions are included?",
-		items: FREE_COMPETITIONS.map((c) => `${c.name} (${c.code})`),
-		footer:
-			"Everything else — including the UEFA Europa League and league cups — needs a paid subscription.",
 	},
 	{
 		question: "Is my team selection saved across devices?",
@@ -66,11 +72,6 @@ export const FAQ_ENTRIES: FaqEntry[] = [
 			"Team rosters refresh weekly.",
 			"Scores reflect the latest build, not real-time.",
 		],
-	},
-	{
-		question: "Why do I only see UCL and top 5 league teams?",
-		answer:
-			"Only the top 5 European leagues — Premier League, La Liga, Serie A, Bundesliga, and Ligue 1 — plus the UEFA Champions League are scanned. A club from another league, such as the Eredivisie, Primeira Liga, or Süper Lig, appears only when it has qualified for the Champions League.",
 	},
 	{
 		question: "Can I get reminders or notifications for matches?",

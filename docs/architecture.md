@@ -35,6 +35,21 @@ on an absent file. With empty data the app shows an error prompting
 
 Stored under localStorage key `big-matches-selected`.
 
+## FAQ page
+
+Content lives in `src/lib/faqContent.ts` (a `FaqEntry[]`); `src/routes/faq.tsx`
+renders each entry as a native `<details>` dropdown (multiple openable). Enumeration
+answers use the `items` field → `<ul>`; a `footer` renders after the list.
+
+Ordering is grouped by theme, not append-only:
+
+1. Coverage first — "Which competitions are included?", top-5/UCL rule, then
+   paywalls (UEL, league cups). These answer most "why can't I see X" questions.
+2. App behavior — localStorage (no cross-device sync), static/non-live data.
+3. Roadmap/unsure last — e.g. reminders/notifications, not yet shipped.
+
+New entries go inside their theme group, not appended to the end.
+
 ## Testing
 
 - Unit: vitest, colocated `*.test.ts`, run via `npm test`
