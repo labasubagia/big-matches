@@ -42,8 +42,7 @@ export const FAQ_ENTRIES: FaqEntry[] = [
 			"Cup competitions such as the English Football League Cup and other domestic league cups require a paid tier. The free plan includes no cup competitions.",
 	},
 	{
-		question: "Which competitions are included on the free plan?",
-		answer: "The free plan includes exactly 12 competitions:",
+		question: "Which competitions are included?",
 		items: FREE_COMPETITIONS.map((c) => `${c.name} (${c.code})`),
 		footer:
 			"Everything else — including the UEFA Europa League and league cups — needs a paid subscription.",
