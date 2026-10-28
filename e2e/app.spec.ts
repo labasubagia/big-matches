@@ -9,7 +9,24 @@ function rowMatching(page, names) {
 		.filter({ hasText: names[1] });
 }
 
-test("overview shows next-3-month future matches and links to the teams page", async ({
+// Opens the filters dropdown, retrying because a click issued before React
+// hydrates the page is silently dropped.
+async function openFilters(page) {
+	const btn = page.getByRole("button", { name: /Filters/ });
+	const search = page.getByPlaceholder("Search teams…");
+	for (let i = 0; i < 15; i++) {
+		await btn.click();
+		try {
+			await search.waitFor({ state: "visible", timeout: 600 });
+			return search;
+		} catch {
+			// swallowed click; retry
+		}
+	}
+	throw new Error("filters panel did not open");
+}
+
+test("overview shows fixtures within the default 30-day range", async ({
 	page,
 }) => {
 	await page.goto("/big-matches/");
@@ -23,18 +40,78 @@ test("overview shows next-3-month future matches and links to the teams page", a
 	await expect(teamsLink).toBeVisible();
 	await expect(teamsLink).toHaveAttribute("href", "/big-matches/teams");
 
-	// Near-future mutual fixture appears exactly once (the finished past game
-	// with the same pairing is excluded from the overview).
+	// Mutual fixtures inside the default 30-day window appear exactly once (the
+	// finished past game with the same pairing is excluded from the overview).
 	await expect(
 		rowMatching(page, ["Manchester United", "Manchester City"]),
 	).toHaveCount(1);
 
-	// Beyond 3 months -> hidden on the overview.
+	// Beyond the 30-day window -> hidden on the overview.
 	await expect(rowMatching(page, ["Liverpool", "Chelsea"])).toHaveCount(0);
 
-	// Only the near-future Real Madrid vs Barcelona row is present; the TBD
-	// fixture (May 2027) is hidden.
+	// Only the in-range Real Madrid vs Barcelona row is present; the TBD
+	// fixture (far in the future) is hidden.
 	await expect(rowMatching(page, ["Real Madrid", "Barcelona"])).toHaveCount(1);
+});
+
+test("search fuzzy-narrows candidates and applies immediately", async ({
+	page,
+}) => {
+	await page.goto("/big-matches/");
+	const search = await openFilters(page);
+	await search.fill("inter");
+
+	// Fuzzy candidate list shows only matching teams, deduped by club.
+	const candidates = page.locator("ul label");
+	await expect(candidates).toHaveCount(1);
+	await expect(candidates.first()).toContainText("Internazionale");
+
+	// Clicking the label text checks the box.
+	await candidates.first().click();
+	await expect(
+		candidates.first().locator('input[type="checkbox"]'),
+	).toBeChecked();
+
+	// A single searched team keeps only its matches vs globally selected teams;
+	// Inter's only fixture pairs it with Juventus (not globally selected).
+	await expect(
+		page.getByText("No fixtures match the current filters."),
+	).toBeVisible();
+});
+
+test("searching one team keeps only its matches against globally selected teams", async ({
+	page,
+}) => {
+	await page.goto("/big-matches/");
+	const search = await openFilters(page);
+
+	await search.fill("manchester united");
+	const manUtd = page
+		.locator("ul label")
+		.filter({ hasText: "Manchester United" });
+	await manUtd.click();
+	await expect(page.getByText("1 club selected")).toBeVisible();
+	await expect(
+		rowMatching(page, ["Manchester United", "Manchester City"]),
+	).toBeVisible();
+	await expect(rowMatching(page, ["Real Madrid", "Barcelona"])).toHaveCount(0);
+});
+
+test("selecting two teams restricts results to their mutual fixtures", async ({
+	page,
+}) => {
+	await page.goto("/big-matches/");
+	const search = await openFilters(page);
+
+	await search.fill("real");
+	await page.locator("ul label").filter({ hasText: "Real Madrid" }).click();
+	await search.fill("barcelona");
+	await page.locator("ul label").filter({ hasText: "FC Barcelona" }).click();
+	await expect(page.getByText("2 clubs selected")).toBeVisible();
+	await expect(rowMatching(page, ["Real Madrid", "Barcelona"])).toHaveCount(1);
+	await expect(
+		rowMatching(page, ["Manchester United", "Manchester City"]),
+	).toHaveCount(0);
 });
 
 test("teams page groups teams by competition in canonical order", async ({

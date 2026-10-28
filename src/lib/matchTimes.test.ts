@@ -2,10 +2,10 @@ import { describe, expect, it } from "vitest";
 import type { Match } from "./filterBigMatches";
 import {
 	competitionLabel,
-	futureWithinMonths,
 	isTBD,
 	matchBucket,
 	teamCrests,
+	withinRange,
 } from "./matchTimes";
 
 const NOW = Date.parse("2026-10-28T00:00:00Z");
@@ -53,20 +53,28 @@ describe("matchBucket", () => {
 	});
 });
 
-describe("futureWithinMonths", () => {
-	it("keeps future matches inside the window", () => {
-		expect(futureWithinMonths(match(), NOW)).toBe(true);
+describe("withinRange", () => {
+	it("keeps matches inside the range", () => {
+		expect(withinRange(match(), NOW, NOW + 90 * 24 * 3600 * 1000)).toBe(true);
 	});
 
-	it("drops past matches", () => {
+	it("drops matches before the range", () => {
 		expect(
-			futureWithinMonths(match({ utcDate: "2026-09-01T20:00:00Z" }), NOW),
+			withinRange(
+				match({ utcDate: "2026-09-01T20:00:00Z" }),
+				NOW,
+				NOW + 90 * 24 * 3600 * 1000,
+			),
 		).toBe(false);
 	});
 
-	it("drops matches beyond the window", () => {
+	it("drops matches after the range", () => {
 		expect(
-			futureWithinMonths(match({ utcDate: "2027-06-01T20:00:00Z" }), NOW),
+			withinRange(
+				match({ utcDate: "2027-06-01T20:00:00Z" }),
+				NOW,
+				NOW + 90 * 24 * 3600 * 1000,
+			),
 		).toBe(false);
 	});
 });

@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { filterBigMatches, type Match } from "./filterBigMatches";
+import {
+	filterBigMatches,
+	filterOverviewMatches,
+	type Match,
+} from "./filterBigMatches";
 
 function match(overrides: Partial<Match> = {}): Match {
 	return {
@@ -46,5 +50,53 @@ describe("filterBigMatches", () => {
 
 	it("returns empty array for empty input", () => {
 		expect(filterBigMatches([])).toEqual([]);
+	});
+});
+
+describe("filterOverviewMatches", () => {
+	const globalIds = new Set([86, 81, 64]);
+
+	it("falls back to mutual pairings when nothing is searched", () => {
+		const fixtures = [
+			match(), // Real Madrid vs Barcelona — both global -> keep
+			match({
+				id: 2,
+				homeTeam: { id: 86, name: "Real Madrid" },
+				awayTeam: { id: 63, name: "Cádiz" },
+			}), // opponent not global -> drop
+		];
+		const out = filterOverviewMatches(fixtures, globalIds, new Set());
+		expect(out.map((m) => m.id)).toEqual([1]);
+	});
+
+	it("with one search team keeps matches vs any global team", () => {
+		const fixtures = [
+			match({
+				id: 1,
+				homeTeam: { id: 63, name: "Cádiz" },
+				awayTeam: { id: 86, name: "Real Madrid" },
+			}), // searched team vs global -> keep
+			match({
+				id: 2,
+				homeTeam: { id: 63, name: "Cádiz" },
+				awayTeam: { id: 68, name: "Norwich City" },
+			}), // opponent not global -> drop
+			match({ id: 3 }), // no searched team -> drop
+		];
+		const out = filterOverviewMatches(fixtures, globalIds, new Set([63]));
+		expect(out.map((m) => m.id)).toEqual([1]);
+	});
+
+	it("with two or more search teams keeps only mutual pairings", () => {
+		const fixtures = [
+			match({ id: 1 }), // 86 vs 81 — both searched -> keep
+			match({
+				id: 2,
+				homeTeam: { id: 86, name: "Real Madrid" },
+				awayTeam: { id: 64, name: "Liverpool" },
+			}), // only one searched -> drop
+		];
+		const out = filterOverviewMatches(fixtures, globalIds, new Set([86, 81]));
+		expect(out.map((m) => m.id)).toEqual([1]);
 	});
 });
