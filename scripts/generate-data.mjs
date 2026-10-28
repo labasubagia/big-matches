@@ -25,7 +25,10 @@ async function fetchJson(p) {
 		headers: { "X-Auth-Token": KEY },
 	});
 	if (!res.ok) {
-		throw new Error(`Football-Data API ${res.status} for ${p}`);
+		const detail = await res.text().catch(() => "");
+		throw new Error(
+			`Football-Data API ${res.status} for ${p}: ${detail.slice(0, 300)}`,
+		);
 	}
 	return res.json();
 }
@@ -46,15 +49,15 @@ async function fetchMatches() {
 	try {
 		const data = await fetchJson(`/matches?competitions=${CODES.join(",")}`);
 		return data.matches ?? [];
-	} catch {
-		// Fallback: per-competition fetch if the aggregate call fails.
+	} catch (err) {
+		console.error(`aggregate matches failed: ${err.message}`);
 		const all = [];
 		for (const code of CODES) {
 			try {
 				const data = await fetchJson(`/competitions/${code}/matches`);
 				all.push(...(data.matches ?? []));
-			} catch {
-				// skip competitions that fail; the rest still render
+			} catch (e) {
+				console.error(`skip matches for ${code}: ${e.message}`);
 			}
 			await sleep(150);
 		}
@@ -84,18 +87,25 @@ if (staleTeams) {
 	for (const code of CODES) {
 		try {
 			all.push(...(await fetchTeams(code)));
-		} catch {
-			console.warn(`skip teams for ${code} (leaving previous data intact?)`);
+		} catch (e) {
+			console.error(`skip teams for ${code}: ${e.message}`);
 		}
 		await sleep(1500);
 	}
-	teams = all;
+	// Keep the previous roster if this refresh yielded nothing, so a transient
+	// failure never clobbers good data with an empty list.
+	teams = all.length ? all : (prev?.teams ?? []);
 } else {
 	teams = prev.teams;
 }
 
 const matches = await fetchMatches();
 
+if (teams.length === 0 && matches.length === 0) {
+	console.error("generated empty dataset; refusing to publish a blank site");
+	process.exit(1);
+}
+
 const out = { generatedAt: new Date(now).toISOString(), teams, matches };
-writeFileSync(OUT, `${JSON.stringify(out, null, 2)}\n`);
+writeFileSync(OUT, JSON.stringify(out, null, 2) + "\n");
 console.log(`wrote ${OUT}: ${teams.length} teams, ${matches.length} matches`);
