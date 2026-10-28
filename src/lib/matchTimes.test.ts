@@ -101,6 +101,11 @@ describe("isTBD", () => {
 		expect(
 			isTBD(match({ status: "SCHEDULED", utcDate: "2026-12-01T00:00:00Z" })),
 		).toBe(true);
+		expect(
+			isTBD(
+				match({ status: "SCHEDULED", utcDate: "2026-12-01T00:00:00.000Z" }),
+			),
+		).toBe(true);
 		expect(isTBD(match())).toBe(false);
 	});
 });

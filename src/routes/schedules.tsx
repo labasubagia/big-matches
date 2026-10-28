@@ -1,32 +1,34 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
+import { MatchFilters } from "../components/MatchFilters";
 import { BucketLegend, MatchList } from "../components/MatchList";
-import {
-	filterBigMatches,
-	type Match,
-	type Team,
-} from "../lib/filterBigMatches";
-import fixturesJson from "../lib/fixtures.json";
+import { filterOverviewMatches } from "../lib/filterBigMatches";
+import { loadFixtures } from "../lib/loadFixtures";
+import { withinRange } from "../lib/matchTimes";
+import { useMatchFilters } from "../lib/useMatchFilters";
 import { useSelection } from "../lib/useSelection";
 
 export const Route = createFileRoute("/schedules")({
 	component: Schedules,
-	loader: () => ({
-		matches: fixturesJson.matches as Match[],
-		teams: fixturesJson.teams as Team[],
-	}),
+	loader: () => loadFixtures(),
 });
 
 function Schedules() {
 	const { matches: fixtures, teams } = Route.useLoaderData();
 	const { selected, ready } = useSelection(teams);
+	const filters = useMatchFilters(teams, selected);
 
 	const allMatches = useMemo(() => {
-		if (!ready) return [];
-		return filterBigMatches(fixtures, new Set(selected)).sort((a, b) =>
-			a.utcDate.localeCompare(b.utcDate),
-		);
-	}, [ready, fixtures, selected]);
+		const range = filters.range;
+		if (!ready || !range) return [];
+		return filterOverviewMatches(
+			fixtures,
+			new Set(selected),
+			new Set(filters.selectedTeams),
+		)
+			.filter((m) => withinRange(m, range.from, range.to))
+			.sort((a, b) => a.utcDate.localeCompare(b.utcDate));
+	}, [ready, fixtures, selected, filters.range, filters.selectedTeams]);
 
 	return (
 		<main
@@ -39,8 +41,9 @@ function Schedules() {
 		>
 			<h1>All Big Matches</h1>
 			<BucketLegend />
+			<MatchFilters {...filters} />
 			{ready && allMatches.length === 0 ? (
-				<p>No mutual-pairing fixtures for the selected teams.</p>
+				<p>No fixtures match the current filters.</p>
 			) : (
 				<MatchList matches={allMatches} />
 			)}

@@ -8,6 +8,10 @@ function rowMatching(page, names) {
 		.filter({ hasText: names[0] })
 		.filter({ hasText: names[1] });
 }
+function isoDate(d: Date): string {
+	const p = (n: number) => String(n).padStart(2, "0");
+	return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
 
 // Opens the filters dropdown, retrying because a click issued before React
 // hydrates the page is silently dropped.
@@ -174,6 +178,15 @@ test("schedules shows all matches including the past with bucket background colo
 	page,
 }) => {
 	await page.goto("/big-matches/schedules");
+	// Widen the date-range filter so past/near/far matches all appear.
+	await openFilters(page);
+	const now = new Date();
+	await page
+		.getByLabel("From")
+		.fill(isoDate(new Date(now.getTime() - 10 * 86400000)));
+	await page
+		.getByLabel("To")
+		.fill(isoDate(new Date(now.getTime() + 200 * 86400000)));
 
 	await expect(
 		page.getByRole("heading", { name: "All Big Matches" }),
@@ -181,8 +194,8 @@ test("schedules shows all matches including the past with bucket background colo
 
 	// Legend highlights the three buckets.
 	await expect(page.getByText("Played")).toBeVisible();
-	await expect(page.getByText("Next 3 months")).toBeVisible();
-	await expect(page.getByText("Later or time TBD")).toBeVisible();
+	await expect(page.getByText("Upcoming")).toBeVisible();
+	await expect(page.getByText("• Time TBD", { exact: true })).toBeVisible();
 
 	// A finished past match shows its score.
 	await expect(page.getByText("1 - 0")).toBeVisible();
@@ -192,10 +205,16 @@ test("schedules shows all matches including the past with bucket background colo
 	// Real Madrid vs Barcelona appears twice: near (Nov) and TBD far (May).
 	await expect(rowMatching(page, ["Real Madrid", "Barcelona"])).toHaveCount(2);
 
-	// Past row is dark gray; far row is light gray.
+	// Past rows are light gray; all other rows are white.
 	const pastRow = page.locator("li").filter({ hasText: "1 - 0" }).first();
-	await expect(pastRow).toHaveCSS("background-color", "rgb(158, 158, 158)");
+	await expect(pastRow).toHaveCSS("background-color", "rgb(240, 240, 240)");
 
 	const farRow = rowMatching(page, ["Liverpool", "Chelsea"]);
-	await expect(farRow).toHaveCSS("background-color", "rgb(208, 208, 208)");
+	await expect(farRow).toHaveCSS("background-color", "rgb(255, 255, 255)");
+	// TBD matches mark only the time text in orange.
+	const tbdRow = rowMatching(page, ["Real Madrid", "Barcelona"]).last();
+	await expect(tbdRow.getByText("(time TBD)")).toHaveCSS(
+		"color",
+		"rgb(232, 98, 12)",
+	);
 });
