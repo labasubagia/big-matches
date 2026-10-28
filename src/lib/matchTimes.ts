@@ -20,14 +20,10 @@ export function matchBucket(m: Match, now: number = Date.now()): MatchBucket {
 	return "near";
 }
 
-// True for future matches within the next `months` months (excludes past).
-export function futureWithinMonths(
-	m: Match,
-	now: number = Date.now(),
-	months = 3,
-): boolean {
+// True when the match kickoff falls within the inclusive range [from, to].
+export function withinRange(m: Match, from: number, to: number): boolean {
 	const t = new Date(m.utcDate).getTime();
-	return t >= now && t <= now + months * 30 * 24 * 60 * 60 * 1000;
+	return t >= from && t <= to;
 }
 
 const COMPETITION_LABELS: Record<string, string> = {
