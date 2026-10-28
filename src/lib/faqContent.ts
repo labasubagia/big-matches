@@ -76,6 +76,6 @@ export const FAQ_ENTRIES: FaqEntry[] = [
 	{
 		question: "Can I get reminders or notifications for matches?",
 		answer:
-			"Not yet — Big Matches does not send reminders or notifications. It is planned as a future feature.",
+			"Not yet — Big Matches does not send reminders or notifications. This may change in the future.",
 	},
 ];
