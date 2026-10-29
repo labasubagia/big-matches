@@ -43,31 +43,31 @@ function MatchRow({ m }: { m: Match }) {
 					past ? "bg-muted" : "bg-card",
 				)}
 			>
-				<CardContent className="flex items-center gap-2 p-2.5">
-					<Crest url={m.homeTeam.crest} name={m.homeTeam.name} />
-					<span>{m.homeTeam.name}</span>
-					{homeScore != null && (
-						<span className={homeScoreClass}>{homeScore}</span>
-					)}
-					<span className="opacity-55">v</span>
-					{awayScore != null && (
-						<span className={awayScoreClass}>{awayScore}</span>
-					)}
-					<span>{m.awayTeam.name}</span>
-					<Crest url={m.awayTeam.crest} name={m.awayTeam.name} />
-					<span className="ml-auto flex items-center gap-2">
+				<CardContent className="flex flex-col gap-0.5 p-2.5">
+					<div className="flex items-center gap-2">
+						<Crest url={m.homeTeam.crest} name={m.homeTeam.name} />
+						<span>{m.homeTeam.name}</span>
+						{homeScore != null && (
+							<span className={homeScoreClass}>{homeScore}</span>
+						)}
+						<span className="opacity-55">v</span>
+						{awayScore != null && (
+							<span className={awayScoreClass}>{awayScore}</span>
+						)}
+						<span>{m.awayTeam.name}</span>
+						<Crest url={m.awayTeam.crest} name={m.awayTeam.name} />
+					</div>
+					<div className="flex items-center gap-2">
 						<span
 							className={cn(
 								"text-[0.85em]",
 								tbd ? "text-winner" : "opacity-85",
 							)}
 						>
-							<span>
-								{competitionLabel(m)}
-								{phase ? ` · ${phase}` : ""} · {fmtDate(m)} {fmtStatus(m)}
-							</span>
+							{competitionLabel(m)}
+							{phase ? ` · ${phase}` : ""} · {fmtDate(m)} {fmtStatus(m)}
 						</span>
-					</span>
+					</div>
 				</CardContent>
 			</Card>
 		</li>
