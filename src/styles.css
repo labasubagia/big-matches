@@ -39,7 +39,10 @@
 	font-size: 0.8125rem !important;
 }
 
-.rdp-month_caption,
+.rdp-month_caption {
+	font-size: 0.875rem !important;
+	font-weight: 500 !important;
+}
 .rdp-selected {
 	font-size: 0.875rem !important;
 }
