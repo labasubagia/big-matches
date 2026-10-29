@@ -47,17 +47,24 @@ export function filterOverviewMatches(
 	);
 }
 
+const fold = (s: string): string =>
+	s
+		.normalize("NFD")
+		.replace(/[\u0300-\u036f]/g, "")
+		.toLowerCase();
+
 // Fuzzy team-name search via Fuse.js. Shares the production matcher across the
 // Overview / Schedules club search and the Teams page search. Preserves input
 // order and duplicate entries for empty queries (a team may appear under
 // several competitions); non-empty queries return relevance-ranked matches.
 export function filterTeamsByName(teams: Team[], query: string): Team[] {
-	const q = query.trim().toLowerCase();
+	const q = fold(query.trim());
 	if (!q) return teams;
-	const fuse = new Fuse(teams, {
-		keys: ["name"],
+	const indexed = teams.map((t) => ({ t, n: fold(t.name) }));
+	const fuse = new Fuse(indexed, {
+		keys: ["n"],
 		threshold: 0.3,
 		ignoreLocation: true,
 	});
-	return fuse.search(q).map((r) => r.item);
+	return fuse.search(q).map((r) => r.item.t);
 }

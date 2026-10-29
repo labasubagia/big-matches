@@ -48,6 +48,16 @@ describe("filterTeamsByName", () => {
 		]);
 	});
 
+	it("matches diacritic-stripped queries", () => {
+		const local = [
+			...teams,
+			{ id: 5, name: "FC Bayern München", competition: "BL" },
+		];
+		expect(filterTeamsByName(local, "munchen").map((t) => t.name)).toEqual([
+			"FC Bayern München",
+		]);
+	});
+
 	it("does not match unrelated names", () => {
 		expect(filterTeamsByName(teams, "jupiter")).toEqual([]);
 	});
