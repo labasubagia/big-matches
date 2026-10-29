@@ -25,9 +25,8 @@ export type MatchFilterState = {
 	range: { from: number; to: number } | null;
 };
 
-// Shared filter state for the Overview and Schedules pages. Both filters apply
-// live: date range (default 30 days) plus a club search restricted to the
-// selected big teams.
+// Shared filter state for the Overview page. Filters apply live: date range
+// (default 30 days) plus a club search restricted to the selected big teams.
 export function useMatchFilters(
 	teams: Team[],
 	selected: number[],

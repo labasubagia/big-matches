@@ -56,7 +56,7 @@ const fold = (s: string): string =>
 		.toLowerCase();
 
 // Fuzzy team-name search via Fuse.js. Shares the production matcher across the
-// Overview / Schedules club search and the Teams page search. Preserves input
+// Overview club search and the Teams page search. Preserves input
 // order and duplicate entries for empty queries (a team may appear under
 // several competitions); non-empty queries return relevance-ranked matches.
 export function filterTeamsByName(teams: Team[], query: string): Team[] {
