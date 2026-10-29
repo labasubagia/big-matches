@@ -6,58 +6,42 @@ import {
 	Scripts,
 } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import "../styles.css";
 
-const navLinkStyle: React.CSSProperties = {
-	color: "inherit",
-	textDecoration: "none",
-	padding: "0.25rem 0.6rem",
-	borderRadius: 6,
-};
+const navLinkClass =
+	"rounded-md px-2.5 py-1 text-inherit [text-decoration-line:none]";
+const activeNavLinkClass = `${navLinkClass} bg-muted`;
 
 function Nav() {
 	return (
-		<nav
-			style={{
-				borderBottom: "1px solid #e0e0e0",
-				fontFamily: "system-ui, sans-serif",
-			}}
-		>
-			<div
-				style={{
-					display: "flex",
-					gap: "0.5rem",
-					maxWidth: 760,
-					margin: "0 auto",
-					padding: "0.75rem 1rem",
-					width: "100%",
-				}}
-			>
+		<nav className="border-b border-border font-sans">
+			<div className="mx-auto flex w-full max-w-[760px] gap-2 px-4 py-3">
 				<Link
 					to="/"
-					style={navLinkStyle}
+					className={navLinkClass}
 					activeOptions={{ exact: true }}
-					activeProps={{ style: { ...navLinkStyle, background: "#eee" } }}
+					activeProps={{ className: activeNavLinkClass }}
 				>
 					Overview
 				</Link>
 				<Link
 					to="/teams"
-					style={navLinkStyle}
-					activeProps={{ style: { ...navLinkStyle, background: "#eee" } }}
+					className={navLinkClass}
+					activeProps={{ className: activeNavLinkClass }}
 				>
 					Teams
 				</Link>
 				<Link
 					to="/schedules"
-					style={navLinkStyle}
-					activeProps={{ style: { ...navLinkStyle, background: "#eee" } }}
+					className={navLinkClass}
+					activeProps={{ className: activeNavLinkClass }}
 				>
 					Schedules
 				</Link>
 				<Link
 					to="/faq"
-					style={navLinkStyle}
-					activeProps={{ style: { ...navLinkStyle, background: "#eee" } }}
+					className={navLinkClass}
+					activeProps={{ className: activeNavLinkClass }}
 				>
 					FAQ
 				</Link>

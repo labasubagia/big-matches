@@ -11,8 +11,6 @@ function isoLocal(d: Date): string {
 }
 
 export type MatchFilterState = {
-	open: boolean;
-	setOpen: Dispatch<SetStateAction<boolean>>;
 	fromStr: string;
 	setFromStr: Dispatch<SetStateAction<string>>;
 	toStr: string;
@@ -33,7 +31,6 @@ export function useMatchFilters(
 	teams: Team[],
 	selected: number[],
 ): MatchFilterState {
-	const [open, setOpen] = useState(false);
 	const [fromStr, setFromStr] = useState(() => isoLocal(new Date()));
 	const [toStr, setToStr] = useState(() =>
 		isoLocal(new Date(Date.now() + 30 * DAY_MS)),
@@ -72,8 +69,6 @@ export function useMatchFilters(
 	}, [fromStr, toStr]);
 
 	return {
-		open,
-		setOpen,
 		fromStr,
 		setFromStr,
 		toStr,

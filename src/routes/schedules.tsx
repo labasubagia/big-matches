@@ -31,18 +31,13 @@ function Schedules() {
 	}, [ready, fixtures, selected, filters.range, filters.selectedTeams]);
 
 	return (
-		<main
-			style={{
-				fontFamily: "system-ui, sans-serif",
-				maxWidth: 760,
-				margin: "0 auto",
-				padding: "1rem",
-			}}
-		>
-			<h1>All Big Matches</h1>
+		<main className="mx-auto max-w-[760px] p-4 font-sans">
+			<h1 className="mb-3 text-2xl font-semibold tracking-tight">
+				All Big Matches
+			</h1>
 			<BucketLegend />
 			<MatchFilters {...filters} />
-			<h2 style={{ fontSize: "1.1rem" }}>
+			<h2 className="mb-3 text-[1.1rem]">
 				Fixtures {filters.fromStr} → {filters.toStr}
 			</h2>
 			{ready && allMatches.length === 0 ? (
