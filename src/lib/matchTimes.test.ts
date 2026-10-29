@@ -155,18 +155,23 @@ describe("fmtPhase", () => {
 		);
 	});
 
-	it("abbreviates knockout rounds", () => {
+	it("abbreviates fixed stages", () => {
 		expect(fmtPhase(match({ stage: "SEMI_FINALS" }))).toBe("SF");
 		expect(fmtPhase(match({ stage: "FINAL" }))).toBe("F");
 		expect(fmtPhase(match({ stage: "QUARTER_FINALS" }))).toBe("QF");
+		expect(fmtPhase(match({ stage: "THIRD_PLACE" }))).toBe("3P");
 		expect(fmtPhase(match({ stage: "GROUP_STAGE" }))).toBe("GS");
 	});
 
-	it("returns null when no stage or matchday", () => {
-		expect(fmtPhase(match())).toBeNull();
+	it("derives round number from stage enum", () => {
+		expect(fmtPhase(match({ stage: "LAST_16" }))).toBe("R16");
+		expect(fmtPhase(match({ stage: "ROUND_3" }))).toBe("R3");
+		expect(fmtPhase(match({ stage: "QUALIFICATION_ROUND_2" }))).toBe("Q2");
+		expect(fmtPhase(match({ stage: "PLAYOFF_ROUND_1" }))).toBe("PO1");
 	});
-	it("gives stage precedence over matchday", () => {
-		expect(fmtPhase(match({ stage: "GROUP_STAGE", matchday: 3 }))).toBe("GS");
+
+	it("appends matchday when set on round stages", () => {
+		expect(fmtPhase(match({ stage: "GROUP_STAGE", matchday: 3 }))).toBe("GS3");
 	});
 
 	it("labels matchday 0", () => {

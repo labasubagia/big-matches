@@ -55,36 +55,49 @@ export function competitionLabel(m: Match): string {
 	if (code && COMPETITION_LABELS[code]) return COMPETITION_LABELS[code];
 	return m.competition.name;
 }
-const STAGE_LABELS: Record<string, string> = {
+const STAGE_PREFIXES: Record<string, string> = {
 	FINAL: "F",
 	THIRD_PLACE: "3P",
 	SEMI_FINALS: "SF",
 	QUARTER_FINALS: "QF",
-	LAST_16: "R16",
-	LAST_32: "R32",
-	LAST_64: "R64",
-	ROUND_4: "R4",
-	ROUND_3: "R3",
-	ROUND_2: "R2",
-	ROUND_1: "R1",
+	LAST_16: "R",
+	LAST_32: "R",
+	LAST_64: "R",
+	ROUND_4: "R",
+	ROUND_3: "R",
+	ROUND_2: "R",
+	ROUND_1: "R",
 	GROUP_STAGE: "GS",
 	PRELIMINARY_ROUND: "PR",
 	QUALIFICATION: "Q",
-	QUALIFICATION_ROUND_1: "Q1",
-	QUALIFICATION_ROUND_2: "Q2",
-	QUALIFICATION_ROUND_3: "Q3",
-	PLAYOFF_ROUND_1: "PO1",
-	PLAYOFF_ROUND_2: "PO2",
+	QUALIFICATION_ROUND_1: "Q",
+	QUALIFICATION_ROUND_2: "Q",
+	QUALIFICATION_ROUND_3: "Q",
+	PLAYOFF_ROUND_1: "PO",
+	PLAYOFF_ROUND_2: "PO",
 	PLAYOFFS: "PO",
 };
 
-// Short phase label: knockout/cup rounds get an abbreviation
-// (SEMI_FINALS → SF), league stages by matchday (matchday 22 → MD22).
+// Trailing number baked into a stage enum, e.g. "LAST_16" → 16,
+// "ROUND_3" → 3, "QUALIFICATION_ROUND_2" → 2, "PLAYOFF_ROUND_1" → 1.
+function stageNumber(stage: string): number | null {
+	const m = stage.match(/(\d+)$/);
+	return m ? Number(m[1]) : null;
+}
+
+// Short phase label: round stages get an abbreviation + a number. The number
+// comes from the match's matchday when set (GROUP_STAGE matchday 3 → GS3),
+// otherwise from the stage enum (LAST_16 → R16). League stages fall back to
+// MD<matchday> (matchday 22 → MD22).
 export function fmtPhase(m: Match): string | null {
-	const stage = STAGE_LABELS[m.stage ?? ""];
-	if (stage) return stage;
-	if (m.matchday != null) return `MD${m.matchday}`;
-	return null;
+	const stage = m.stage ?? "";
+	const prefix = STAGE_PREFIXES[stage];
+	if (!prefix) {
+		if (m.matchday != null) return `MD${m.matchday}`;
+		return null;
+	}
+	const n = m.matchday != null ? m.matchday : stageNumber(stage);
+	return n != null ? `${prefix}${n}` : prefix;
 }
 
 // Map team id -> crest URL from the first match each team appears in.
