@@ -78,50 +78,43 @@ function lastDayOfMonth(d: Date): number {
 	return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
 }
 
-function sameMonth(a: Date, b: Date): boolean {
-	return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth();
-}
-
 type MonthGroup = { label: string; note?: string; matches: Match[] };
 
-// Group assumed-sorted matches by calendar month. The first/last group gets a
-// "filtered from" / "filtered until" note when the range clips that month.
-function groupByMonth(
+// Group matches into month buckets in any input order. The first/last group
+// gets a "filtered from" / "filtered until" note when the corresponding range
+// endpoint clips its month (regardless of whether that clipped month has any
+// matches of its own).
+export function groupByMonth(
 	matches: Match[],
 	rangeFrom?: Date,
 	rangeTo?: Date,
 ): MonthGroup[] {
-	const groups: MonthGroup[] = [];
-	let lastKey = "";
+	const byKey = new Map<string, MonthGroup>();
 	for (const m of matches) {
 		const d = new Date(m.utcDate);
 		const key = `${d.getFullYear()}-${d.getMonth()}`;
-		if (key !== lastKey) {
-			lastKey = key;
-			let note: string | undefined;
-			if (rangeFrom && sameMonth(d, rangeFrom) && rangeFrom.getDate() !== 1) {
-				note = `filtered from ${fmtShortDate(rangeFrom)}`;
-			}
-			if (
-				rangeTo &&
-				sameMonth(d, rangeTo) &&
-				rangeTo.getDate() !== lastDayOfMonth(rangeTo)
-			) {
-				note = note
-					? `${note} · filtered until ${fmtShortDate(rangeTo)}`
-					: `filtered until ${fmtShortDate(rangeTo)}`;
-			}
-			groups.push({
+		let g = byKey.get(key);
+		if (!g) {
+			g = {
 				label: d.toLocaleDateString("en-GB", {
 					month: "long",
 					year: "numeric",
 				}),
-				note,
-				matches: [m],
-			});
-		} else {
-			groups[groups.length - 1].matches.push(m);
+				matches: [],
+			};
+			byKey.set(key, g);
 		}
+		g.matches.push(m);
+	}
+	const groups = [...byKey.values()];
+	const first = groups[0];
+	if (first && rangeFrom && rangeFrom.getDate() !== 1) {
+		first.note = `filtered from ${fmtShortDate(rangeFrom)}`;
+	}
+	const last = groups[groups.length - 1];
+	if (last && rangeTo && rangeTo.getDate() !== lastDayOfMonth(rangeTo)) {
+		const note = `filtered until ${fmtShortDate(rangeTo)}`;
+		last.note = last.note ? `${last.note} · ${note}` : note;
 	}
 	return groups;
 }
