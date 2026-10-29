@@ -5,7 +5,10 @@ import { FAQ_ENTRIES } from "../src/lib/faqContent";
 // Match rows render each team name as its own element. Scope row assertions to
 // the <li> that contains both names.
 function rowMatching(page, names) {
-	return page.locator("li").filter({ hasText: names[0] });
+	return page
+		.locator("li")
+		.filter({ hasText: names[0] })
+		.filter({ hasText: names[1] });
 }
 
 // Opens the club combobox and returns its search input.
@@ -322,10 +325,7 @@ test("faq page shows accordion Q&As with multiple-open behavior", async ({
 		const trig = item.locator("button");
 		for (let k = 0; k < 5; k++) {
 			await trig.click();
-			if ((await item.getAttribute("data-state")) === "open") {
-				await expect(item).toContainText(""); // flush
-				return;
-			}
+			if ((await item.getAttribute("data-state")) === "open") return;
 			await page.waitForTimeout(200);
 		}
 		throw new Error("accordion item did not open");

@@ -37,6 +37,7 @@ export function TeamCombobox({
 					variant="outline"
 					role="combobox"
 					aria-expanded={open}
+					aria-haspopup="listbox"
 					className="w-full justify-between"
 				>
 					{selectedTeams.length === 0

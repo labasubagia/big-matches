@@ -44,6 +44,7 @@ export function DateRangePicker({
 						!selected && "text-muted-foreground",
 					)}
 					aria-label="Date range"
+					aria-haspopup="dialog"
 				>
 					<CalendarIcon className="size-4" />
 					{selected?.from
@@ -59,9 +60,11 @@ export function DateRangePicker({
 					selected={selected}
 					defaultMonth={from}
 					onSelect={(range) => {
-						if (!range) return;
-						if (range.from) onFromChange(isoLocal(range.from));
-						if (range.to) onToChange(isoLocal(range.to));
+						if (!range?.from) return;
+						const f = range.from;
+						onFromChange(isoLocal(f));
+						const t = range.to ?? to;
+						onToChange(isoLocal(t && t >= f ? t : f));
 					}}
 				/>
 			</PopoverContent>
