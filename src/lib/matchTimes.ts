@@ -21,10 +21,18 @@ export function isTBD(m: Match): boolean {
 
 export function matchBucket(m: Match, now: number = Date.now()): MatchBucket {
 	const kickoff = new Date(m.utcDate).getTime();
+	// Anything not an upcoming fixture: finished, in-play (incl. halftime),
+	// or terminal (postponed/cancelled/suspended). A cancelled/postponed match
+	// at a past date is a historical entry, not an upcoming one; the row still
+	// prints the raw status so it's not mistaken for a played result.
 	if (
 		m.status === "FINISHED" ||
 		m.status === "LIVE" ||
-		m.status === "IN_PLAY"
+		m.status === "IN_PLAY" ||
+		m.status === "PAUSED" ||
+		m.status === "POSTPONED" ||
+		m.status === "CANCELLED" ||
+		m.status === "SUSPENDED"
 	) {
 		return "past";
 	}

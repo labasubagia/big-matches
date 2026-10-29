@@ -40,6 +40,12 @@ describe("matchBucket", () => {
 		expect(matchBucket(match({ status: "IN_PLAY" }), NOW)).toBe("past");
 	});
 
+	it("classifies terminal dead-status matches as past", () => {
+		expect(matchBucket(match({ status: "POSTPONED" }), NOW)).toBe("past");
+		expect(matchBucket(match({ status: "CANCELLED" }), NOW)).toBe("past");
+		expect(matchBucket(match({ status: "SUSPENDED" }), NOW)).toBe("past");
+	});
+
 	it("classifies a match within 3 months as near", () => {
 		expect(matchBucket(match(), NOW)).toBe("near");
 	});
