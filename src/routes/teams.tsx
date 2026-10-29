@@ -82,19 +82,23 @@ function Teams() {
 				/>
 			</div>
 
-			{groups.map((g) => (
+			{groups.map((g, i) => (
 				<section key={g.name} className="mb-5">
-					<h2 className="text-base">{groupLabel(g.name)}</h2>
+					<h2 className="mb-2 text-lg font-semibold tracking-tight">
+						{groupLabel(g.name)}
+					</h2>
 					<ul className="grid list-none grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-1.5 p-0">
 						{g.teams.map((t) => {
 							const isSelected = selected.includes(t.id);
 							return (
 								<li key={t.id}>
 									<Button
-										variant={isSelected ? "default" : "outline"}
+										variant={isSelected ? "ghost" : "outline"}
 										onClick={() => toggle(t.id)}
 										aria-pressed={isSelected}
-										className="w-full justify-start gap-2 px-2 text-left text-[0.9rem] min-h-12"
+										className={`w-full justify-start gap-2 px-2 text-left text-[0.9rem] min-h-12 ${
+											isSelected ? "border border-input bg-[#fde8d7]" : ""
+										}`}
 									>
 										{(() => {
 											const crest = crests.get(t.id);
@@ -113,6 +117,7 @@ function Teams() {
 							);
 						})}
 					</ul>
+					{i < groups.length - 1 ? <hr className="my-4 border-border" /> : null}
 				</section>
 			))}
 		</main>
