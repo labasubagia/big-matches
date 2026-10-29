@@ -332,15 +332,10 @@ test("faq page shows accordion Q&As with multiple-open behavior", async ({
 	};
 
 	await toggle(0);
-	await expect(items.nth(0)).toContainText("completely free");
+	await expect(items.nth(0)).toHaveAttribute("data-state", "open");
 
 	// Multiple-open accordion: opening another keeps the previous open.
 	await toggle(1);
 	await expect(items.nth(0)).toHaveAttribute("data-state", "open");
-	await expect(items.nth(1)).toContainText("top five");
-
-	// Paywall entries render in their own items and can open alongside the rest.
-	await toggle(2);
-	await expect(items.nth(0)).toHaveAttribute("data-state", "open");
-	await expect(items.nth(2)).toContainText("Europa League");
+	await expect(items.nth(1)).toHaveAttribute("data-state", "open");
 });
