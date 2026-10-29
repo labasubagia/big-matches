@@ -29,6 +29,14 @@
 	--rdp-accent-color: var(--color-winner) !important;
 	--rdp-accent-background-color: var(--color-winner-soft) !important;
 	--rdp-today-color: var(--color-winner) !important;
+	--rdp-day-width: 34px !important;
+	--rdp-day-height: 34px !important;
+	--rdp-day_button-width: 34px !important;
+	--rdp-day_button-height: 34px !important;
+	--rdp-nav_button-width: 1.75rem !important;
+	--rdp-nav_button-height: 1.75rem !important;
+	--rdp-nav-height: 2.5rem !important;
+	--rdp-weekday-padding: 0.25rem 0 !important;
 }
 
 @keyframes accordion-down {
