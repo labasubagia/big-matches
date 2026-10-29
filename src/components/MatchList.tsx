@@ -81,9 +81,9 @@ function lastDayOfMonth(d: Date): number {
 type MonthGroup = { label: string; note?: string; matches: Match[] };
 
 // Group matches into month buckets in any input order. The first/last group
-// gets a "filtered from" / "filtered until" note when the corresponding range
-// endpoint clips its month (regardless of whether that clipped month has any
-// matches of its own).
+// gets a "from" / "until" note when the corresponding range endpoint clips its
+// month (regardless of whether that clipped month has any matches of its own).
+
 export function groupByMonth(
 	matches: Match[],
 	rangeFrom?: Date,
@@ -109,11 +109,11 @@ export function groupByMonth(
 	const groups = [...byKey.values()];
 	const first = groups[0];
 	if (first && rangeFrom && rangeFrom.getDate() !== 1) {
-		first.note = `filtered from ${fmtShortDate(rangeFrom)}`;
+		first.note = `from ${fmtShortDate(rangeFrom)}`;
 	}
 	const last = groups[groups.length - 1];
 	if (last && rangeTo && rangeTo.getDate() !== lastDayOfMonth(rangeTo)) {
-		const note = `filtered until ${fmtShortDate(rangeTo)}`;
+		const note = `until ${fmtShortDate(rangeTo)}`;
 		last.note = last.note ? `${last.note} · ${note}` : note;
 	}
 	return groups;

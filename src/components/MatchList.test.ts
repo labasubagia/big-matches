@@ -36,7 +36,7 @@ describe("groupByMonth", () => {
 			[m("2026-04-05T20:00:00Z")],
 			new Date(2026, 2, 15), // 15 March 2026
 		);
-		expect(groups[0].note).toBe("filtered from 15/03/2026");
+		expect(groups[0].note).toBe("from 15/03/2026");
 	});
 
 	it("annotates the last group when the range end clips a later month", () => {
@@ -45,7 +45,7 @@ describe("groupByMonth", () => {
 			undefined,
 			new Date(2027, 0, 23), // 23 January 2027
 		);
-		expect(groups[0].note).toBe("filtered until 23/01/2027");
+		expect(groups[0].note).toBe("until 23/01/2027");
 	});
 
 	it("omits notes when the range spans full months", () => {
@@ -63,8 +63,6 @@ describe("groupByMonth", () => {
 			new Date(2026, 9, 29),
 			new Date(2026, 9, 23),
 		);
-		expect(groups[0].note).toBe(
-			"filtered from 29/10/2026 · filtered until 23/10/2026",
-		);
+		expect(groups[0].note).toBe("from 29/10/2026 · until 23/10/2026");
 	});
 });
