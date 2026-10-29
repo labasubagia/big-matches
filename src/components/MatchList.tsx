@@ -139,17 +139,22 @@ export function MatchList({
 	const groups = groupByMonth(matches, rangeFrom, rangeTo);
 	return (
 		<div className="space-y-5">
-			{groups.map((g) => (
+			{groups.map((g, i) => (
 				<section key={g.label}>
-					<h3 className="mb-2 text-sm font-semibold text-muted-foreground">
+					<h2 className="mb-2 text-lg font-semibold tracking-tight">
 						{g.label}
-						{g.note ? ` · ${g.note}` : ""}
-					</h3>
+						{g.note ? (
+							<span className="ml-2 text-sm font-semibold tracking-wide text-muted-foreground">
+								{g.note}
+							</span>
+						) : null}
+					</h2>
 					<ul className="list-none p-0">
 						{g.matches.map((m) => (
 							<MatchRow key={m.id} m={m} />
 						))}
 					</ul>
+					{i < groups.length - 1 ? <hr className="my-4 border-border" /> : null}
 				</section>
 			))}
 		</div>

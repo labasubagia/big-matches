@@ -45,7 +45,7 @@ function Home() {
 
 			<section>
 				<h2 className="mb-3 text-[1.1rem]">
-					Fixtures {fmtShortDate(new Date(`${filters.fromStr}T00:00:00`))} →{" "}
+					{fmtShortDate(new Date(`${filters.fromStr}T00:00:00`))} →{" "}
 					{fmtShortDate(new Date(`${filters.toStr}T00:00:00`))}
 				</h2>
 				{ready && shownMatches.length === 0 ? (
