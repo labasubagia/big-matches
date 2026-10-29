@@ -43,13 +43,13 @@ function MatchRow({ m }: { m: Match }) {
 					past ? "bg-muted" : "bg-card",
 				)}
 			>
-				<CardContent className="flex flex-col gap-0.5 p-2.5 sm:flex-row sm:items-center sm:gap-2">
-					<div className="flex flex-wrap items-center justify-center gap-2 text-center sm:justify-start sm:text-left">
+				<CardContent className="flex flex-col gap-0.5 p-2.5 md:flex-row md:items-center md:gap-2">
+					<div className="flex flex-wrap items-center justify-center gap-2 text-center md:justify-start md:text-left">
 						<Crest url={m.homeTeam.crest} name={m.homeTeam.name} />
-						<span className="sm:hidden">
+						<span className="md:hidden">
 							{m.homeTeam.shortName ?? m.homeTeam.name}
 						</span>
-						<span className="hidden sm:inline">{m.homeTeam.name}</span>
+						<span className="hidden md:inline">{m.homeTeam.name}</span>
 						{homeScore != null && (
 							<span className={homeScoreClass}>{homeScore}</span>
 						)}
@@ -57,13 +57,13 @@ function MatchRow({ m }: { m: Match }) {
 						{awayScore != null && (
 							<span className={awayScoreClass}>{awayScore}</span>
 						)}
-						<span className="sm:hidden">
+						<span className="md:hidden">
 							{m.awayTeam.shortName ?? m.awayTeam.name}
 						</span>
-						<span className="hidden sm:inline">{m.awayTeam.name}</span>
+						<span className="hidden md:inline">{m.awayTeam.name}</span>
 						<Crest url={m.awayTeam.crest} name={m.awayTeam.name} />
 					</div>
-					<div className="flex flex-wrap items-center justify-center gap-2 text-center sm:ml-auto sm:justify-start sm:text-left">
+					<div className="flex flex-wrap items-center justify-center gap-2 text-center md:ml-auto md:justify-start md:text-left">
 						<span
 							className={cn(
 								"text-[0.85em]",
@@ -140,7 +140,7 @@ export function MatchList({
 		<div className="space-y-5">
 			{groups.map((g, i) => (
 				<section key={g.label}>
-					<div className="mb-2 text-center sm:text-left">
+					<div className="mb-2 text-center md:text-left">
 						<h2 className="text-lg font-semibold tracking-tight">{g.label}</h2>
 						{g.note ? (
 							<p className="mt-0.5 text-sm font-semibold tracking-wide text-muted-foreground">
