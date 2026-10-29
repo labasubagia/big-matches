@@ -69,7 +69,7 @@ function Teams() {
 				Click a team to add or remove it. Only matches between two selected
 				teams are shown.
 			</p>
-			<div className="my-4 flex flex-wrap items-center gap-3">
+			<div className="my-4 grid gap-1.5">
 				<p className="text-sm text-muted-foreground">
 					{ready ? `${selected.length} teams selected` : "Loading…"}
 				</p>
@@ -78,7 +78,7 @@ function Teams() {
 					placeholder="Search all clubs…"
 					value={query}
 					onChange={(e) => setQuery(e.target.value)}
-					className="min-w-48 flex-1"
+					className="w-full"
 				/>
 			</div>
 
