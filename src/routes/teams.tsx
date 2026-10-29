@@ -62,8 +62,10 @@ function Teams() {
 
 	return (
 		<main className="mx-auto max-w-[760px] p-4 font-sans">
-			<h1>Select Big Teams</h1>
-			<p className="text-muted-foreground">
+			<h1 className="text-2xl font-semibold tracking-tight">
+				Select Big Teams
+			</h1>
+			<p className="mt-1 text-sm text-muted-foreground">
 				Click a team to add or remove it. Only matches between two selected
 				teams are shown.
 			</p>
