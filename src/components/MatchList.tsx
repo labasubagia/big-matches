@@ -2,6 +2,7 @@ import type { Match } from "../lib/filterBigMatches";
 import {
 	competitionLabel,
 	fmtDate,
+	fmtPhase,
 	fmtStatus,
 	isTBD,
 	matchBucket,
@@ -26,6 +27,7 @@ function MatchRow({ m }: { m: Match }) {
 	const past = matchBucket(m) === "past";
 	const tbd = isTBD(m);
 	const { fullTime, winner } = m.score ?? {};
+	const phase = fmtPhase(m);
 	const homeScore = fullTime?.home;
 	const awayScore = fullTime?.away;
 	const homeWon = winner === "HOME_TEAM";
@@ -60,7 +62,10 @@ function MatchRow({ m }: { m: Match }) {
 								tbd ? "text-winner" : "opacity-85",
 							)}
 						>
-							{competitionLabel(m)} · {fmtDate(m)} {fmtStatus(m)}
+							<span>
+								{competitionLabel(m)}
+								{phase ? ` · ${phase}` : ""} · {fmtDate(m)} {fmtStatus(m)}
+							</span>
 						</span>
 					</span>
 				</CardContent>

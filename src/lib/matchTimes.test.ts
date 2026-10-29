@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Match } from "./filterBigMatches";
 import {
 	competitionLabel,
+	fmtPhase,
 	isTBD,
 	localMidnightMs,
 	matchBucket,
@@ -144,5 +145,44 @@ describe("teamCrests", () => {
 		expect(map.get(86)).toBe("crest-86");
 		expect(map.get(64)).toBe("crest-64");
 		expect(map.has(999)).toBe(false);
+	});
+});
+
+describe("fmtPhase", () => {
+	it("labels league match by matchday", () => {
+		expect(fmtPhase(match({ stage: "REGULAR_SEASON", matchday: 22 }))).toBe(
+			"MD22",
+		);
+	});
+
+	it("abbreviates fixed stages", () => {
+		expect(fmtPhase(match({ stage: "SEMI_FINALS" }))).toBe("SF");
+		expect(fmtPhase(match({ stage: "FINAL" }))).toBe("F");
+		expect(fmtPhase(match({ stage: "QUARTER_FINALS" }))).toBe("QF");
+		expect(fmtPhase(match({ stage: "THIRD_PLACE" }))).toBe("3P");
+		expect(fmtPhase(match({ stage: "GROUP_STAGE" }))).toBe("GS");
+	});
+
+	it("derives round number from stage enum", () => {
+		expect(fmtPhase(match({ stage: "LAST_16" }))).toBe("R16");
+		expect(fmtPhase(match({ stage: "ROUND_3" }))).toBe("R3");
+		expect(fmtPhase(match({ stage: "QUALIFICATION_ROUND_2" }))).toBe("Q2");
+		expect(fmtPhase(match({ stage: "PLAYOFF_ROUND_1" }))).toBe("PO1");
+		expect(fmtPhase(match({ stage: "PLAYOFF_ROUND_2" }))).toBe("PO2");
+	});
+
+	it("abbreviates playoffs without a round number", () => {
+		expect(fmtPhase(match({ stage: "PLAYOFFS" }))).toBe("PO");
+		expect(fmtPhase(match({ stage: "PLAYOFFS", matchday: 2 }))).toBe("PO2");
+	});
+
+	it("appends matchday when set on round stages", () => {
+		expect(fmtPhase(match({ stage: "GROUP_STAGE", matchday: 3 }))).toBe("GS3");
+	});
+
+	it("labels matchday 0", () => {
+		expect(fmtPhase(match({ stage: "REGULAR_SEASON", matchday: 0 }))).toBe(
+			"MD0",
+		);
 	});
 });

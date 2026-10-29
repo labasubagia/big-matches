@@ -55,6 +55,50 @@ export function competitionLabel(m: Match): string {
 	if (code && COMPETITION_LABELS[code]) return COMPETITION_LABELS[code];
 	return m.competition.name;
 }
+const STAGE_PREFIXES: Record<string, string> = {
+	FINAL: "F",
+	THIRD_PLACE: "3P",
+	SEMI_FINALS: "SF",
+	QUARTER_FINALS: "QF",
+	LAST_16: "R",
+	LAST_32: "R",
+	LAST_64: "R",
+	ROUND_4: "R",
+	ROUND_3: "R",
+	ROUND_2: "R",
+	ROUND_1: "R",
+	GROUP_STAGE: "GS",
+	PRELIMINARY_ROUND: "PR",
+	QUALIFICATION: "Q",
+	QUALIFICATION_ROUND_1: "Q",
+	QUALIFICATION_ROUND_2: "Q",
+	QUALIFICATION_ROUND_3: "Q",
+	PLAYOFF_ROUND_1: "PO",
+	PLAYOFF_ROUND_2: "PO",
+	PLAYOFFS: "PO",
+};
+
+// Trailing number baked into a stage enum, e.g. "LAST_16" → 16,
+// "ROUND_3" → 3, "QUALIFICATION_ROUND_2" → 2, "PLAYOFF_ROUND_1" → 1.
+function stageNumber(stage: string): number | null {
+	const m = stage.match(/(\d+)$/);
+	return m ? Number(m[1]) : null;
+}
+
+// Short phase label: round stages get an abbreviation + a number. The number
+// comes from the match's matchday when set (GROUP_STAGE matchday 3 → GS3),
+// otherwise from the stage enum (LAST_16 → R16). League stages fall back to
+// MD<matchday> (matchday 22 → MD22).
+export function fmtPhase(m: Match): string | null {
+	const stage = m.stage ?? "";
+	const prefix = STAGE_PREFIXES[stage];
+	if (!prefix) {
+		if (m.matchday != null) return `MD${m.matchday}`;
+		return null;
+	}
+	const n = m.matchday != null ? m.matchday : stageNumber(stage);
+	return n != null ? `${prefix}${n}` : prefix;
+}
 
 // Map team id -> crest URL from the first match each team appears in.
 export function teamCrests(matches: Match[]): Map<number, string> {
