@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import type { Team } from "../lib/filterBigMatches";
@@ -60,20 +61,13 @@ function Teams() {
 	}, [candidates]);
 
 	return (
-		<main
-			style={{
-				fontFamily: "system-ui, sans-serif",
-				maxWidth: 760,
-				margin: "0 auto",
-				padding: "1rem",
-			}}
-		>
+		<main className="mx-auto max-w-[760px] p-4 font-sans">
 			<h1>Select Big Teams</h1>
-			<p style={{ color: "#666" }}>
+			<p className="text-muted-foreground">
 				Click a team to add or remove it. Only matches between two selected
 				teams are shown.
 			</p>
-			<p style={{ color: "#666", fontSize: "0.85rem" }}>
+			<p className="text-muted-foreground text-sm">
 				{ready ? `${selected.length} teams selected` : "Loading…"}
 			</p>
 
@@ -86,17 +80,9 @@ function Teams() {
 			/>
 
 			{groups.map((g) => (
-				<section key={g.name} style={{ marginBottom: "1.25rem" }}>
-					<h2 style={{ fontSize: "1rem" }}>{groupLabel(g.name)}</h2>
-					<ul
-						style={{
-							listStyle: "none",
-							padding: 0,
-							display: "grid",
-							gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
-							gap: "0.4rem",
-						}}
-					>
+				<section key={g.name} className="mb-5">
+					<h2 className="text-base">{groupLabel(g.name)}</h2>
+					<ul className="grid list-none grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-1.5 p-0">
 						{g.teams.map((t) => {
 							const isSelected = selected.includes(t.id);
 							return (
@@ -107,31 +93,17 @@ function Teams() {
 										aria-pressed={isSelected}
 										className="w-full justify-start gap-2 px-2 text-left text-[0.9rem] min-h-12"
 									>
-										{crests.get(t.id) ? (
-											<img
-												src={crests.get(t.id)}
-												alt=""
-												width={24}
-												height={24}
-											/>
-										) : (
-											<span
-												style={{
-													width: 24,
-													height: 24,
-													borderRadius: "50%",
-													background: "#bbb",
-													color: "#fff",
-													fontSize: 11,
-													display: "inline-flex",
-													alignItems: "center",
-													justifyContent: "center",
-													flexShrink: 0,
-												}}
-											>
-												{t.name[0]}
-											</span>
-										)}
+										{(() => {
+											const crest = crests.get(t.id);
+											return (
+												<Avatar className="size-6">
+													{crest ? <AvatarImage src={crest} alt="" /> : null}
+													<AvatarFallback className="bg-muted text-[11px] text-muted-foreground">
+														{t.name[0]}
+													</AvatarFallback>
+												</Avatar>
+											);
+										})()}
 										<span>{t.name}</span>
 									</Button>
 								</li>

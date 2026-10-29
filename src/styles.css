@@ -3,7 +3,8 @@
 @theme inline {
 	--color-background: #ffffff;
 	--color-foreground: #111111;
-	--color-card: #ffffff;
+	--color-popover: #ffffff;
+	--color-popover-foreground: #111111;
 	--color-card-foreground: #111111;
 	--color-border: #e0e0e0;
 	--color-input: #cccccc;
@@ -14,14 +15,35 @@
 	--color-secondary-foreground: #111111;
 	--color-accent: #f0f0f0;
 	--color-accent-foreground: #111111;
+	--color-winner: #e8620c;
 	--color-muted: #f0f0f0;
 	--color-muted-foreground: #666666;
 	--color-destructive: #d33;
 	--color-destructive-foreground: #ffffff;
+	--animate-accordion-down: accordion-down 0.2s ease-out;
+	--animate-accordion-up: accordion-up 0.2s ease-out;
 }
 
 :root {
 	--rdp-accent-color: #e8620c;
 	--rdp-accent-background-color: #fde8d7;
 	--rdp-today-color: #e8620c;
+}
+
+@keyframes accordion-down {
+	from {
+		height: 0;
+	}
+	to {
+		height: var(--radix-accordion-content-height);
+	}
+}
+
+@keyframes accordion-up {
+	from {
+		height: var(--radix-accordion-content-height);
+	}
+	to {
+		height: 0;
+	}
 }

@@ -16,7 +16,7 @@ export function MatchFilters(f: MatchFilterState) {
 			</Button>
 
 			{f.open && (
-				<div className="mt-1.5 grid gap-3 rounded-lg border border-neutral-300 bg-white p-3 shadow-md">
+				<div className="mt-1.5 grid gap-3 rounded-lg border border-border bg-card p-3">
 					<DateRangePicker
 						fromStr={f.fromStr}
 						toStr={f.toStr}

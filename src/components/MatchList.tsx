@@ -6,49 +6,19 @@ import {
 	isTBD,
 	matchBucket,
 } from "../lib/matchTimes";
-
-const PAST_BG = "#f0f0f0";
-
-const WINNER_COLOR = "#e8620c";
-
-const rowStyle = {
-	display: "flex",
-	alignItems: "center",
-	gap: "0.5rem",
-	padding: "0.45rem 0.6rem",
-	border: "1px solid #e0e0e0",
-	borderRadius: 6,
-	marginBottom: "0.4rem",
-} as const;
+import { cn } from "../lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Badge } from "./ui/badge";
+import { Card, CardContent } from "./ui/card";
 
 function Crest({ url, name }: { url?: string; name: string }) {
-	if (!url) {
-		return (
-			<span
-				style={{
-					width: 22,
-					height: 22,
-					borderRadius: "50%",
-					background: "#bbb",
-					color: "#fff",
-					fontSize: 10,
-					display: "inline-flex",
-					alignItems: "center",
-					justifyContent: "center",
-				}}
-			>
-				{name[0]}
-			</span>
-		);
-	}
 	return (
-		<img
-			src={url}
-			alt={name}
-			width={22}
-			height={22}
-			style={{ borderRadius: "50%" }}
-		/>
+		<Avatar className="size-[22px]">
+			{url ? <AvatarImage src={url} alt={name} /> : null}
+			<AvatarFallback className="bg-muted text-[10px] text-muted-foreground">
+				{name[0]}
+			</AvatarFallback>
+		</Avatar>
 	);
 }
 
@@ -60,44 +30,41 @@ function MatchRow({ m }: { m: Match }) {
 	const awayScore = fullTime?.away;
 	const homeWon = winner === "HOME_TEAM";
 	const awayWon = winner === "AWAY_TEAM";
-	const scoreStyle = (won: boolean) =>
-		won ? { color: WINNER_COLOR, fontWeight: 600 } : { fontWeight: 600 };
-	const style = {
-		...rowStyle,
-		background: past ? PAST_BG : "#ffffff",
-		color: "#111",
-	};
+	const homeScoreClass = cn("font-semibold", homeWon && "text-winner");
+	const awayScoreClass = cn("font-semibold", awayWon && "text-winner");
+
 	return (
-		<li style={style}>
-			<Crest url={m.homeTeam.crest} name={m.homeTeam.name} />
-			<span>{m.homeTeam.name}</span>
-			{homeScore != null && (
-				<span style={scoreStyle(homeWon)}>{homeScore}</span>
-			)}
-			<span style={{ opacity: 0.55 }}>v</span>
-			{awayScore != null && (
-				<span style={scoreStyle(awayWon)}>{awayScore}</span>
-			)}
-			<span>{m.awayTeam.name}</span>
-			<Crest url={m.awayTeam.crest} name={m.awayTeam.name} />
-			<span
-				style={{
-					marginLeft: "auto",
-					display: "flex",
-					alignItems: "center",
-					gap: "0.5rem",
-				}}
+		<li>
+			<Card
+				className={cn(
+					"mb-1.5 rounded-md shadow-none",
+					past ? "bg-muted" : "bg-card",
+				)}
 			>
-				<span
-					style={{
-						fontSize: "0.85em",
-						opacity: tbd ? 1 : 0.85,
-						color: tbd ? WINNER_COLOR : undefined,
-					}}
-				>
-					{competitionLabel(m)} · {fmtDate(m)} {fmtStatus(m)}
-				</span>
-			</span>
+				<CardContent className="flex items-center gap-2 p-2.5">
+					<Crest url={m.homeTeam.crest} name={m.homeTeam.name} />
+					<span>{m.homeTeam.name}</span>
+					{homeScore != null && (
+						<span className={homeScoreClass}>{homeScore}</span>
+					)}
+					<span className="opacity-55">v</span>
+					{awayScore != null && (
+						<span className={awayScoreClass}>{awayScore}</span>
+					)}
+					<span>{m.awayTeam.name}</span>
+					<Crest url={m.awayTeam.crest} name={m.awayTeam.name} />
+					<span className="ml-auto flex items-center gap-2">
+						<span
+							className={cn(
+								"text-[0.85em]",
+								tbd ? "text-winner" : "opacity-85",
+							)}
+						>
+							{competitionLabel(m)} · {fmtDate(m)} {fmtStatus(m)}
+						</span>
+					</span>
+				</CardContent>
+			</Card>
 		</li>
 	);
 }
@@ -105,7 +72,7 @@ function MatchRow({ m }: { m: Match }) {
 export function MatchList({ matches }: { matches: Match[] }) {
 	if (matches.length === 0) return null;
 	return (
-		<ul style={{ listStyle: "none", padding: 0 }}>
+		<ul className="list-none p-0">
 			{matches.map((m) => (
 				<MatchRow key={m.id} m={m} />
 			))}
@@ -115,47 +82,16 @@ export function MatchList({ matches }: { matches: Match[] }) {
 
 export function BucketLegend() {
 	return (
-		<div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-			<span
-				style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}
-			>
-				<span
-					style={{
-						width: 14,
-						height: 14,
-						border: "1px solid #ccc",
-						borderRadius: 3,
-						background: PAST_BG,
-						display: "inline-block",
-					}}
-				/>
+		<div className="mb-4 flex gap-3">
+			<Badge variant="secondary" className="gap-1.5">
+				<span className="inline-block size-3.5 rounded-sm border border-border bg-muted" />
 				Played
-			</span>
-			<span
-				style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}
-			>
-				<span
-					style={{
-						width: 14,
-						height: 14,
-						border: "1px solid #ccc",
-						borderRadius: 3,
-						background: "#ffffff",
-						display: "inline-block",
-					}}
-				/>
+			</Badge>
+			<Badge variant="outline" className="gap-1.5">
+				<span className="inline-block size-3.5 rounded-sm border border-border bg-card" />
 				Upcoming
-			</span>
-			<span
-				style={{
-					display: "inline-flex",
-					alignItems: "center",
-					gap: "0.35rem",
-					color: WINNER_COLOR,
-				}}
-			>
-				• Time TBD
-			</span>
+			</Badge>
+			<Badge variant="winner">• Time TBD</Badge>
 		</div>
 	);
 }

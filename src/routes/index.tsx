@@ -39,18 +39,11 @@ function Home() {
 	}, [ready, fixtures, selected, filters.range, filters.selectedTeams]);
 
 	return (
-		<main
-			style={{
-				fontFamily: "system-ui, sans-serif",
-				maxWidth: 760,
-				margin: "0 auto",
-				padding: "1rem",
-			}}
-		>
+		<main className="mx-auto max-w-[760px] p-4 font-sans">
 			<h1>Big Matches</h1>
 
-			<section style={{ marginBottom: "1.5rem" }}>
-				<p style={{ color: "#666" }}>
+			<section className="mb-6">
+				<p className="text-muted-foreground">
 					Select your big teams on the <Link to="/teams">Teams page</Link> —
 					then narrow matches by date range and team search.
 				</p>
@@ -59,7 +52,7 @@ function Home() {
 			<MatchFilters {...filters} />
 
 			<section>
-				<h2 style={{ fontSize: "1.1rem" }}>
+				<h2 className="mb-3 text-[1.1rem]">
 					Fixtures {filters.fromStr} → {filters.toStr}
 				</h2>
 				{ready && shownMatches.length === 0 ? (
