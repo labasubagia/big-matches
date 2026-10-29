@@ -5,10 +5,8 @@ import { Button } from "./ui/button";
 export function MatchFilters(f: MatchFilterState) {
 	return (
 		<section className="mb-6">
-			<h2 className="mb-2 text-sm font-semibold text-muted-foreground">
-				Filters
-			</h2>
 			<div className="grid gap-3 rounded-lg border border-border bg-card p-3">
+				<h2 className="text-sm font-semibold text-muted-foreground">Filters</h2>
 				<DateRangePicker
 					fromStr={f.fromStr}
 					toStr={f.toStr}
