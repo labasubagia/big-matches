@@ -9,7 +9,6 @@ import {
 } from "../lib/matchTimes";
 import { cn } from "../lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Badge } from "./ui/badge";
 import { Card, CardContent } from "./ui/card";
 
 function Crest({ url, name }: { url?: string; name: string }) {
@@ -82,15 +81,5 @@ export function MatchList({ matches }: { matches: Match[] }) {
 				<MatchRow key={m.id} m={m} />
 			))}
 		</ul>
-	);
-}
-
-export function BucketLegend() {
-	return (
-		<div className="mb-4 flex gap-3">
-			<Badge variant="secondary">Played</Badge>
-			<Badge variant="outline">Upcoming</Badge>
-			<Badge variant="winner">• Time TBD</Badge>
-		</div>
 	);
 }

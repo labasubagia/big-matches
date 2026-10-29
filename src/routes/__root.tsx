@@ -23,7 +23,7 @@ function Nav() {
 					activeOptions={{ exact: true }}
 					activeProps={{ className: activeNavLinkClass }}
 				>
-					Overview
+					Schedules
 				</Link>
 				<Link
 					to="/teams"
@@ -31,13 +31,6 @@ function Nav() {
 					activeProps={{ className: activeNavLinkClass }}
 				>
 					Teams
-				</Link>
-				<Link
-					to="/schedules"
-					className={navLinkClass}
-					activeProps={{ className: activeNavLinkClass }}
-				>
-					Schedules
 				</Link>
 				<Link
 					to="/faq"

@@ -1,24 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo } from "react";
 import { MatchFilters } from "../components/MatchFilters";
 import { MatchList } from "../components/MatchList";
-import { filterOverviewMatches } from "../lib/filterBigMatches";
-import { loadFixtures } from "../lib/loadFixtures";
-import { withinRange } from "../lib/matchTimes";
+import { loadFixturesOrThrow } from "../lib/loadFixtures";
+import { useFilteredMatches } from "../lib/useFilteredMatches";
 import { useMatchFilters } from "../lib/useMatchFilters";
 import { useSelection } from "../lib/useSelection";
 
 export const Route = createFileRoute("/")({
 	component: Home,
-	loader: () => {
-		const fixtures = loadFixtures();
-		if (fixtures.teams.length === 0 || fixtures.matches.length === 0) {
-			throw new Error(
-				"App data missing — run `source .env && npm run data:gen` then restart.",
-			);
-		}
-		return fixtures;
-	},
+	loader: loadFixturesOrThrow,
 });
 
 function Home() {
@@ -26,17 +16,7 @@ function Home() {
 	const { selected, ready } = useSelection(teams);
 	const filters = useMatchFilters(teams, selected, fixtures);
 
-	const shownMatches = useMemo(() => {
-		const range = filters.range;
-		if (!ready || !range) return [];
-		return filterOverviewMatches(
-			fixtures,
-			new Set(selected),
-			new Set(filters.selectedTeams),
-		)
-			.filter((m) => withinRange(m, range.from, range.to))
-			.sort((a, b) => a.utcDate.localeCompare(b.utcDate));
-	}, [ready, fixtures, selected, filters.range, filters.selectedTeams]);
+	const shownMatches = useFilteredMatches(fixtures, selected, ready, filters);
 
 	return (
 		<main className="mx-auto max-w-[760px] p-4 font-sans">

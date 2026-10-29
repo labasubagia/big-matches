@@ -250,10 +250,10 @@ test("selection persists across pages", async ({ page }) => {
 	).toHaveAttribute("aria-pressed", "true");
 });
 
-test("schedules shows all matches including the past with bucket background colors", async ({
+test("overview shows all matches including the past with bucket background colors", async ({
 	page,
 }) => {
-	await page.goto("/big-matches/schedules");
+	await page.goto("/big-matches/");
 	// Widen the date-range filter so past/near/far matches all appear.
 	const now = new Date();
 	const from = new Date(now.getTime() - 10 * 86400000);
@@ -261,14 +261,10 @@ test("schedules shows all matches including the past with bucket background colo
 	await pickRange(page, from, to);
 
 	await expect(
-		page.getByRole("heading", { name: "All Big Matches" }),
+		page.getByRole("heading", { name: "Big Matches" }),
 	).toBeVisible();
 
-	// Legend highlights the three buckets.
-	await expect(page.getByText("Played")).toBeVisible();
-	await expect(page.getByText("Upcoming")).toBeVisible();
-	await expect(page.getByText("• Time TBD", { exact: true })).toBeVisible();
-	// Fixture date-range heading mirrors the Overview page.
+	// Fixture date-range heading.
 	await expect(
 		page.getByText(/Fixtures \d{4}-\d{2}-\d{2} → \d{4}-\d{2}-\d{2}/),
 	).toBeVisible();
@@ -282,7 +278,7 @@ test("schedules shows all matches including the past with bucket background colo
 	await expect(pastRow).toContainText("1");
 	await expect(pastRow).toContainText("0");
 
-	// Far matches (timed and TBD) are included on the schedules page.
+	// Far matches (timed and TBD) are included on the page.
 	await expect(rowMatching(page, ["Liverpool", "Chelsea"])).toBeVisible();
 	// Real Madrid vs Barcelona appears twice: near (Nov) and TBD far (May).
 	await expect(rowMatching(page, ["Real Madrid", "Barcelona"])).toHaveCount(2);

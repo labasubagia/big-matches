@@ -1,7 +1,7 @@
 import type { Match } from "./filterBigMatches";
 
-// Bucket a match for the schedules page: past (happened), near (within 3
-// months), or far (beyond 3 months, or kickoff time not set yet).
+// Bucket a match: past (happened), near (within 3 months), or far (beyond 3
+// months, or kickoff time not set yet).
 export type MatchBucket = "past" | "near" | "far";
 
 const MONTHS_MS = 90 * 24 * 60 * 60 * 1000;
