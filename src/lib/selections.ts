@@ -9,10 +9,9 @@ export function readSavedSelection(validIds: ReadonlySet<number>): number[] {
 		if (!raw) return DEFAULT_SELECTED_IDS;
 		const parsed = JSON.parse(raw) as unknown;
 		if (Array.isArray(parsed)) {
-			const ids = parsed.filter(
+			return parsed.filter(
 				(n): n is number => typeof n === "number" && validIds.has(n),
 			);
-			if (ids.length > 0) return ids;
 		}
 	} catch {
 		// fall through to default

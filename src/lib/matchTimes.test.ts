@@ -29,10 +29,21 @@ describe("matchBucket", () => {
 		expect(matchBucket(match({ status: "FINISHED" }), NOW)).toBe("past");
 	});
 
-	it("classifies a passed date as past even if not finished", () => {
+	it("classifies an unfinished passed-date match as near, not past", () => {
 		expect(matchBucket(match({ utcDate: "2026-08-01T20:00:00Z" }), NOW)).toBe(
-			"past",
+			"near",
 		);
+	});
+
+	it("classifies live matches as past", () => {
+		expect(matchBucket(match({ status: "LIVE" }), NOW)).toBe("past");
+		expect(matchBucket(match({ status: "IN_PLAY" }), NOW)).toBe("past");
+	});
+
+	it("classifies terminal dead-status matches as past", () => {
+		expect(matchBucket(match({ status: "POSTPONED" }), NOW)).toBe("past");
+		expect(matchBucket(match({ status: "CANCELLED" }), NOW)).toBe("past");
+		expect(matchBucket(match({ status: "SUSPENDED" }), NOW)).toBe("past");
 	});
 
 	it("classifies a match within 3 months as near", () => {

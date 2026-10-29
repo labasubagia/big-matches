@@ -45,7 +45,6 @@ open at once). Enumeration answers use the `items` field →
 Ordering is grouped by theme, not append-only:
 
 1. Coverage first — the top-5/UCL rule, then paywalls (UEL, league cups). These answer most "why can't I see X" questions.
-   paywalls (UEL, league cups). These answer most "why can't I see X" questions.
 2. App behavior — localStorage (no cross-device sync), static/non-live data.
 3. Roadmap/unsure last — e.g. reminders/notifications, not yet shipped.
 

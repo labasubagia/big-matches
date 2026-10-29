@@ -10,7 +10,15 @@ import { useSelection } from "../lib/useSelection";
 
 export const Route = createFileRoute("/schedules")({
 	component: Schedules,
-	loader: () => loadFixtures(),
+	loader: () => {
+		const fixtures = loadFixtures();
+		if (fixtures.teams.length === 0 || fixtures.matches.length === 0) {
+			throw new Error(
+				"App data missing — run `source .env && npm run data:gen` then restart.",
+			);
+		}
+		return fixtures;
+	},
 });
 
 function Schedules() {
