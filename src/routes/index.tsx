@@ -24,7 +24,7 @@ export const Route = createFileRoute("/")({
 function Home() {
 	const { matches: fixtures, teams } = Route.useLoaderData();
 	const { selected, ready } = useSelection(teams);
-	const filters = useMatchFilters(teams, selected);
+	const filters = useMatchFilters(teams, selected, fixtures);
 
 	const shownMatches = useMemo(() => {
 		const range = filters.range;

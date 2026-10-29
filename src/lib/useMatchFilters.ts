@@ -1,8 +1,8 @@
 import type { Dispatch, SetStateAction } from "react";
 import { useMemo, useState } from "react";
-import type { Team } from "./filterBigMatches";
+import type { Match, Team } from "./filterBigMatches";
 import { filterTeamsByName } from "./filterBigMatches";
-import { localMidnightMs } from "./matchTimes";
+import { localMidnightMs, teamCrests } from "./matchTimes";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -19,6 +19,7 @@ export type MatchFilterState = {
 	setQuery: Dispatch<SetStateAction<string>>;
 	selectedTeams: number[];
 	candidates: Team[];
+	crests: Map<number, string>;
 	toggleTeam: (id: number) => void;
 	reset: () => void;
 	range: { from: number; to: number } | null;
@@ -30,6 +31,7 @@ export type MatchFilterState = {
 export function useMatchFilters(
 	teams: Team[],
 	selected: number[],
+	matches: Match[],
 ): MatchFilterState {
 	const [fromStr, setFromStr] = useState(() => isoLocal(new Date()));
 	const [toStr, setToStr] = useState(() =>
@@ -37,6 +39,8 @@ export function useMatchFilters(
 	);
 	const [query, setQuery] = useState("");
 	const [selectedTeams, setSelectedTeams] = useState<number[]>([]);
+
+	const crests = useMemo(() => teamCrests(matches), [matches]);
 
 	const candidates = useMemo(() => {
 		const selectedSet = new Set(selected);
@@ -77,6 +81,7 @@ export function useMatchFilters(
 		setQuery,
 		selectedTeams,
 		candidates,
+		crests,
 		toggleTeam,
 		reset,
 		range,
