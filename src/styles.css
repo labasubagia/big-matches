@@ -36,6 +36,12 @@
 	--rdp-nav_button-height: 1.75rem !important;
 	--rdp-nav-height: 2.5rem !important;
 	--rdp-weekday-padding: 0.25rem 0 !important;
+	font-size: 0.8125rem !important;
+}
+
+.rdp-month_caption,
+.rdp-selected {
+	font-size: 0.875rem !important;
 }
 
 @keyframes accordion-down {
