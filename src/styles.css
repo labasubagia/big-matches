@@ -26,9 +26,9 @@
 }
 
 .rdp-root {
-	--rdp-accent-color: var(--color-winner) !important;
-	--rdp-accent-background-color: var(--color-winner-soft) !important;
-	--rdp-today-color: var(--color-winner) !important;
+	--rdp-accent-color: var(--color-orange-500) !important;
+	--rdp-accent-background-color: var(--color-orange-300) !important;
+	--rdp-today-color: var(--color-orange-500) !important;
 	--rdp-day-width: 34px !important;
 	--rdp-day-height: 34px !important;
 	--rdp-day_button-width: 34px !important;

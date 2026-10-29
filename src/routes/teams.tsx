@@ -70,7 +70,7 @@ function Teams() {
 				teams are shown.
 			</p>
 			<div className="my-4 grid gap-1.5">
-				<p className="text-sm text-muted-foreground">
+				<p className="text-sm font-semibold text-muted-foreground">
 					{ready ? `${selected.length} teams selected` : "Loading…"}
 				</p>
 				<Input
@@ -93,11 +93,13 @@ function Teams() {
 							return (
 								<li key={t.id}>
 									<Button
-										variant={isSelected ? "ghost" : "outline"}
+										variant="ghost"
 										onClick={() => toggle(t.id)}
 										aria-pressed={isSelected}
-										className={`w-full justify-start gap-2 px-2 text-left text-[0.9rem] min-h-12 ${
-											isSelected ? "border border-input bg-winner-soft" : ""
+										className={`w-full justify-start gap-2 border px-2 text-left text-[0.9rem] min-h-12 ${
+											isSelected
+												? "border-transparent bg-orange-500 text-white hover:enabled:bg-orange-300 hover:enabled:text-foreground"
+												: "border-input bg-background hover:enabled:bg-orange-500 hover:enabled:text-white"
 										}`}
 									>
 										{(() => {
