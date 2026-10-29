@@ -96,10 +96,10 @@ function Teams() {
 										variant="ghost"
 										onClick={() => toggle(t.id)}
 										aria-pressed={isSelected}
-										className={`w-full justify-start gap-2 border px-2 text-left text-[0.9rem] min-h-12 ${
+										className={`w-full justify-start gap-2 px-2 text-left text-[0.9rem] min-h-12 ${
 											isSelected
-												? "border-transparent bg-orange-500 text-white hover:enabled:bg-orange-300 hover:enabled:text-foreground"
-												: "border-input bg-background hover:enabled:bg-orange-500 hover:enabled:text-white"
+												? "border-2 border-orange-500 bg-background hover:enabled:bg-background"
+												: "border border-input bg-background hover:border-orange-500 hover:enabled:bg-background"
 										}`}
 									>
 										{(() => {
