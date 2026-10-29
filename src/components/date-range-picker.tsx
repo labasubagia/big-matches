@@ -1,6 +1,6 @@
-import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import * as React from "react";
+import { fmtShortDate } from "../lib/matchTimes";
 import { cn } from "../lib/utils";
 import { Button } from "./ui/button";
 import { Calendar } from "./ui/calendar";
@@ -49,8 +49,8 @@ export function DateRangePicker({
 					<CalendarIcon className="size-4" />
 					{selected?.from
 						? selected.to
-							? `${format(selected.from, "LLL dd, y")} – ${format(selected.to, "LLL dd, y")}`
-							: format(selected.from, "LLL dd, y")
+							? `${fmtShortDate(selected.from)} – ${fmtShortDate(selected.to)}`
+							: fmtShortDate(selected.from)
 						: "Pick a date range"}
 				</Button>
 			</PopoverTrigger>

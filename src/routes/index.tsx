@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { MatchFilters } from "../components/MatchFilters";
 import { MatchList } from "../components/MatchList";
 import { loadFixturesOrThrow } from "../lib/loadFixtures";
+import { fmtShortDate } from "../lib/matchTimes";
 import { useFilteredMatches } from "../lib/useFilteredMatches";
 import { useMatchFilters } from "../lib/useMatchFilters";
 import { useSelection } from "../lib/useSelection";
@@ -39,7 +40,8 @@ function Home() {
 
 			<section>
 				<h2 className="mb-3 text-[1.1rem]">
-					Fixtures {filters.fromStr} → {filters.toStr}
+					Fixtures {fmtShortDate(new Date(`${filters.fromStr}T00:00:00`))} →{" "}
+					{fmtShortDate(new Date(`${filters.toStr}T00:00:00`))}
 				</h2>
 				{ready && shownMatches.length === 0 ? (
 					<p>No fixtures match the current filters.</p>
