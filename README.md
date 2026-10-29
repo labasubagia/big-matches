@@ -17,7 +17,7 @@ empty data shows an error prompting you to run `npm run data:gen`.
 ## Selecting teams
 
 Use the on-page picker: teams are grouped by competition (Premier League, La
-Liga, Serie A, Bundesliga, Ligue 1, UEFA Champions League); tick the ones you
+Liga, Serie A, Bundesliga, Ligue 1, UEFA Champions League); select the ones you
 want to follow. Your selection is saved in the browser and restored on next visit.
 
 ## Tests
