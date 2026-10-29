@@ -24,7 +24,10 @@ export function MatchFilters(f: MatchFilterState) {
 					<Button variant="ghost" size="sm" onClick={f.reset}>
 						Reset
 					</Button>
-					<span className="text-sm text-muted-foreground">
+					<span
+						className="text-sm text-muted-foreground"
+						data-testid="selected-count"
+					>
 						{f.selectedTeams.length === 0
 							? "All selected big teams"
 							: f.selectedTeams.length === 1

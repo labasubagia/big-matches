@@ -43,6 +43,7 @@ export function DateRangePicker({
 						"justify-start text-left font-normal",
 						!selected && "text-muted-foreground",
 					)}
+					aria-label="Date range"
 				>
 					<CalendarIcon className="size-4" />
 					{selected?.from
