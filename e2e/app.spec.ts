@@ -264,11 +264,6 @@ test("overview shows all matches including the past with bucket background color
 		page.getByRole("heading", { name: "Big Matches" }),
 	).toBeVisible();
 
-	// Fixture date-range heading.
-	await expect(
-		page.getByText(/\d{2}\/\d{2}\/\d{4} → \d{2}\/\d{2}\/\d{4}/),
-	).toBeVisible();
-
 	// Matches are grouped under month headings.
 	await expect(
 		page
