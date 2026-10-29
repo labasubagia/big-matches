@@ -25,7 +25,7 @@ function Faq() {
 						<AccordionContent>
 							<p>{entry.answer}</p>
 							{entry.items && entry.items.length > 0 ? (
-								<ul className="mt-1 ml-5">
+								<ul className="mt-1 ml-5 list-disc">
 									{entry.items.map((item) => (
 										<li key={item}>{item}</li>
 									))}
