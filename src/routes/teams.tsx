@@ -97,7 +97,7 @@ function Teams() {
 										onClick={() => toggle(t.id)}
 										aria-pressed={isSelected}
 										className={`w-full justify-start gap-2 px-2 text-left text-[0.9rem] min-h-12 ${
-											isSelected ? "border border-input bg-[#fde8d7]" : ""
+											isSelected ? "border border-input bg-winner-soft" : ""
 										}`}
 									>
 										{(() => {

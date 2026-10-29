@@ -16,6 +16,7 @@
 	--color-accent: #f0f0f0;
 	--color-accent-foreground: #111111;
 	--color-winner: #e8620c;
+	--color-winner-soft: #fde8d7;
 	--color-muted: #f0f0f0;
 	--color-muted-foreground: #666666;
 	--color-destructive: #d33;
@@ -24,10 +25,10 @@
 	--animate-accordion-up: accordion-up 0.2s ease-out;
 }
 
-:root {
-	--rdp-accent-color: #e8620c;
-	--rdp-accent-background-color: #fde8d7;
-	--rdp-today-color: #e8620c;
+.rdp-root {
+	--rdp-accent-color: var(--color-winner) !important;
+	--rdp-accent-background-color: var(--color-winner-soft) !important;
+	--rdp-today-color: var(--color-winner) !important;
 }
 
 @keyframes accordion-down {
