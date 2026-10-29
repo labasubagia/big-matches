@@ -6,6 +6,7 @@ import {
 	Scripts,
 } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { useEffect } from "react";
 import "../styles.css";
 
 const navLinkClass =
@@ -55,13 +56,24 @@ export const Route = createRootRoute({
 		meta: [
 			{ charSet: "utf-8" },
 			{ name: "viewport", content: "width=device-width, initial-scale=1" },
+			{ name: "theme-color", content: "#0f172a" },
 			{ title: "Big Matches" },
+		],
+		links: [
+			{ rel: "manifest", href: "/big-matches/manifest.webmanifest" },
+			{ rel: "apple-touch-icon", href: "/big-matches/icon-192.png" },
 		],
 	}),
 	component: RootComponent,
 });
 
 function RootComponent() {
+	useEffect(() => {
+		if (!import.meta.env.PROD) return;
+		if (!("serviceWorker" in navigator)) return;
+		navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`);
+	}, []);
+
 	return (
 		<RootDocument>
 			<Nav />

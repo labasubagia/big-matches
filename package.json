@@ -4,7 +4,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "node scripts/ensure-fixtures.mjs && vite dev",
-		"build": "node scripts/ensure-fixtures.mjs && vite build && tsc --noEmit",
+		"build": "node scripts/ensure-fixtures.mjs && vite build && node scripts/generate-sw.mjs && tsc --noEmit",
 		"preview": "vite preview",
 		"test": "vitest run --exclude \"e2e/**\"",
 		"check": "biome check",
