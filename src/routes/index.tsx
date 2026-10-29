@@ -12,6 +12,11 @@ export const Route = createFileRoute("/")({
 	loader: loadFixturesOrThrow,
 });
 
+function isoToDate(iso: string): Date | undefined {
+	return /^\d{4}-\d{2}-\d{2}$/.test(iso)
+		? new Date(`${iso}T00:00:00`)
+		: undefined;
+}
 function Home() {
 	const { matches: fixtures, teams } = Route.useLoaderData();
 	const { selected, ready } = useSelection(teams);
@@ -46,7 +51,11 @@ function Home() {
 				{ready && shownMatches.length === 0 ? (
 					<p>No fixtures match the current filters.</p>
 				) : (
-					<MatchList matches={shownMatches} />
+					<MatchList
+						matches={shownMatches}
+						rangeFrom={isoToDate(filters.fromStr)}
+						rangeTo={isoToDate(filters.toStr)}
+					/>
 				)}
 			</section>
 		</main>

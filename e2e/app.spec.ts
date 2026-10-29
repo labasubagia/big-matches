@@ -266,8 +266,11 @@ test("overview shows all matches including the past with bucket background color
 
 	// Fixture date-range heading.
 	await expect(
-		page.getByText(/Fixtures \d{4}-\d{2}-\d{2} → \d{4}-\d{2}-\d{2}/),
+		page.getByText(/Fixtures \d{2}\/\d{2}\/\d{4} → \d{2}\/\d{2}\/\d{4}/),
 	).toBeVisible();
+
+	// Matches are grouped under month headings.
+	await expect(page.locator("section > h3").first()).toContainText(/\w+ \d{4}/);
 
 	// A finished past match shows its inline score between the teams.
 	const pastRow = page
