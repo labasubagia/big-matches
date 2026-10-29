@@ -120,7 +120,7 @@ export function groupByMonth(
 	const last = groups[groups.length - 1];
 	if (last && rangeTo && rangeTo.getDate() !== lastDayOfMonth(rangeTo)) {
 		const note = `until ${fmtShortDate(rangeTo)}`;
-		last.note = last.note ? `${last.note} · ${note}` : note;
+		last.note = last.note ? `${last.note} . ${note}` : note;
 	}
 	return groups;
 }
@@ -140,14 +140,14 @@ export function MatchList({
 		<div className="space-y-5">
 			{groups.map((g, i) => (
 				<section key={g.label}>
-					<h2 className="mb-2 text-lg font-semibold tracking-tight">
-						{g.label}
+					<div className="mb-2 text-center sm:text-left">
+						<h2 className="text-lg font-semibold tracking-tight">{g.label}</h2>
 						{g.note ? (
-							<span className="ml-2 text-sm font-semibold tracking-wide text-muted-foreground">
+							<p className="mt-0.5 text-sm font-semibold tracking-wide text-muted-foreground">
 								{g.note}
-							</span>
+							</p>
 						) : null}
-					</h2>
+					</div>
 					<ul className="list-none p-0">
 						{g.matches.map((m) => (
 							<MatchRow key={m.id} m={m} />

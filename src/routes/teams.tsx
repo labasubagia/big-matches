@@ -84,7 +84,7 @@ function Teams() {
 
 			{groups.map((g, i) => (
 				<section key={g.name} className="mb-5">
-					<h2 className="mb-2 text-lg font-semibold tracking-tight">
+					<h2 className="mb-2 text-center text-lg font-semibold tracking-tight sm:text-left">
 						{groupLabel(g.name)}
 					</h2>
 					<ul className="grid list-none grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-1.5 p-0">
