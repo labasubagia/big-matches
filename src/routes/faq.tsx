@@ -18,7 +18,7 @@ function Faq() {
 			<p className="mt-1 text-sm text-muted-foreground">
 				What Big Matches can show depends on the football-data.org free plan.
 			</p>
-			<Accordion type="single" collapsible>
+			<Accordion type="multiple">
 				{FAQ_ENTRIES.map((entry) => (
 					<AccordionItem key={entry.question} value={entry.question}>
 						<AccordionTrigger>{entry.question}</AccordionTrigger>

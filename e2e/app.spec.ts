@@ -303,7 +303,7 @@ test("schedules shows all matches including the past with bucket background colo
 	);
 });
 
-test("faq page shows accordion Q&As with single-open behavior", async ({
+test("faq page shows accordion Q&As with multiple-open behavior", async ({
 	page,
 }) => {
 	await page.goto("/big-matches/faq");
@@ -334,11 +334,13 @@ test("faq page shows accordion Q&As with single-open behavior", async ({
 	await toggle(0);
 	await expect(items.nth(0)).toContainText("Premier League (PL)"); // free-plan list
 
-	// Single-open accordion: opening the next collapses the previous.
+	// Multiple-open accordion: opening another keeps the previous open.
 	await toggle(1);
+	await expect(items.nth(0)).toHaveAttribute("data-state", "open");
 	await expect(items.nth(1)).toContainText("top 5");
 
-	// Paywall entries render in their own items.
+	// Paywall entries render in their own items and can open alongside the rest.
 	await toggle(2);
+	await expect(items.nth(0)).toHaveAttribute("data-state", "open");
 	await expect(items.nth(2)).toContainText("Europa League");
 });

@@ -38,9 +38,9 @@ Stored under localStorage key `big-matches-selected`.
 ## FAQ page
 
 Content lives in `src/lib/faqContent.ts` (a `FaqEntry[]`); `src/routes/faq.tsx`
-renders each entry as a shadcn `<Accordion>` (`type="single"` `collapsible` —
-one item open at a time). Enumeration answers use the `items` field → `<ul>`;
-a `footer` renders after the list.
+renders each entry as a shadcn `<Accordion>` (`type="multiple"` — several items
+open at once). Enumeration answers use the `items` field →
+`<ul>`; a `footer` renders after the list.
 
 Ordering is grouped by theme, not append-only:
 
