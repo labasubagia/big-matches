@@ -83,14 +83,8 @@ export function MatchList({ matches }: { matches: Match[] }) {
 export function BucketLegend() {
 	return (
 		<div className="mb-4 flex gap-3">
-			<Badge variant="secondary" className="gap-1.5">
-				<span className="inline-block size-3 rounded-full bg-muted" />
-				Played
-			</Badge>
-			<Badge variant="outline" className="gap-1.5">
-				<span className="inline-block size-3 rounded-full border border-border" />
-				Upcoming
-			</Badge>
+			<Badge variant="secondary">Played</Badge>
+			<Badge variant="outline">Upcoming</Badge>
 			<Badge variant="winner">• Time TBD</Badge>
 		</div>
 	);
