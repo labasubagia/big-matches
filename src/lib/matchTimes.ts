@@ -55,6 +55,37 @@ export function competitionLabel(m: Match): string {
 	if (code && COMPETITION_LABELS[code]) return COMPETITION_LABELS[code];
 	return m.competition.name;
 }
+const STAGE_LABELS: Record<string, string> = {
+	FINAL: "F",
+	THIRD_PLACE: "3P",
+	SEMI_FINALS: "SF",
+	QUARTER_FINALS: "QF",
+	LAST_16: "R16",
+	LAST_32: "R32",
+	LAST_64: "R64",
+	ROUND_4: "R4",
+	ROUND_3: "R3",
+	ROUND_2: "R2",
+	ROUND_1: "R1",
+	GROUP_STAGE: "GS",
+	PRELIMINARY_ROUND: "PR",
+	QUALIFICATION: "Q",
+	QUALIFICATION_ROUND_1: "Q1",
+	QUALIFICATION_ROUND_2: "Q2",
+	QUALIFICATION_ROUND_3: "Q3",
+	PLAYOFF_ROUND_1: "PO1",
+	PLAYOFF_ROUND_2: "PO2",
+	PLAYOFFS: "PO",
+};
+
+// Short phase label: knockout/cup rounds get an abbreviation
+// (SEMI_FINALS → SF), league stages by matchday (matchday 22 → MD22).
+export function fmtPhase(m: Match): string | null {
+	const stage = STAGE_LABELS[m.stage ?? ""];
+	if (stage) return stage;
+	if (m.matchday != null) return `MD${m.matchday}`;
+	return null;
+}
 
 // Map team id -> crest URL from the first match each team appears in.
 export function teamCrests(matches: Match[]): Map<number, string> {

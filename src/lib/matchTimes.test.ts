@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Match } from "./filterBigMatches";
 import {
 	competitionLabel,
+	fmtPhase,
 	isTBD,
 	localMidnightMs,
 	matchBucket,
@@ -144,5 +145,33 @@ describe("teamCrests", () => {
 		expect(map.get(86)).toBe("crest-86");
 		expect(map.get(64)).toBe("crest-64");
 		expect(map.has(999)).toBe(false);
+	});
+});
+
+describe("fmtPhase", () => {
+	it("labels league match by matchday", () => {
+		expect(fmtPhase(match({ stage: "REGULAR_SEASON", matchday: 22 }))).toBe(
+			"MD22",
+		);
+	});
+
+	it("abbreviates knockout rounds", () => {
+		expect(fmtPhase(match({ stage: "SEMI_FINALS" }))).toBe("SF");
+		expect(fmtPhase(match({ stage: "FINAL" }))).toBe("F");
+		expect(fmtPhase(match({ stage: "QUARTER_FINALS" }))).toBe("QF");
+		expect(fmtPhase(match({ stage: "GROUP_STAGE" }))).toBe("GS");
+	});
+
+	it("returns null when no stage or matchday", () => {
+		expect(fmtPhase(match())).toBeNull();
+	});
+	it("gives stage precedence over matchday", () => {
+		expect(fmtPhase(match({ stage: "GROUP_STAGE", matchday: 3 }))).toBe("GS");
+	});
+
+	it("labels matchday 0", () => {
+		expect(fmtPhase(match({ stage: "REGULAR_SEASON", matchday: 0 }))).toBe(
+			"MD0",
+		);
 	});
 });

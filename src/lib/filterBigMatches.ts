@@ -3,6 +3,8 @@ export type Match = {
 	id: number;
 	utcDate: string;
 	status: string;
+	matchday?: number | null;
+	stage?: string | null;
 	competition: { name: string; code?: string };
 	homeTeam: { id: number; name: string; crest?: string };
 	awayTeam: { id: number; name: string; crest?: string };
