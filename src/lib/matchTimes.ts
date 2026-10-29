@@ -20,10 +20,15 @@ export function isTBD(m: Match): boolean {
 }
 
 export function matchBucket(m: Match, now: number = Date.now()): MatchBucket {
-	if (m.status === "FINISHED" || new Date(m.utcDate).getTime() < now) {
+	const kickoff = new Date(m.utcDate).getTime();
+	if (
+		m.status === "FINISHED" ||
+		m.status === "LIVE" ||
+		m.status === "IN_PLAY"
+	) {
 		return "past";
 	}
-	if (isTBD(m) || new Date(m.utcDate).getTime() > now + MONTHS_MS) {
+	if (isTBD(m) || kickoff > now + MONTHS_MS) {
 		return "far";
 	}
 	return "near";
