@@ -2,19 +2,18 @@
 
 @theme inline {
 	--color-background: #ffffff;
-	--color-foreground: #111111;
+	--color-foreground: #3f3f46;
 	--color-popover: #ffffff;
-	--color-popover-foreground: #111111;
-	--color-card-foreground: #111111;
-	--color-border: #e0e0e0;
+	--color-popover-foreground: #3f3f46;
+	--color-card-foreground: #3f3f46;
 	--color-input: #cccccc;
 	--color-ring: #f97316;
 	--color-primary: #111111;
 	--color-primary-foreground: #ffffff;
 	--color-secondary: #f0f0f0;
-	--color-secondary-foreground: #111111;
+	--color-secondary-foreground: #3f3f46;
 	--color-accent: #f0f0f0;
-	--color-accent-foreground: #111111;
+	--color-accent-foreground: #3f3f46;
 	--color-winner: #f97316;
 	--color-muted: #f0f0f0;
 	--color-muted-foreground: #666666;
