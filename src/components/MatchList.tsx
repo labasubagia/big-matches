@@ -43,7 +43,7 @@ function MatchRow({ m }: { m: Match }) {
 					past ? "bg-muted" : "bg-card",
 				)}
 			>
-				<CardContent className="flex flex-col gap-0.5 p-2.5">
+				<CardContent className="flex flex-col gap-0.5 p-2.5 sm:flex-row sm:items-center sm:gap-2">
 					<div className="flex flex-wrap items-center justify-center gap-2 text-center sm:justify-start sm:text-left">
 						<Crest url={m.homeTeam.crest} name={m.homeTeam.name} />
 						<span className="sm:hidden">
@@ -61,8 +61,9 @@ function MatchRow({ m }: { m: Match }) {
 							{m.awayTeam.shortName ?? m.awayTeam.name}
 						</span>
 						<span className="hidden sm:inline">{m.awayTeam.name}</span>
+						<Crest url={m.awayTeam.crest} name={m.awayTeam.name} />
 					</div>
-					<div className="flex flex-wrap items-center justify-center gap-2 text-center sm:justify-start sm:text-left">
+					<div className="flex flex-wrap items-center justify-center gap-2 text-center sm:ml-auto sm:justify-start sm:text-left">
 						<span
 							className={cn(
 								"text-[0.85em]",
