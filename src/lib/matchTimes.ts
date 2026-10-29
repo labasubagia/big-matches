@@ -127,15 +127,21 @@ export function teamCrests(matches: Match[]): Map<number, string> {
 	return crests;
 }
 
-export function fmtDate(m: Match): string {
-	const tbd = isTBD(m);
-	const date = new Date(m.utcDate).toLocaleDateString(undefined, {
-		day: "numeric",
-		month: "short",
+// Fixed DD/MM/YYYY display (en-GB 24h), independent of user locale.
+export function fmtShortDate(d: Date): string {
+	return d.toLocaleDateString("en-GB", {
+		day: "2-digit",
+		month: "2-digit",
 		year: "numeric",
 	});
+}
+
+export function fmtDate(m: Match): string {
+	const tbd = isTBD(m);
+	const d = new Date(m.utcDate);
+	const date = fmtShortDate(d);
 	if (tbd) return `${date} (time TBD)`;
-	const time = new Date(m.utcDate).toLocaleTimeString(undefined, {
+	const time = d.toLocaleTimeString("en-GB", {
 		hour: "2-digit",
 		minute: "2-digit",
 	});

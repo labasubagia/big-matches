@@ -3,6 +3,7 @@ import {
 	competitionLabel,
 	fmtDate,
 	fmtPhase,
+	fmtShortDate,
 	fmtStatus,
 	isTBD,
 	matchBucket,
@@ -73,13 +74,82 @@ function MatchRow({ m }: { m: Match }) {
 	);
 }
 
-export function MatchList({ matches }: { matches: Match[] }) {
+function lastDayOfMonth(d: Date): number {
+	return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+}
+
+type MonthGroup = { label: string; note?: string; matches: Match[] };
+
+// Group matches into month buckets in any input order. The first/last group
+// gets a "filtered from" / "filtered until" note when the corresponding range
+// endpoint clips its month (regardless of whether that clipped month has any
+// matches of its own).
+export function groupByMonth(
+	matches: Match[],
+	rangeFrom?: Date,
+	rangeTo?: Date,
+): MonthGroup[] {
+	const byKey = new Map<string, MonthGroup>();
+	for (const m of matches) {
+		const d = new Date(m.utcDate);
+		const key = `${d.getFullYear()}-${d.getMonth()}`;
+		let g = byKey.get(key);
+		if (!g) {
+			g = {
+				label: d.toLocaleDateString("en-GB", {
+					month: "long",
+					year: "numeric",
+				}),
+				matches: [],
+			};
+			byKey.set(key, g);
+		}
+		g.matches.push(m);
+	}
+	const groups = [...byKey.values()];
+	const first = groups[0];
+	if (first && rangeFrom && rangeFrom.getDate() !== 1) {
+		first.note = `filtered from ${fmtShortDate(rangeFrom)}`;
+	}
+	const last = groups[groups.length - 1];
+	if (last && rangeTo && rangeTo.getDate() !== lastDayOfMonth(rangeTo)) {
+		const note = `filtered until ${fmtShortDate(rangeTo)}`;
+		last.note = last.note ? `${last.note} · ${note}` : note;
+	}
+	return groups;
+}
+
+export function MatchList({
+	matches,
+	rangeFrom,
+	rangeTo,
+}: {
+	matches: Match[];
+	rangeFrom?: Date;
+	rangeTo?: Date;
+}) {
 	if (matches.length === 0) return null;
+	const groups = groupByMonth(matches, rangeFrom, rangeTo);
 	return (
-		<ul className="list-none p-0">
-			{matches.map((m) => (
-				<MatchRow key={m.id} m={m} />
+		<div className="space-y-5">
+			{groups.map((g, i) => (
+				<section key={g.label}>
+					<h2 className="mb-2 text-lg font-semibold tracking-tight">
+						{g.label}
+						{g.note ? (
+							<span className="ml-2 text-sm font-semibold tracking-wide text-muted-foreground">
+								{g.note}
+							</span>
+						) : null}
+					</h2>
+					<ul className="list-none p-0">
+						{g.matches.map((m) => (
+							<MatchRow key={m.id} m={m} />
+						))}
+					</ul>
+					{i < groups.length - 1 ? <hr className="my-4 border-border" /> : null}
+				</section>
 			))}
-		</ul>
+		</div>
 	);
 }

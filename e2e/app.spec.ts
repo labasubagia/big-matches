@@ -264,9 +264,12 @@ test("overview shows all matches including the past with bucket background color
 		page.getByRole("heading", { name: "Big Matches" }),
 	).toBeVisible();
 
-	// Fixture date-range heading.
+	// Matches are grouped under month headings.
 	await expect(
-		page.getByText(/Fixtures \d{4}-\d{2}-\d{2} → \d{4}-\d{2}-\d{2}/),
+		page
+			.locator("h2")
+			.filter({ hasText: /\w+ \d{4}/ })
+			.first(),
 	).toBeVisible();
 
 	// A finished past match shows its inline score between the teams.

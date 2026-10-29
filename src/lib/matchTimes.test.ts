@@ -2,13 +2,19 @@ import { describe, expect, it } from "vitest";
 import type { Match } from "./filterBigMatches";
 import {
 	competitionLabel,
+	fmtDate,
 	fmtPhase,
+	fmtShortDate,
 	isTBD,
 	localMidnightMs,
 	matchBucket,
 	teamCrests,
 	withinRange,
 } from "./matchTimes";
+
+// The byte are UTC-format dates; pin the test worker to UTC so assertions are
+// deterministic regardless of the host timezone.
+process.env.TZ = "UTC";
 
 const NOW = Date.parse("2026-10-28T00:00:00Z");
 
@@ -195,5 +201,26 @@ describe("fmtPhase", () => {
 		expect(fmtPhase(match({ stage: "REGULAR_SEASON", matchday: 0 }))).toBe(
 			"MD0",
 		);
+	});
+});
+describe("fmtDate / fmtShortDate", () => {
+	it("formats dates as DD/MM/YYYY", () => {
+		expect(fmtShortDate(new Date(2026, 11, 25))).toBe("25/12/2026");
+		expect(fmtShortDate(new Date(2026, 8, 9))).toBe("09/09/2026");
+	});
+
+	it("formats kickoff as date + 24h time", () => {
+		expect(fmtDate(match({ utcDate: "2026-12-25T02:59:00Z" }))).toBe(
+			"25/12/2026 02:59",
+		);
+		expect(fmtDate(match({ utcDate: "2026-09-09T23:59:00Z" }))).toBe(
+			"09/09/2026 23:59",
+		);
+	});
+
+	it("labels TBD matches without a time", () => {
+		expect(
+			fmtDate(match({ status: "SCHEDULED", utcDate: "2026-12-01T00:00:00Z" })),
+		).toBe("01/12/2026 (time TBD)");
 	});
 });
