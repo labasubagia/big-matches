@@ -56,28 +56,30 @@ export function TeamCombobox({
 					<CommandList>
 						<CommandEmpty>No clubs found.</CommandEmpty>
 						<CommandGroup>
-							{candidates.map((team) => {
-								const checked = selectedTeams.includes(team.id);
-								return (
-									<CommandItem
-										key={team.id}
-										value={String(team.id)}
-										onSelect={() => toggleTeam(team.id)}
-									>
-										<span
-											className={cn(
-												"mr-2 flex size-4 items-center justify-center rounded-sm border",
-												checked
-													? "border-primary bg-primary text-primary-foreground"
-													: "border-input",
-											)}
+							{[...candidates]
+								.sort((a, b) => a.name.localeCompare(b.name))
+								.map((team) => {
+									const checked = selectedTeams.includes(team.id);
+									return (
+										<CommandItem
+											key={team.id}
+											value={String(team.id)}
+											onSelect={() => toggleTeam(team.id)}
 										>
-											{checked && <Check className="size-3" />}
-										</span>
-										{team.name}
-									</CommandItem>
-								);
-							})}
+											<span
+												className={cn(
+													"mr-2 flex size-4 items-center justify-center rounded-sm border",
+													checked
+														? "border-primary bg-primary text-primary-foreground"
+														: "border-input",
+												)}
+											>
+												{checked && <Check className="size-3" />}
+											</span>
+											{team.name}
+										</CommandItem>
+									);
+								})}
 						</CommandGroup>
 					</CommandList>
 				</Command>
