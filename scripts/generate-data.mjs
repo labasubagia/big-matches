@@ -69,6 +69,7 @@ async function fetchTeams(code) {
 	return (data.teams ?? []).map((t) => ({
 		id: t.id,
 		name: t.name,
+		shortName: t.shortName,
 		competition: name,
 	}));
 }

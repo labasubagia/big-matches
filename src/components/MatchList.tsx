@@ -43,31 +43,37 @@ function MatchRow({ m }: { m: Match }) {
 					past ? "bg-muted" : "bg-card",
 				)}
 			>
-				<CardContent className="flex items-center gap-2 p-2.5">
-					<Crest url={m.homeTeam.crest} name={m.homeTeam.name} />
-					<span>{m.homeTeam.name}</span>
-					{homeScore != null && (
-						<span className={homeScoreClass}>{homeScore}</span>
-					)}
-					<span className="opacity-55">v</span>
-					{awayScore != null && (
-						<span className={awayScoreClass}>{awayScore}</span>
-					)}
-					<span>{m.awayTeam.name}</span>
-					<Crest url={m.awayTeam.crest} name={m.awayTeam.name} />
-					<span className="ml-auto flex items-center gap-2">
+				<CardContent className="flex flex-col gap-0.5 p-2.5 md:flex-row md:items-center md:gap-2">
+					<div className="flex flex-wrap items-center justify-center gap-2 text-center md:justify-start md:text-left">
+						<Crest url={m.homeTeam.crest} name={m.homeTeam.name} />
+						<span className="md:hidden">
+							{m.homeTeam.shortName ?? m.homeTeam.name}
+						</span>
+						<span className="hidden md:inline">{m.homeTeam.name}</span>
+						{homeScore != null && (
+							<span className={homeScoreClass}>{homeScore}</span>
+						)}
+						<span className="opacity-55">v</span>
+						{awayScore != null && (
+							<span className={awayScoreClass}>{awayScore}</span>
+						)}
+						<span className="md:hidden">
+							{m.awayTeam.shortName ?? m.awayTeam.name}
+						</span>
+						<span className="hidden md:inline">{m.awayTeam.name}</span>
+						<Crest url={m.awayTeam.crest} name={m.awayTeam.name} />
+					</div>
+					<div className="flex flex-wrap items-center justify-center gap-2 text-center md:ml-auto md:justify-start md:text-left">
 						<span
 							className={cn(
 								"text-[0.85em]",
 								tbd ? "text-winner" : "opacity-85",
 							)}
 						>
-							<span>
-								{competitionLabel(m)}
-								{phase ? ` · ${phase}` : ""} · {fmtDate(m)} {fmtStatus(m)}
-							</span>
+							{competitionLabel(m)}
+							{phase ? ` · ${phase}` : ""} · {fmtDate(m)} {fmtStatus(m)}
 						</span>
-					</span>
+					</div>
 				</CardContent>
 			</Card>
 		</li>
@@ -114,7 +120,7 @@ export function groupByMonth(
 	const last = groups[groups.length - 1];
 	if (last && rangeTo && rangeTo.getDate() !== lastDayOfMonth(rangeTo)) {
 		const note = `until ${fmtShortDate(rangeTo)}`;
-		last.note = last.note ? `${last.note} · ${note}` : note;
+		last.note = last.note ? `${last.note} . ${note}` : note;
 	}
 	return groups;
 }
@@ -134,14 +140,14 @@ export function MatchList({
 		<div className="space-y-5">
 			{groups.map((g, i) => (
 				<section key={g.label}>
-					<h2 className="mb-2 text-lg font-semibold tracking-tight">
-						{g.label}
+					<div className="mb-2 text-center md:text-left">
+						<h2 className="text-lg font-semibold tracking-tight">{g.label}</h2>
 						{g.note ? (
-							<span className="ml-2 text-sm font-semibold tracking-wide text-muted-foreground">
+							<p className="mt-0.5 text-sm font-semibold tracking-wide text-muted-foreground">
 								{g.note}
-							</span>
+							</p>
 						) : null}
-					</h2>
+					</div>
 					<ul className="list-none p-0">
 						{g.matches.map((m) => (
 							<MatchRow key={m.id} m={m} />

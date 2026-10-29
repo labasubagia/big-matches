@@ -63,6 +63,6 @@ describe("groupByMonth", () => {
 			new Date(2026, 9, 29),
 			new Date(2026, 9, 23),
 		);
-		expect(groups[0].note).toBe("from 29/10/2026 · until 23/10/2026");
+		expect(groups[0].note).toBe("from 29/10/2026 . until 23/10/2026");
 	});
 });

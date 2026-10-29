@@ -14,10 +14,20 @@ export interface Fixtures {
 export function loadFixtures(): Fixtures {
 	const data =
 		import.meta.env.VITE_FIXTURES === "mock" ? mockFixtures : realFixtures;
-	return {
-		matches: data.matches as Match[],
-		teams: data.teams as Team[],
-	};
+	const matches = data.matches as Match[];
+	const shortNames = new Map<number, string>();
+	for (const m of matches) {
+		if (m.homeTeam.shortName)
+			shortNames.set(m.homeTeam.id, m.homeTeam.shortName);
+		if (m.awayTeam.shortName)
+			shortNames.set(m.awayTeam.id, m.awayTeam.shortName);
+	}
+	const rawTeams = data.teams as Team[];
+	const teams: Team[] = rawTeams.map((t) => ({
+		...t,
+		shortName: t.shortName ?? shortNames.get(t.id),
+	}));
+	return { matches, teams };
 }
 export function loadFixturesOrThrow(): Fixtures {
 	const fixtures = loadFixtures();
