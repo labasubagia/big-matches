@@ -6,8 +6,8 @@ export type Match = {
 	matchday?: number | null;
 	stage?: string | null;
 	competition: { name: string; code?: string };
-	homeTeam: { id: number; name: string; crest?: string };
-	awayTeam: { id: number; name: string; crest?: string };
+	homeTeam: { id: number; name: string; shortName?: string; crest?: string };
+	awayTeam: { id: number; name: string; shortName?: string; crest?: string };
 	score?: {
 		winner?: string | null;
 		fullTime?: { home?: number | null; away?: number | null };

@@ -44,9 +44,12 @@ function MatchRow({ m }: { m: Match }) {
 				)}
 			>
 				<CardContent className="flex flex-col gap-0.5 p-2.5">
-					<div className="flex items-center gap-2">
+					<div className="flex flex-wrap items-center justify-center gap-2 text-center sm:justify-start sm:text-left">
 						<Crest url={m.homeTeam.crest} name={m.homeTeam.name} />
-						<span>{m.homeTeam.name}</span>
+						<span className="sm:hidden">
+							{m.homeTeam.shortName ?? m.homeTeam.name}
+						</span>
+						<span className="hidden sm:inline">{m.homeTeam.name}</span>
 						{homeScore != null && (
 							<span className={homeScoreClass}>{homeScore}</span>
 						)}
@@ -54,10 +57,12 @@ function MatchRow({ m }: { m: Match }) {
 						{awayScore != null && (
 							<span className={awayScoreClass}>{awayScore}</span>
 						)}
-						<span>{m.awayTeam.name}</span>
-						<Crest url={m.awayTeam.crest} name={m.awayTeam.name} />
+						<span className="sm:hidden">
+							{m.awayTeam.shortName ?? m.awayTeam.name}
+						</span>
+						<span className="hidden sm:inline">{m.awayTeam.name}</span>
 					</div>
-					<div className="flex items-center gap-2">
+					<div className="flex flex-wrap items-center justify-center gap-2 text-center sm:justify-start sm:text-left">
 						<span
 							className={cn(
 								"text-[0.85em]",
