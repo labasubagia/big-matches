@@ -74,11 +74,11 @@ function Teams() {
 			</p>
 
 			<Input
-				type="search"
+				type="text"
 				placeholder="Search all clubs…"
 				value={query}
 				onChange={(e) => setQuery(e.target.value)}
-				className="mb-4 w-full"
+				className="my-4 w-full"
 			/>
 
 			{groups.map((g) => (
