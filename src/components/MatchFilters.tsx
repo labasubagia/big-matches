@@ -17,6 +17,7 @@ export function MatchFilters(f: MatchFilterState) {
 					candidates={f.candidates}
 					selectedTeams={f.selectedTeams}
 					toggleTeam={f.toggleTeam}
+					crests={f.crests}
 					query={f.query}
 					setQuery={f.setQuery}
 				/>
