@@ -23,6 +23,12 @@ describe("filterTeamsByName", () => {
 		{ id: 86, name: "Real Madrid", competition: "PD" },
 		{ id: 81, name: "Barcelona", competition: "PD" },
 		{ id: 81, name: "Barcelona", competition: "CL" },
+		{
+			id: 524,
+			name: "Paris Saint Germain",
+			shortName: "PSG",
+			competition: "FL1",
+		},
 		{ id: 64, name: "Liverpool", competition: "PL" },
 		{ id: 57, name: "Arsenal", competition: "PL" },
 	];
@@ -55,6 +61,12 @@ describe("filterTeamsByName", () => {
 		];
 		expect(filterTeamsByName(local, "munchen").map((t) => t.name)).toEqual([
 			"FC Bayern München",
+		]);
+	});
+
+	it("matches by short name", () => {
+		expect(filterTeamsByName(teams, "psg").map((t) => t.name)).toEqual([
+			"Paris Saint Germain",
 		]);
 	});
 

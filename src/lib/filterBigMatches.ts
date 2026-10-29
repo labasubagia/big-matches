@@ -17,6 +17,7 @@ export type Match = {
 export type Team = {
 	id: number;
 	name: string;
+	shortName?: string;
 	competition: string;
 };
 
@@ -62,9 +63,13 @@ const fold = (s: string): string =>
 export function filterTeamsByName(teams: Team[], query: string): Team[] {
 	const q = fold(query.trim());
 	if (!q) return teams;
-	const indexed = teams.map((t) => ({ t, n: fold(t.name) }));
+	const indexed = teams.map((t) => ({
+		t,
+		n: fold(t.name),
+		s: t.shortName ? fold(t.shortName) : "",
+	}));
 	const fuse = new Fuse(indexed, {
-		keys: ["n"],
+		keys: ["n", "s"],
 		threshold: 0.3,
 		ignoreLocation: true,
 	});
