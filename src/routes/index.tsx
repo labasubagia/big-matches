@@ -44,8 +44,14 @@ function Home() {
 
 			<section className="mb-6">
 				<p className="mt-1 text-sm text-muted-foreground">
-					Select your big teams on the <Link to="/teams">Teams page</Link> —
-					then narrow matches by date range and team search.
+					Select your big teams on the{" "}
+					<Link
+						to="/teams"
+						className="font-medium underline underline-offset-2 hover:text-primary"
+					>
+						Teams page
+					</Link>{" "}
+					— then narrow matches by date range and team search.
 				</p>
 			</section>
 
