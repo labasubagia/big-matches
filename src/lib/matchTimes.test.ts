@@ -168,6 +168,12 @@ describe("fmtPhase", () => {
 		expect(fmtPhase(match({ stage: "ROUND_3" }))).toBe("R3");
 		expect(fmtPhase(match({ stage: "QUALIFICATION_ROUND_2" }))).toBe("Q2");
 		expect(fmtPhase(match({ stage: "PLAYOFF_ROUND_1" }))).toBe("PO1");
+		expect(fmtPhase(match({ stage: "PLAYOFF_ROUND_2" }))).toBe("PO2");
+	});
+
+	it("abbreviates playoffs without a round number", () => {
+		expect(fmtPhase(match({ stage: "PLAYOFFS" }))).toBe("PO");
+		expect(fmtPhase(match({ stage: "PLAYOFFS", matchday: 2 }))).toBe("PO2");
 	});
 
 	it("appends matchday when set on round stages", () => {
