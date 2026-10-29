@@ -34,6 +34,10 @@ jobs:
       - run: npm test
   e2e:
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      env:
+        PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -41,12 +45,4 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-playwright-
-      - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e

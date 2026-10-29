@@ -7,8 +7,8 @@ export default defineConfig({
 	testTimeout: 60_000,
 	use: {
 		baseURL: "http://127.0.0.1:3100",
-		// First navigation after a cold dev-server boot compiles the route
-		// on demand; allow extra time.
+		// Container runs as root; Chromium sandbox must be off (CI only).
+		chromiumSandbox: process.env.CI ? false : undefined,
 		navigationTimeout: 60_000,
 	},
 });
