@@ -69,17 +69,18 @@ function Teams() {
 				Click a team to add or remove it. Only matches between two selected
 				teams are shown.
 			</p>
-			<p className="text-muted-foreground text-sm">
-				{ready ? `${selected.length} teams selected` : "Loading…"}
-			</p>
-
-			<Input
-				type="text"
-				placeholder="Search all clubs…"
-				value={query}
-				onChange={(e) => setQuery(e.target.value)}
-				className="my-4 w-full"
-			/>
+			<div className="my-4 flex flex-wrap items-center gap-3">
+				<p className="text-sm text-muted-foreground">
+					{ready ? `${selected.length} teams selected` : "Loading…"}
+				</p>
+				<Input
+					type="text"
+					placeholder="Search all clubs…"
+					value={query}
+					onChange={(e) => setQuery(e.target.value)}
+					className="min-w-48 flex-1"
+				/>
+			</div>
 
 			{groups.map((g) => (
 				<section key={g.name} className="mb-5">
