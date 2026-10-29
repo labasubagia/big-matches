@@ -9,7 +9,6 @@ await p.waitForSelector("h1:has-text('Big Matches')");
 // match rows are Cards
 const cards = await p.locator("ul > li > div[class*='rounded']").count();
 console.log("overview card rows:", cards);
-await p.click("section button:has-text('Filters')");
 await p.waitForSelector("button:has-text('Reset')");
 await p.click("button[role=combobox]");
 await p.waitForSelector("[cmdk-root]");
