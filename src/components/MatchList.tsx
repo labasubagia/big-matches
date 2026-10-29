@@ -84,11 +84,11 @@ export function BucketLegend() {
 	return (
 		<div className="mb-4 flex gap-3">
 			<Badge variant="secondary" className="gap-1.5">
-				<span className="inline-block size-3.5 rounded-sm border border-border bg-muted" />
+				<span className="inline-block size-3 rounded-full bg-muted" />
 				Played
 			</Badge>
 			<Badge variant="outline" className="gap-1.5">
-				<span className="inline-block size-3.5 rounded-sm border border-border bg-card" />
+				<span className="inline-block size-3 rounded-full border border-border" />
 				Upcoming
 			</Badge>
 			<Badge variant="winner">• Time TBD</Badge>

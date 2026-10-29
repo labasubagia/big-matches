@@ -32,7 +32,9 @@ function Schedules() {
 
 	return (
 		<main className="mx-auto max-w-[760px] p-4 font-sans">
-			<h1 className="text-2xl font-semibold tracking-tight">All Big Matches</h1>
+			<h1 className="mb-3 text-2xl font-semibold tracking-tight">
+				All Big Matches
+			</h1>
 			<BucketLegend />
 			<MatchFilters {...filters} />
 			<h2 className="mb-3 text-[1.1rem]">
