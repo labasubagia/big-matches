@@ -31,7 +31,7 @@ Package manager: **npm** (lockfile `package-lock.json`).
 Setup: copy `.env.example` to `.env` and set the Football-Data.org API key.
 
 ## Code Conventions & Common Patterns
-- **TypeScript**: type-only imports and exported types; null-safety is enforced (`strictNullChecks`), not full strict mode.
+- **TypeScript**: type-only imports and exported types; full strict mode enabled (`strict`).
 - **React**: functional components with typed props; interactive controls use shadcn-style components (`src/components/ui/`, plus `react-day-picker` + `cmdk` + radix popover) and all styling uses Tailwind CSS v4 utilities (theme tokens in `src/styles.css`, incl. `text-winner` for the winner/TBD orange). No CSS modules, no inline style objects.
 - **Routing**: TanStack Router file routes; the route loads static `fixtures.json` (no server functions).
 - **Naming**: constants in UPPER_CASE; small module-level helpers, camelCase.
