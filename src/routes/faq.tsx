@@ -13,7 +13,7 @@ export const Route = createFileRoute("/faq")({
 
 function Faq() {
 	return (
-		<main className="mx-auto max-w-[760px] p-4 font-sans">
+		<main className="mx-auto w-full max-w-[760px] p-4 font-sans">
 			<h1 className="text-2xl font-semibold tracking-tight">FAQ</h1>
 			<p className="mt-1 text-sm text-muted-foreground">
 				What Big Matches can show depends on the football-data.org free plan.
