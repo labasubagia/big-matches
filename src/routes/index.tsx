@@ -24,7 +24,7 @@ function Home() {
 	const shownMatches = useFilteredMatches(fixtures, selected, ready, filters);
 
 	return (
-		<main className="mx-auto max-w-[760px] p-4 font-sans">
+		<main className="mx-auto w-full max-w-[760px] p-4 font-sans">
 			<h1 className="text-2xl font-semibold tracking-tight">Big Matches</h1>
 
 			<section className="mb-6">

@@ -15,8 +15,8 @@ const activeNavLinkClass = `${navLinkClass} bg-muted`;
 
 function Nav() {
 	return (
-		<nav className="border-b border-border font-sans">
-			<div className="mx-auto flex w-full max-w-[760px] gap-2 px-4 py-3">
+		<nav className="border-b border-border font-sans md:mx-auto md:w-full md:max-w-[760px]">
+			<div className="flex w-full items-center gap-2 px-4 py-3">
 				<Link
 					to="/"
 					className={navLinkClass}
@@ -71,7 +71,28 @@ function RootComponent() {
 		<RootDocument>
 			<Nav />
 			<Outlet />
+			<Footer />
 		</RootDocument>
+	);
+}
+
+const githubUrl = "https://github.com/labasubagia/big-matches";
+
+function Footer() {
+	return (
+		<footer className="mt-auto border-t border-border py-4 font-sans md:mx-auto md:w-full md:max-w-[760px]">
+			<div className="flex w-full items-center gap-4 px-4 text-sm text-muted-foreground">
+				<span>© {new Date().getFullYear()} Big Matches</span>
+				<a
+					href={githubUrl}
+					className="underline hover:text-foreground"
+					target="_blank"
+					rel="noreferrer"
+				>
+					GitHub
+				</a>
+			</div>
+		</footer>
 	);
 }
 
@@ -81,7 +102,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 			<head>
 				<HeadContent />
 			</head>
-			<body>
+			<body className="flex min-h-screen flex-col">
 				{children}
 				<Scripts />
 			</body>

@@ -61,7 +61,7 @@ function Teams() {
 	}, [candidates]);
 
 	return (
-		<main className="mx-auto max-w-[760px] p-4 font-sans">
+		<main className="mx-auto w-full max-w-[760px] p-4 font-sans">
 			<h1 className="text-2xl font-semibold tracking-tight">
 				Select Big Teams
 			</h1>
