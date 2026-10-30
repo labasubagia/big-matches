@@ -37,6 +37,7 @@ Setup: copy `.env.example` to `.env` and set the Football-Data.org API key.
 - **Naming**: constants in UPPER_CASE; small module-level helpers, camelCase.
 - **Error handling**: fail loudly on API errors (throw); tolerate/ignore non-critical failures (e.g. localStorage, a single failed competition); log a dev warning for suspicious data.
 - **Patterns**: derive filtered view with memoization; keep pure logic separate from UI and unit-test it.
+- **Commits**: Conventional Commits enforced by commitlint via the husky commit-msg hook (types: `feat`, `fix`, `chore`, `docs`, `test`, `refactor`, `style`, `perf`, `ci`, `build`, `revert`).
 
 ## Documentation Drift
 - Every change MUST be checked for documentation drift: if it affects any documented behavior, command, config, or convention (including this file), update the affected docs in the same change.
