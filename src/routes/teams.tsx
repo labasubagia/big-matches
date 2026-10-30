@@ -113,7 +113,9 @@ function Teams() {
 												</Avatar>
 											);
 										})()}
-										<span>{t.name}</span>
+										<span className="min-w-0 whitespace-normal break-words">
+											{t.name}
+										</span>
 									</Button>
 								</li>
 							);
