@@ -31,6 +31,7 @@ jobs:
       - run: npm run build
         env:
           VITE_FIXTURES: mock
+          VITE_GITHUB_URL: https://github.com/${{ github.repository }}
       - run: npm test
   e2e:
     runs-on: ubuntu-latest

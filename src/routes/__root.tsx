@@ -76,7 +76,9 @@ function RootComponent() {
 	);
 }
 
-const githubUrl = "https://github.com/labasubagia/big-matches";
+const githubUrl =
+	import.meta.env.VITE_GITHUB_URL ||
+	"https://github.com/labasubagia/big-matches";
 
 function Footer() {
 	return (

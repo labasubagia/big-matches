@@ -36,6 +36,9 @@ jobs:
       - run: npm run build
         env:
           VITE_FIXTURES: production
+          VITE_GITHUB_URL: https://github.com/${{ github.repository }}
+        env:
+          VITE_FIXTURES: production
       - run: cp dist/client/index.html dist/client/404.html
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
