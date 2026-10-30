@@ -15,7 +15,7 @@ export default defineConfig({
 		tanstackStart({
 			prerender: {
 				enabled: true,
-				failOnError: false,
+				failOnError: true,
 			},
 		}),
 		viteReact(),
