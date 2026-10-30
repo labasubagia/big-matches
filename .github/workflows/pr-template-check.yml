@@ -32,7 +32,7 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - uses: Conventional-Commits/action-commitlint@v1
+      - uses: conventional-commits/action-commitlint@v1
         with:
           commitlint-rules: |
             {
