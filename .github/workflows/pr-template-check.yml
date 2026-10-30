@@ -26,3 +26,17 @@ jobs:
 
           print("All required headings present.")
           EOF
+  lint-pr-title:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+      - run: npm ci
+      - name: Lint PR title
+        run: |
+          printf '%s' '${{ github.event.pull_request.title }}' | npx commitlint --verbose
