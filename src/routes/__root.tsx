@@ -76,21 +76,23 @@ function RootComponent() {
 	);
 }
 
-const githubUrl = "https://github.com/labasubagia/big-matches";
+const githubUrl = import.meta.env.VITE_GITHUB_URL;
 
 function Footer() {
 	return (
 		<footer className="mt-auto border-t border-border py-4 font-sans md:mx-auto md:w-full md:max-w-[760px]">
 			<div className="flex w-full items-center gap-4 px-4 text-sm text-muted-foreground">
 				<span>© {new Date().getFullYear()} Big Matches</span>
-				<a
-					href={githubUrl}
-					className="underline hover:text-foreground"
-					target="_blank"
-					rel="noreferrer"
-				>
-					GitHub
-				</a>
+				{githubUrl && (
+					<a
+						href={githubUrl}
+						className="underline hover:text-foreground"
+						target="_blank"
+						rel="noreferrer"
+					>
+						GitHub
+					</a>
+				)}
 			</div>
 		</footer>
 	);
