@@ -32,15 +32,11 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - uses: conventional-commits/action-commitlint@v1
+      - uses: actions/setup-node@v4
         with:
-          commitlint-rules: |
-            {
-              "header-max-length": [2, "always", 100],
-              "subject-case": [2, "never", ["sentence-case", "start-case", "pascal-case", "upper-case"]],
-              "type-case": [2, "always", "lower-case"],
-              "type-empty": [2, "never"],
-              "scope-empty": [1, "always"],
-              "subject-empty": [2, "never"],
-              "type-enum": [2, "always", ["feat", "fix", "chore", "docs", "test", "refactor", "style", "perf", "ci", "build", "revert"]]
-            }
+          node-version: lts/*
+          cache: npm
+      - run: npm ci
+      - name: Lint PR title
+        run: |
+          printf '%s' '${{ github.event.pull_request.title }}' | npx commitlint --verbose
