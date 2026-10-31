@@ -44,7 +44,7 @@ export function TeamCombobox({
 						role="combobox"
 						aria-expanded={open}
 						aria-haspopup="listbox"
-						className="w-full justify-between pr-8"
+						className="w-full justify-between"
 					>
 						{selectedTeams.length === 0
 							? "Filter big clubs"
