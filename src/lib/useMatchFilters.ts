@@ -20,8 +20,9 @@ export type MatchFilterState = {
 	selectedTeams: number[];
 	candidates: Team[];
 	crests: Map<number, string>;
-	toggleTeam: (id: number) => void;
+	resetTeams: () => void;
 	reset: () => void;
+	toggleTeam: (id: number) => void;
 	range: { from: number; to: number } | null;
 };
 
@@ -57,11 +58,15 @@ export function useMatchFilters(
 			prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
 		);
 
+	const resetTeams = () => {
+		setQuery("");
+		setSelectedTeams([]);
+	};
+
 	const reset = () => {
 		setFromStr(isoLocal(new Date()));
 		setToStr(isoLocal(new Date(Date.now() + 30 * DAY_MS)));
-		setQuery("");
-		setSelectedTeams([]);
+		resetTeams();
 	};
 
 	const range = useMemo(() => {
@@ -82,7 +87,8 @@ export function useMatchFilters(
 		candidates,
 		crests,
 		toggleTeam,
-		reset,
+		resetTeams,
 		range,
+		reset,
 	};
 }

@@ -22,5 +22,10 @@ export function useSelection(teams: Team[]) {
 		});
 	}, []);
 
-	return { selected, ready, toggle };
+	const reset = useCallback(() => {
+		setSelected([]);
+		writeSelection([]);
+	}, []);
+
+	return { selected, ready, toggle, reset };
 }

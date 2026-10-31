@@ -1,4 +1,4 @@
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, X } from "lucide-react";
 import * as React from "react";
 import type { Team } from "../lib/filterBigMatches";
 import { cn } from "../lib/utils";
@@ -15,6 +15,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 type TeamComboboxProps = {
+	onReset: () => void;
 	candidates: Team[];
 	selectedTeams: number[];
 	toggleTeam: (id: number) => void;
@@ -24,6 +25,7 @@ type TeamComboboxProps = {
 };
 
 export function TeamCombobox({
+	onReset,
 	candidates,
 	selectedTeams,
 	toggleTeam,
@@ -44,9 +46,33 @@ export function TeamCombobox({
 					className="w-full justify-between"
 				>
 					{selectedTeams.length === 0
-						? "All clubs"
+						? "Filter big clubs"
 						: `${selectedTeams.length} club${selectedTeams.length > 1 ? "s" : ""} selected`}
-					<ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+					{selectedTeams.length > 0 ? (
+						// biome-ignore lint/a11y/useSemanticElements: real <button> cannot nest inside the trigger <button>; span intercepts clicks without opening the popover.
+						<span
+							role="button"
+							tabIndex={0}
+							className="ml-2 flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-sm text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+							onClick={(e) => {
+								e.preventDefault();
+								e.stopPropagation();
+								onReset();
+							}}
+							onPointerDown={(e) => e.stopPropagation()}
+							onKeyDown={(e) => {
+								if (e.key === "Enter" || e.key === " ") {
+									e.preventDefault();
+									e.stopPropagation();
+									onReset();
+								}
+							}}
+						>
+							<X className="size-4" />
+						</span>
+					) : (
+						<ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+					)}
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
