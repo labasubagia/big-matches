@@ -1,14 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MatchFilters } from "../components/MatchFilters";
 import { MatchList } from "../components/MatchList";
-import { loadFixturesOrThrow } from "../lib/loadFixtures";
+
 import { useFilteredMatches } from "../lib/useFilteredMatches";
+import { useFixtures } from "../lib/useFixtures";
 import { useMatchFilters } from "../lib/useMatchFilters";
 import { useSelection } from "../lib/useSelection";
 
 export const Route = createFileRoute("/")({
 	component: Home,
-	loader: loadFixturesOrThrow,
 });
 
 function isoToDate(iso: string): Date | undefined {
@@ -17,11 +17,14 @@ function isoToDate(iso: string): Date | undefined {
 		: undefined;
 }
 function Home() {
-	const { matches: fixtures, teams } = Route.useLoaderData();
+	const { status, fixtures, error } = useFixtures();
+	if (status === "error" && error) throw error;
+	const teams = fixtures?.teams ?? [];
+	const matches = fixtures?.matches ?? [];
 	const { selected, ready } = useSelection(teams);
-	const filters = useMatchFilters(teams, selected, fixtures);
-
-	const shownMatches = useFilteredMatches(fixtures, selected, ready, filters);
+	const filters = useMatchFilters(teams, selected, matches);
+	const shownMatches = useFilteredMatches(matches, selected, ready, filters);
+	const loading = status === "loading";
 
 	return (
 		<main className="mx-auto w-full max-w-[760px] p-4 font-sans">
@@ -40,19 +43,23 @@ function Home() {
 				</p>
 			</section>
 
-			<MatchFilters {...filters} />
+			{!loading && (
+				<>
+					<MatchFilters {...filters} />
 
-			<section>
-				{ready && shownMatches.length === 0 ? (
-					<p>No fixtures match the current filters.</p>
-				) : (
-					<MatchList
-						matches={shownMatches}
-						rangeFrom={isoToDate(filters.fromStr)}
-						rangeTo={isoToDate(filters.toStr)}
-					/>
-				)}
-			</section>
+					<section>
+						{ready && shownMatches.length === 0 ? (
+							<p>No fixtures match the current filters.</p>
+						) : (
+							<MatchList
+								matches={shownMatches}
+								rangeFrom={isoToDate(filters.fromStr)}
+								rangeTo={isoToDate(filters.toStr)}
+							/>
+						)}
+					</section>
+				</>
+			)}
 		</main>
 	);
 }
