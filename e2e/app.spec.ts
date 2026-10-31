@@ -199,6 +199,8 @@ test("teams page groups teams by competition in canonical order", async ({
 		page.getByRole("heading", { name: "Select Big Teams" }),
 	).toBeVisible();
 
+	await expect(page.getByRole("heading", { name: "EPL" })).toBeVisible();
+
 	const headings = await page
 		.getByRole("heading", { level: 2 })
 		.allTextContents();
