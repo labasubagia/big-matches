@@ -87,9 +87,8 @@ function Teams() {
 				placeholder="Search all clubs…"
 				value={query}
 				onChange={(e) => setQuery(e.target.value)}
-				className="w-full"
+				className="w-full mb-4"
 			/>
-
 			{groups.map((g, i) => (
 				<section key={g.name} className="mb-5">
 					<h2 className="mb-2 text-center text-lg font-semibold tracking-tight md:text-left">
