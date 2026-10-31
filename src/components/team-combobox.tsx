@@ -53,6 +53,7 @@ export function TeamCombobox({
 						<span
 							role="button"
 							aria-label="Reset club filter"
+							className="cursor-pointer"
 							tabIndex={0}
 							onClick={(e) => {
 								e.preventDefault();
