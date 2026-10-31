@@ -338,3 +338,34 @@ test("faq page shows accordion Q&As with multiple-open behavior", async ({
 	await expect(items.nth(0)).toHaveAttribute("data-state", "open");
 	await expect(items.nth(1)).toHaveAttribute("data-state", "open");
 });
+test("teams page reset button clears all selection", async ({ page }) => {
+	await page.goto("/big-matches/teams");
+	await expectTeamsReady(page);
+
+	const resetBtn = page.getByRole("button", { name: "Reset" });
+	await expect(resetBtn).toBeEnabled();
+
+	await resetBtn.click();
+	await expect(page.getByText(/0 teams selected/)).toBeVisible();
+	await expect(resetBtn).toBeDisabled();
+});
+
+test("combobox X resets club filter", async ({ page }) => {
+	await page.goto("/big-matches/");
+	const search = await openCombobox(page);
+	await search.fill("manchester united");
+	await page
+		.getByRole("option")
+		.filter({ hasText: "Manchester United" })
+		.click();
+	await expect(page.getByTestId("selected-count")).toHaveText(
+		"1 club selected",
+	);
+
+	const xBtn = page.getByRole("button", { name: "Reset club filter" });
+	await xBtn.click();
+	await expect(page.getByTestId("selected-count")).toHaveText(
+		"All selected big teams",
+	);
+	await expect(page.getByRole("combobox")).toContainText("Filter big clubs");
+});

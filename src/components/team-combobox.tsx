@@ -52,8 +52,8 @@ export function TeamCombobox({
 						// biome-ignore lint/a11y/useSemanticElements: real <button> cannot nest inside the trigger <button>; span intercepts clicks without opening the popover.
 						<span
 							role="button"
+							aria-label="Reset club filter"
 							tabIndex={0}
-							className="ml-2 flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-sm text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 							onClick={(e) => {
 								e.preventDefault();
 								e.stopPropagation();
