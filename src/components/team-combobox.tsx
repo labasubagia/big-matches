@@ -1,4 +1,4 @@
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, X } from "lucide-react";
 import * as React from "react";
 import type { Team } from "../lib/filterBigMatches";
 import { cn } from "../lib/utils";
@@ -15,6 +15,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 type TeamComboboxProps = {
+	onReset: () => void;
 	candidates: Team[];
 	selectedTeams: number[];
 	toggleTeam: (id: number) => void;
@@ -24,6 +25,7 @@ type TeamComboboxProps = {
 };
 
 export function TeamCombobox({
+	onReset,
 	candidates,
 	selectedTeams,
 	toggleTeam,
@@ -35,20 +37,37 @@ export function TeamCombobox({
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
-			<PopoverTrigger asChild>
-				<Button
-					variant="outline"
-					role="combobox"
-					aria-expanded={open}
-					aria-haspopup="listbox"
-					className="w-full justify-between"
-				>
-					{selectedTeams.length === 0
-						? "All clubs"
-						: `${selectedTeams.length} club${selectedTeams.length > 1 ? "s" : ""} selected`}
-					<ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
-				</Button>
-			</PopoverTrigger>
+			<div className="relative">
+				<PopoverTrigger asChild>
+					<Button
+						variant="outline"
+						role="combobox"
+						aria-expanded={open}
+						aria-haspopup="listbox"
+						className="w-full justify-between"
+					>
+						{selectedTeams.length === 0
+							? "Filter big clubs"
+							: `${selectedTeams.length} club${selectedTeams.length > 1 ? "s" : ""} selected`}
+						{selectedTeams.length === 0 && (
+							<ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+						)}
+					</Button>
+				</PopoverTrigger>
+				{selectedTeams.length > 0 && (
+					<button
+						type="button"
+						aria-label="Reset club filter"
+						onClick={(e) => {
+							e.stopPropagation();
+							onReset();
+						}}
+						className="absolute right-4 top-1/2 flex size-4 -translate-y-1/2 cursor-pointer items-center justify-center rounded-sm text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+					>
+						<X className="size-4" />
+					</button>
+				)}
+			</div>
 			<PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
 				<Command shouldFilter={false}>
 					<CommandInput

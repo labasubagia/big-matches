@@ -37,7 +37,7 @@ function groupLabel(name: string): string {
 
 function Teams() {
 	const { matches, teams } = Route.useLoaderData();
-	const { selected, ready, toggle } = useSelection(teams);
+	const { selected, ready, toggle, reset } = useSelection(teams);
 	const { query, setQuery, candidates } = useTeamSearch(teams);
 	const crests = useMemo(() => teamCrests(matches), [matches]);
 
@@ -69,19 +69,26 @@ function Teams() {
 				Click a team to add or remove it. Only matches between two selected
 				teams are shown.
 			</p>
-			<div className="my-4 grid gap-1.5">
+			<div className="my-4 flex items-center justify-between gap-3">
 				<p className="text-sm font-semibold text-muted-foreground">
 					{ready ? `${selected.length} teams selected` : "Loading…"}
 				</p>
-				<Input
-					type="text"
-					placeholder="Search all clubs…"
-					value={query}
-					onChange={(e) => setQuery(e.target.value)}
-					className="w-full"
-				/>
+				<Button
+					variant="outline"
+					size="sm"
+					onClick={reset}
+					disabled={!ready || selected.length === 0}
+				>
+					Reset
+				</Button>
 			</div>
-
+			<Input
+				type="text"
+				placeholder="Search all clubs…"
+				value={query}
+				onChange={(e) => setQuery(e.target.value)}
+				className="w-full mb-4"
+			/>
 			{groups.map((g, i) => (
 				<section key={g.name} className="mb-5">
 					<h2 className="mb-2 text-center text-lg font-semibold tracking-tight md:text-left">
@@ -96,7 +103,7 @@ function Teams() {
 										variant="ghost"
 										onClick={() => toggle(t.id)}
 										aria-pressed={isSelected}
-										className={`w-full justify-start gap-2 px-2 text-left text-[0.9rem] min-h-12 ${
+										className={`w-full cursor-pointer justify-start gap-2 px-2 text-left text-[0.9rem] min-h-12 ${
 											isSelected
 												? "border-2 border-orange-500 bg-background hover:enabled:bg-background"
 												: "border border-input bg-background hover:border-orange-500 hover:enabled:bg-background"

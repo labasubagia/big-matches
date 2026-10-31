@@ -20,6 +20,7 @@ export function MatchFilters(f: MatchFilterState) {
 					crests={f.crests}
 					query={f.query}
 					setQuery={f.setQuery}
+					onReset={f.resetTeams}
 				/>
 				<div className="flex items-center gap-2">
 					<Button variant="ghost" size="sm" onClick={f.reset}>
