@@ -27,11 +27,9 @@ function processFixtures(data: {
 	return { matches, teams };
 }
 
-// Client-side static data load. The fixtures ship as standalone JSON assets
-// (via ?url) and are fetched after first paint, keeping the multi-megabyte
-// match dataset off the critical path for the initial shell. The real/mock
-// file is selected at build time via VITE_FIXTURES (see e2e/run.mjs).
-export async function loadFixtures(): Promise<Fixtures> {
+let fixturesPromise: Promise<Fixtures> | null = null;
+
+async function loadFixturesUncached(): Promise<Fixtures> {
 	const url =
 		import.meta.env.VITE_FIXTURES === "mock"
 			? mockFixturesUrl
@@ -41,6 +39,17 @@ export async function loadFixtures(): Promise<Fixtures> {
 		throw new Error(`Failed to load fixtures (HTTP ${res.status})`);
 	}
 	return processFixtures(await res.json());
+}
+
+// Client-side static data load, memoized so Overview/Teams navigations reuse a
+// single fetch+parse of the multi-megabyte JSON asset. On failure the memo is
+// cleared so a later call can retry.
+export function loadFixtures(): Promise<Fixtures> {
+	fixturesPromise ??= loadFixturesUncached().catch((error) => {
+		fixturesPromise = null;
+		throw error;
+	});
+	return fixturesPromise;
 }
 
 export async function loadFixturesOrThrow(): Promise<Fixtures> {
