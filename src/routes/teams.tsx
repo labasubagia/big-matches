@@ -4,14 +4,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import type { Team } from "../lib/filterBigMatches";
-import { loadFixtures } from "../lib/loadFixtures";
 import { teamCrests } from "../lib/matchTimes";
+import { useFixtures } from "../lib/useFixtures";
 import { useSelection } from "../lib/useSelection";
 import { useTeamSearch } from "../lib/useTeamSearch";
 
 export const Route = createFileRoute("/teams")({
 	component: Teams,
-	loader: () => loadFixtures(),
 });
 
 // Canonical competition order and short labels, matching the requested
@@ -36,7 +35,10 @@ function groupLabel(name: string): string {
 }
 
 function Teams() {
-	const { matches, teams } = Route.useLoaderData();
+	const { status, fixtures, error } = useFixtures();
+	if (status === "error" && error) throw error;
+	const matches = fixtures?.matches ?? [];
+	const teams = fixtures?.teams ?? [];
 	const { selected, ready, toggle, reset } = useSelection(teams);
 	const { query, setQuery, candidates } = useTeamSearch(teams);
 	const crests = useMemo(() => teamCrests(matches), [matches]);
