@@ -37,45 +37,37 @@ export function TeamCombobox({
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
-			<PopoverTrigger asChild>
-				<Button
-					variant="outline"
-					role="combobox"
-					aria-expanded={open}
-					aria-haspopup="listbox"
-					className="w-full justify-between"
-				>
-					{selectedTeams.length === 0
-						? "Filter big clubs"
-						: `${selectedTeams.length} club${selectedTeams.length > 1 ? "s" : ""} selected`}
-					{selectedTeams.length > 0 ? (
-						// biome-ignore lint/a11y/useSemanticElements: real <button> cannot nest inside the trigger <button>; span intercepts clicks without opening the popover.
-						<span
-							role="button"
-							aria-label="Reset club filter"
-							className="cursor-pointer"
-							tabIndex={0}
-							onClick={(e) => {
-								e.preventDefault();
-								e.stopPropagation();
-								onReset();
-							}}
-							onPointerDown={(e) => e.stopPropagation()}
-							onKeyDown={(e) => {
-								if (e.key === "Enter" || e.key === " ") {
-									e.preventDefault();
-									e.stopPropagation();
-									onReset();
-								}
-							}}
-						>
-							<X className="size-4" />
-						</span>
-					) : (
-						<ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
-					)}
-				</Button>
-			</PopoverTrigger>
+			<div className="relative">
+				<PopoverTrigger asChild>
+					<Button
+						variant="outline"
+						role="combobox"
+						aria-expanded={open}
+						aria-haspopup="listbox"
+						className="w-full justify-between pr-8"
+					>
+						{selectedTeams.length === 0
+							? "Filter big clubs"
+							: `${selectedTeams.length} club${selectedTeams.length > 1 ? "s" : ""} selected`}
+						{selectedTeams.length === 0 && (
+							<ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+						)}
+					</Button>
+				</PopoverTrigger>
+				{selectedTeams.length > 0 && (
+					<button
+						type="button"
+						aria-label="Reset club filter"
+						onClick={(e) => {
+							e.stopPropagation();
+							onReset();
+						}}
+						className="absolute right-4 top-1/2 flex size-4 -translate-y-1/2 cursor-pointer items-center justify-center rounded-sm text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+					>
+						<X className="size-4" />
+					</button>
+				)}
+			</div>
 			<PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
 				<Command shouldFilter={false}>
 					<CommandInput
