@@ -220,36 +220,40 @@ test("clicking a team selects it with an orange border and white background", as
 	await page.goto("/big-matches/teams");
 	await expectTeamsReady(page);
 
-	const arsenal = page.getByRole("button", { name: /Arsenal/ }).first();
+	const chelsea = page.getByRole("button", { name: /Chelsea/ }).first();
 
-	await arsenal.click();
-	await expect(arsenal).toHaveAttribute("aria-pressed", "true");
-	await expect(arsenal).toHaveCSS("background-color", "rgb(255, 255, 255)");
-	await expect(arsenal).toHaveCSS("border-top-width", "2px");
-	await expect(arsenal).toHaveCSS("border-color", "oklch(0.705 0.213 47.604)");
+	await chelsea.click();
+	await expect(chelsea).toHaveAttribute("aria-pressed", "true");
+	await expect(chelsea).toHaveCSS("background-color", "rgb(255, 255, 255)");
+	await expect(chelsea).toHaveCSS("border-top-width", "2px");
+	await expect(chelsea).toHaveCSS("border-color", "oklch(0.705 0.213 47.604)");
 
 	// Clicking again deselects.
-	await arsenal.click();
-	await expect(arsenal).toHaveAttribute("aria-pressed", "false");
+	await chelsea.click();
+	await expect(chelsea).toHaveAttribute("aria-pressed", "false");
 });
 
 test("selection persists across pages", async ({ page }) => {
 	await page.goto("/big-matches/teams");
 	await expectTeamsReady(page);
 
-	const arsenal = page.getByRole("button", { name: /Arsenal/ }).first();
-	await expect(arsenal).toBeVisible();
-	await arsenal.click();
+	const clearBtn = page.getByRole("button", { name: "Clear" });
+	await clearBtn.click();
 
-	// The newly selected team now appears in overview matches (Chelsea vs Arsenal).
+	const arsenal = page.getByRole("button", { name: /Arsenal/ }).first();
+	const chelsea = page.getByRole("button", { name: /Chelsea/ }).first();
+	await arsenal.click();
+	await chelsea.click();
+	await expect(page.getByText(/2 teams selected/)).toBeVisible();
+
+	// The selected teams now appear in overview matches (Chelsea vs Arsenal).
 	await page.goto("/big-matches/");
 	await expect(rowMatching(page, ["Chelsea", "Arsenal"])).toBeVisible();
 
 	// Selection survives navigation back to the teams page.
 	await page.goto("/big-matches/teams");
-	await expect(
-		page.getByRole("button", { name: /Arsenal/ }).first(),
-	).toHaveAttribute("aria-pressed", "true");
+	await expect(arsenal).toHaveAttribute("aria-pressed", "true");
+	await expect(chelsea).toHaveAttribute("aria-pressed", "true");
 });
 
 test("overview shows all matches including the past with bucket background colors", async ({
@@ -273,7 +277,9 @@ test("overview shows all matches including the past with bucket background color
 			.filter({ hasText: /\w+ \d{4}/ })
 			.first(),
 	).toBeVisible();
-
+	await expect(
+		rowMatching(page, ["Bayern München", "Borussia Dortmund"]),
+	).toBeVisible();
 	// A finished past match shows its inline score between the teams.
 	const pastRow = page
 		.locator("li")
@@ -283,8 +289,7 @@ test("overview shows all matches including the past with bucket background color
 	await expect(pastRow).toContainText("1");
 	await expect(pastRow).toContainText("0");
 
-	// Far matches (timed and TBD) are included on the page.
-	await expect(rowMatching(page, ["Liverpool", "Chelsea"])).toBeVisible();
+	const farRow = rowMatching(page, ["Bayern München", "Borussia Dortmund"]);
 	// Real Madrid vs Barcelona appears twice: near (Nov) and TBD far (May).
 	await expect(rowMatching(page, ["Real Madrid", "Barcelona"])).toHaveCount(2);
 
@@ -294,7 +299,6 @@ test("overview shows all matches including the past with bucket background color
 		"rgb(240, 240, 240)",
 	);
 
-	const farRow = rowMatching(page, ["Liverpool", "Chelsea"]);
 	await expect(farRow.locator("div").first()).toHaveCSS(
 		"background-color",
 		"rgb(255, 255, 255)",
@@ -340,16 +344,26 @@ test("faq page shows accordion Q&As with multiple-open behavior", async ({
 	await expect(items.nth(0)).toHaveAttribute("data-state", "open");
 	await expect(items.nth(1)).toHaveAttribute("data-state", "open");
 });
-test("teams page reset button clears all selection", async ({ page }) => {
+test("teams page reset restores default and clear empties selection", async ({
+	page,
+}) => {
 	await page.goto("/big-matches/teams");
 	await expectTeamsReady(page);
 
+	const clearBtn = page.getByRole("button", { name: "Clear" });
 	const resetBtn = page.getByRole("button", { name: "Reset" });
-	await expect(resetBtn).toBeEnabled();
 
-	await resetBtn.click();
+	// Clear empties the selection and disables itself.
+	await expect(clearBtn).toBeEnabled();
+	await clearBtn.click();
 	await expect(page.getByText(/0 teams selected/)).toBeVisible();
-	await expect(resetBtn).toBeDisabled();
+	await expect(clearBtn).toBeDisabled();
+
+	// Reset restores the default selection (non-empty) and stays enabled.
+	await resetBtn.click();
+	await expect(page.getByText(/[1-9]\d* teams selected/)).toBeVisible();
+	await expect(clearBtn).toBeEnabled();
+	await expect(resetBtn).toBeEnabled();
 });
 
 test("combobox X resets club filter", async ({ page }) => {
