@@ -39,7 +39,7 @@ function Home() {
 				</p>
 			</section>
 
-			<section className="min-h-screen">
+			<section className={loading ? "min-h-screen" : undefined}>
 				{!loading && (
 					<>
 						<MatchFilters {...filters} />
