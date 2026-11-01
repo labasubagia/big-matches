@@ -71,6 +71,8 @@ jobs:
           configPath: ./.lighthouserc.json
           uploadArtifacts: true
           temporaryPublicStorage: true
+      - name: Save desktop reports
+        run: cp -r .lighthouseci /tmp/desktop-lhci
       - name: Run Lighthouse mobile (all gates on all routes)
         uses: treosh/lighthouse-ci-action@v12
         with:
@@ -82,3 +84,5 @@ jobs:
           configPath: ./.lighthouserc.mobile.json
           uploadArtifacts: true
           temporaryPublicStorage: true
+      - name: Post Lighthouse summary
+        run: node scripts/lighthouse-summary.mjs /tmp/desktop-lhci .lighthouseci
