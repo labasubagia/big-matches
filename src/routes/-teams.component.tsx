@@ -41,6 +41,9 @@ function Teams() {
 	const groupsRef = useRef<HTMLDivElement>(null);
 	const [listHeight, setListHeight] = useState(0);
 	useEffect(() => {
+		// `ponytail:` first-load reserve is a 3000px estimate (≈ full roster);
+		// if the roster grows/shrinks past it, the loading→ready transition can
+		// shift. Upgrade: SSR the list (or a skeleton mirroring its height).
 		// Snapshot the loaded list height once; hold it as a stable floor so the
 		// loading→ready transition never changes page height (kills CLS).
 		if (status === "ready" && groupsRef.current && listHeight === 0) {
