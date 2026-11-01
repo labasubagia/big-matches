@@ -60,7 +60,7 @@ const table = [head, ...lines].join("\n");
 const summaryPath = process.env.GITHUB_STEP_SUMMARY;
 if (summaryPath) {
 	const { appendFileSync } = await import("node:fs");
-	appendFileSync(summaryPath, `## Lighthouse results\n\n${table}\n`);
+	appendFileSync(summaryPath, `\n## Lighthouse results\n\n${table}\n`);
 } else {
 	console.log(table);
 }
