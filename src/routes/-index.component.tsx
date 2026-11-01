@@ -39,23 +39,25 @@ function Home() {
 				</p>
 			</section>
 
-			{!loading && (
-				<>
-					<MatchFilters {...filters} />
+			<section className="min-h-[80vh]">
+				{!loading && (
+					<>
+						<MatchFilters {...filters} />
 
-					<section>
-						{ready && shownMatches.length === 0 ? (
-							<p>No fixtures match the current filters.</p>
-						) : (
-							<MatchList
-								matches={shownMatches}
-								rangeFrom={isoToDate(filters.fromStr)}
-								rangeTo={isoToDate(filters.toStr)}
-							/>
-						)}
-					</section>
-				</>
-			)}
+						<section>
+							{ready && shownMatches.length === 0 ? (
+								<p>No fixtures match the current filters.</p>
+							) : (
+								<MatchList
+									matches={shownMatches}
+									rangeFrom={isoToDate(filters.fromStr)}
+									rangeTo={isoToDate(filters.toStr)}
+								/>
+							)}
+						</section>
+					</>
+				)}
+			</section>
 		</main>
 	);
 }
