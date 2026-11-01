@@ -62,9 +62,9 @@ jobs:
         uses: treosh/lighthouse-ci-action@v12
         with:
           urls: |
-            https://${{ github.repository_owner }}.github.io/big-matches/
-            https://${{ github.repository_owner }}.github.io/big-matches/teams
-            https://${{ github.repository_owner }}.github.io/big-matches/faq
+            https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+            https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/teams
+            https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/faq
           runs: 3
           configPath: ./.lighthouserc.json
           uploadArtifacts: true
