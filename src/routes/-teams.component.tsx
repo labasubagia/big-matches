@@ -34,7 +34,8 @@ function Teams() {
 	if (status === "error" && error) throw error;
 	const matches = fixtures?.matches ?? [];
 	const teams = fixtures?.teams ?? [];
-	const { selected, ready, toggle, reset } = useSelection(teams);
+	const { selected, ready, toggle, reset, resetToDefault } =
+		useSelection(teams);
 	const { query, setQuery, candidates } = useTeamSearch(teams);
 	const crests = useMemo(() => teamCrests(matches), [matches]);
 
@@ -87,14 +88,26 @@ function Teams() {
 				<p className="text-sm font-semibold text-muted-foreground">
 					{ready ? `${selected.length} teams selected` : "Loading…"}
 				</p>
-				<Button
-					variant="outline"
-					size="sm"
-					onClick={reset}
-					disabled={!ready || selected.length === 0}
-				>
-					Reset
-				</Button>
+				<div className="flex gap-2">
+					<Button
+						variant="outline"
+						size="sm"
+						className="cursor-pointer"
+						onClick={resetToDefault}
+						disabled={!ready}
+					>
+						Reset
+					</Button>
+					<Button
+						variant="outline"
+						size="sm"
+						className="cursor-pointer"
+						onClick={reset}
+						disabled={!ready || selected.length === 0}
+					>
+						Clear
+					</Button>
+				</div>
 			</div>
 			<Input
 				type="text"

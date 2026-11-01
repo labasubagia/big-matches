@@ -216,8 +216,11 @@ for (const m of matches) {
 	if (m.homeTeam?.crest) m.homeTeam.crest = localCrest(m.homeTeam.crest);
 	if (m.awayTeam?.crest) m.awayTeam.crest = localCrest(m.awayTeam.crest);
 }
-
-const out = { generatedAt: new Date(now).toISOString(), teams, matches };
+const out = {
+	generatedAt: new Date(now).toISOString(),
+	teams,
+	matches,
+};
 writeFileSync(OUT, `${JSON.stringify(out, null, 2)}\n`);
 console.log(
 	`wrote ${OUT}: ${teams.length} teams, ${matches.length} matches (${(
