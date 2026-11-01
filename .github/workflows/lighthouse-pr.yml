@@ -34,6 +34,10 @@ jobs:
           runs: 2
           configPath: ./.lighthouserc.json
           temporaryPublicStorage: true
+      - name: Save desktop reports
+        run: |
+          mkdir -p /tmp/desktop-lhci
+          cp -r .lighthouseci/. /tmp/desktop-lhci/
       - name: Run Lighthouse mobile (all gates on all routes)
         uses: treosh/lighthouse-ci-action@v12
         with:
@@ -44,3 +48,70 @@ jobs:
           runs: 2
           configPath: ./.lighthouserc.mobile.json
           temporaryPublicStorage: true
+      - name: Post Lighthouse summary comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            function load(dir) {
+              const out = [];
+              for (const f of fs.readdirSync(dir).filter(f => f.endsWith('.json'))) {
+                try {
+                  const j = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+                  if (!j.finalDisplayedUrl) continue;
+                  out.push({ url: j.finalDisplayedUrl.replace('http://127.0.0.1:4173', ''), j });
+                } catch {}
+              }
+              return out;
+            }
+
+            const median = arr => arr.slice().sort((a, b) => a - b)[Math.floor(arr.length / 2)];
+            const presets = {
+              desktop: load('/tmp/desktop-lhci'),
+              mobile: load('.lighthouseci'),
+            };
+
+            const rows = new Map();
+            for (const [preset, reports] of Object.entries(presets)) {
+              const byUrl = new Map();
+              for (const { url, j } of reports) {
+                if (!byUrl.has(url)) byUrl.set(url, []);
+                byUrl.get(url).push({
+                  perf: j.categories.performance.score,
+                  a11y: j.categories.accessibility.score,
+                  bp: j.categories['best-practices'].score,
+                  seo: j.categories.seo.score,
+                });
+              }
+              for (const [url, list] of byUrl) {
+                if (!rows.has(url)) rows.set(url, {});
+                rows.get(url)[preset] = {
+                  perf: median(list.map(r => r.perf)),
+                  a11y: median(list.map(r => r.a11y)),
+                  bp: median(list.map(r => r.bp)),
+                  seo: median(list.map(r => r.seo)),
+                };
+              }
+            }
+
+            const fmt = pct => Math.round(pct * 100) + '%';
+            let table = '| Route | Preset | Perf | A11y | Best-practices | SEO |\n|---|---|---|---|---|---|---|\n';
+            for (const [url, p] of [...rows.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
+              for (const preset of ['desktop', 'mobile']) {
+                if (!p[preset]) continue;
+                const s = p[preset];
+                table += `| ${url} | ${preset} | ${fmt(s.perf)} | ${fmt(s.a11y)} | ${fmt(s.bp)} | ${fmt(s.seo)} |\n`;
+              }
+            }
+
+            const marker = '<!-- lhci-summary -->';
+            const body = `${marker}\n## Lighthouse gate — PR summary\n\n${table}\n`;
+            const comments = await github.rest.issues.listComments({ ...context.repo, issue_number: context.issue.number });
+            const existing = comments.data.find(c => c.body && c.body.startsWith(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ ...context.repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body });
+            }
