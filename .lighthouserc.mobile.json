@@ -2,8 +2,13 @@
 	"ci": {
 		"collect": {
 			"settings": {
-				"preset": "mobile",
-				"throttlingMethod": "provided"
+				"throttlingMethod": "provided",
+				"screenEmulation": {
+					"mobile": true,
+					"width": 412,
+					"height": 915,
+					"deviceScaleFactor": 2
+				}
 			}
 		},
 		"assert": {
