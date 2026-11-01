@@ -1,5 +1,6 @@
-import { createFileRoute, lazyRouteComponent } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { SITE_URL } from "../config/site";
+import IndexComponent from "./-index.component";
 
 export const Route = createFileRoute("/")({
 	head: () => ({
@@ -18,5 +19,5 @@ export const Route = createFileRoute("/")({
 			},
 		],
 	}),
-	component: lazyRouteComponent(() => import("./-index.component"), "default"),
+	component: IndexComponent,
 });

@@ -111,7 +111,12 @@ function Teams() {
 											return (
 												<Avatar className="size-6">
 													{crest ? (
-														<AvatarImage src={crestUrl(crest)} alt="" />
+														<AvatarImage
+															src={crestUrl(crest)}
+															alt=""
+															width={24}
+															height={24}
+														/>
 													) : null}
 													<AvatarFallback className="bg-muted text-[11px] text-muted-foreground">
 														{t.name[0]}
