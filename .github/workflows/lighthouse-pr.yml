@@ -101,7 +101,7 @@ jobs:
             }
 
             const fmt = pct => Math.round(pct * 100) + '%';
-            let table = '| Route | Preset | Perf | A11y | Best-practices | SEO |\n|---|---|---|---|---|---|---|\n';
+            let table = '| Route | Preset | Perf | A11y | Best-practices | SEO |\n|---|---|---|---|---|---|\n';
             for (const [url, p] of [...rows.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
               for (const preset of ['desktop', 'mobile']) {
                 if (!p[preset]) continue;
