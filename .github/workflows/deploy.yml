@@ -69,7 +69,7 @@ jobs:
             ${{ needs.deploy.outputs.page_url }}faq
           runs: 2
           configPath: ./.lighthouserc.json
-          uploadArtifacts: true
+          artifactName: lighthouse-desktop
           temporaryPublicStorage: true
       - name: Save desktop reports
         run: cp -r .lighthouseci /tmp/desktop-lhci
@@ -82,7 +82,7 @@ jobs:
             ${{ needs.deploy.outputs.page_url }}faq
           runs: 2
           configPath: ./.lighthouserc.mobile.json
-          uploadArtifacts: true
+          artifactName: lighthouse-mobile
           temporaryPublicStorage: true
       # Summary table: consumes saved desktop reports + mobile .lighthouseci. Script is only used here.
       - name: Post Lighthouse summary
