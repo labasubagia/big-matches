@@ -1,6 +1,7 @@
 import type { Match } from "../lib/filterBigMatches";
 import {
 	competitionLabel,
+	crestUrl,
 	fmtDate,
 	fmtPhase,
 	fmtShortDate,
@@ -15,7 +16,7 @@ import { Card, CardContent } from "./ui/card";
 function Crest({ url, name }: { url?: string; name: string }) {
 	return (
 		<Avatar className="size-[22px]">
-			{url ? <AvatarImage src={url} alt={name} /> : null}
+			{url ? <AvatarImage src={crestUrl(url)} alt={name} /> : null}
 			<AvatarFallback className="bg-muted text-[10px] text-muted-foreground">
 				{name[0]}
 			</AvatarFallback>

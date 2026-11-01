@@ -1,6 +1,7 @@
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import * as React from "react";
 import type { Team } from "../lib/filterBigMatches";
+import { crestUrl } from "../lib/matchTimes";
 import { cn } from "../lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
@@ -100,7 +101,9 @@ export function TeamCombobox({
 												{checked && <Check className="size-3" />}
 											</span>
 											<Avatar className="size-5">
-												{crest ? <AvatarImage src={crest} alt="" /> : null}
+												{crest ? (
+													<AvatarImage src={crestUrl(crest)} alt="" />
+												) : null}
 												<AvatarFallback className="bg-muted text-[9px] text-muted-foreground">
 													{team.name[0]}
 												</AvatarFallback>

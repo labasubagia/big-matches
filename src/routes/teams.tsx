@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import type { Team } from "../lib/filterBigMatches";
-import { teamCrests } from "../lib/matchTimes";
+import { crestUrl, teamCrests } from "../lib/matchTimes";
 import { useFixtures } from "../lib/useFixtures";
 import { useSelection } from "../lib/useSelection";
 import { useTeamSearch } from "../lib/useTeamSearch";
@@ -115,7 +115,9 @@ function Teams() {
 											const crest = crests.get(t.id);
 											return (
 												<Avatar className="size-6">
-													{crest ? <AvatarImage src={crest} alt="" /> : null}
+													{crest ? (
+														<AvatarImage src={crestUrl(crest)} alt="" />
+													) : null}
 													<AvatarFallback className="bg-muted text-[11px] text-muted-foreground">
 														{t.name[0]}
 													</AvatarFallback>

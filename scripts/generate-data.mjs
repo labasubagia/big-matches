@@ -1,6 +1,7 @@
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import sharp from "sharp";
 
 // Generates the static data file the app reads at build time. Run in CI (see
 // .github/workflows/deploy.yml). Teams refresh weekly, matches daily; both are
@@ -71,6 +72,7 @@ async function fetchTeams(code) {
 		name: t.name,
 		shortName: t.shortName,
 		competition: name,
+		crest: t.crest,
 	}));
 }
 
@@ -95,6 +97,65 @@ async function fetchMatches() {
 		}
 	}
 	return all;
+}
+
+// Download team crests from Football-Data's public CDN into public/crests/ so
+// the app never depends on a third-party origin at runtime: page loads stay
+// same-origin and fast. Images are resized and converted to WebP (mobile
+// friendly). A failed download drops that crest (the UI falls back to the team
+// initial) and logs a dev warning.
+async function downloadCrests(urls) {
+	const dir = path.join(ROOT, "public", "crests");
+	mkdirSync(dir, { recursive: true });
+	const map = new Map();
+	const CONCURRENCY = 6;
+	let failed = 0;
+	let skipped = 0;
+	let i = 0;
+	const worker = async () => {
+		while (i < urls.length) {
+			const url = urls[i++];
+			if (!url?.startsWith("https://") || map.has(url)) {
+				skipped++;
+				continue;
+			}
+			let name;
+			try {
+				name = path.basename(new URL(url).pathname);
+			} catch {
+				skipped++;
+				continue;
+			}
+			try {
+				const res = await fetch(url);
+				if (!res.ok) throw new Error(`HTTP ${res.status}`);
+				const buf = Buffer.from(await res.arrayBuffer());
+				const webp = `${name.replace(/\.png$/, "")}.webp`;
+				await sharp(buf)
+					.resize({
+						width: 128,
+						height: 128,
+						fit: "inside",
+						withoutEnlargement: true,
+					})
+					.webp()
+					.toFile(path.join(dir, webp));
+				map.set(url, `crests/${webp}`);
+			} catch (e) {
+				failed++;
+				console.warn(
+					`crest download failed for ${url}: ${e.message}; dropping crest`,
+				);
+			}
+		}
+	};
+	await Promise.all(
+		Array.from({ length: Math.min(CONCURRENCY, urls.length) }, worker),
+	);
+	console.log(
+		`crests: downloaded ${map.size}, skipped ${skipped}, failed ${failed} (of ${urls.length})`,
+	);
+	return map;
 }
 
 let prev = null;
@@ -129,14 +190,37 @@ if (staleTeams) {
 } else {
 	teams = prev.teams;
 }
+console.log(`teams: ${staleTeams ? "refreshed" : "reused"} (${teams.length})`);
 
 const matches = await fetchMatches();
+console.log(`matches: ${matches.length} (season ${currentSeason()})`);
 
 if (teams.length === 0 && matches.length === 0) {
 	console.error("generated empty dataset; refusing to publish a blank site");
 	process.exit(1);
 }
 
+// Pull crests from the remote CDN into public/crests/ and point all references
+// at the local copies so the page loads entirely same-origin.
+const crestUrls = new Set();
+for (const t of teams) if (t.crest) crestUrls.add(t.crest);
+for (const m of matches) {
+	if (m.homeTeam?.crest) crestUrls.add(m.homeTeam.crest);
+	if (m.awayTeam?.crest) crestUrls.add(m.awayTeam.crest);
+}
+const crestMap = await downloadCrests([...crestUrls]);
+const localCrest = (url) =>
+	!url || /^https?:\/\//.test(url) ? crestMap.get(url) : url;
+for (const t of teams) if (t.crest) t.crest = localCrest(t.crest);
+for (const m of matches) {
+	if (m.homeTeam?.crest) m.homeTeam.crest = localCrest(m.homeTeam.crest);
+	if (m.awayTeam?.crest) m.awayTeam.crest = localCrest(m.awayTeam.crest);
+}
+
 const out = { generatedAt: new Date(now).toISOString(), teams, matches };
 writeFileSync(OUT, `${JSON.stringify(out, null, 2)}\n`);
-console.log(`wrote ${OUT}: ${teams.length} teams, ${matches.length} matches`);
+console.log(
+	`wrote ${OUT}: ${teams.length} teams, ${matches.length} matches (${(
+		(Date.now() - now) / 1000
+	).toFixed(1)}s)`,
+);
