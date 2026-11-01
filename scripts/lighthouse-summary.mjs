@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Prints a table of Lighthouse category scores for desktop + mobile runs.
+// Used only by .github/workflows/deploy.yml (lighthouse job, "Post Lighthouse summary" step).
 // Usage: node scripts/lighthouse-summary.mjs <desktopDir> <mobileDir>
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";

@@ -84,5 +84,6 @@ jobs:
           configPath: ./.lighthouserc.mobile.json
           uploadArtifacts: true
           temporaryPublicStorage: true
+      # Summary table: consumes saved desktop reports + mobile .lighthouseci. Script is only used here.
       - name: Post Lighthouse summary
         run: node scripts/lighthouse-summary.mjs /tmp/desktop-lhci .lighthouseci
