@@ -1,0 +1,46 @@
+name: Lighthouse gate (PR)
+
+on:
+  pull_request:
+
+jobs:
+  lighthouse:
+    name: Lighthouse gate (desktop + mobile)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build production bundle
+        run: npm run build
+      - name: Start preview server
+        run: |
+          npm run preview -- --port 4173 --host 127.0.0.1 > /tmp/preview.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:4173/big-matches/ > /dev/null && exit 0
+            sleep 1
+          done
+          echo "preview server did not start"; cat /tmp/preview.log; exit 1
+      - name: Run Lighthouse desktop (all gates on all routes)
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            http://127.0.0.1:4173/big-matches/
+            http://127.0.0.1:4173/big-matches/teams
+            http://127.0.0.1:4173/big-matches/faq
+          runs: 2
+          configPath: ./.lighthouserc.json
+          temporaryPublicStorage: true
+      - name: Run Lighthouse mobile (all gates on all routes)
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            http://127.0.0.1:4173/big-matches/
+            http://127.0.0.1:4173/big-matches/teams
+            http://127.0.0.1:4173/big-matches/faq
+          runs: 2
+          configPath: ./.lighthouserc.mobile.json
+          temporaryPublicStorage: true
