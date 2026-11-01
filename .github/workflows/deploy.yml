@@ -71,11 +71,6 @@ jobs:
           configPath: ./.lighthouserc.json
           uploadArtifacts: true
           temporaryPublicStorage: true
-      - name: Save desktop reports
-        run: |
-          mkdir -p /tmp/desktop-lhci
-          cp -r .lighthouseci/. /tmp/desktop-lhci/
-      - name: Run Lighthouse mobile (all gates on all routes)
         uses: treosh/lighthouse-ci-action@v12
         with:
           urls: |
