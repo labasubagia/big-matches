@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -38,6 +38,20 @@ function Teams() {
 	const { query, setQuery, candidates } = useTeamSearch(teams);
 	const crests = useMemo(() => teamCrests(matches), [matches]);
 
+	const groupsRef = useRef<HTMLDivElement>(null);
+	const [listHeight, setListHeight] = useState(0);
+	useEffect(() => {
+		// `ponytail:` first-load reserve is a 3000px estimate (≈ full roster);
+		// if the roster grows/shrinks past it, the loading→ready transition can
+		// shift. Upgrade: SSR the list (or a skeleton mirroring its height).
+		// Snapshot the loaded list height once; hold it as a stable floor so the
+		// loading→ready transition never changes page height (kills CLS).
+		if (status === "ready" && groupsRef.current && listHeight === 0) {
+			setListHeight(Math.round(groupsRef.current.offsetHeight));
+		}
+	}, [status, listHeight]);
+	const reserveHeight =
+		status === "loading" ? Math.max(listHeight, 3000) : listHeight;
 	const groups = useMemo(() => {
 		const map = new Map<string, Team[]>();
 		for (const t of candidates) {
@@ -58,7 +72,10 @@ function Teams() {
 	}, [candidates]);
 
 	return (
-		<main className="mx-auto w-full max-w-[760px] p-4 font-sans">
+		<main
+			className="mx-auto w-full max-w-[760px] p-4 font-sans"
+			style={reserveHeight ? { minHeight: reserveHeight } : undefined}
+		>
 			<h1 className="text-2xl font-semibold tracking-tight">
 				Select Big Teams
 			</h1>
@@ -86,50 +103,59 @@ function Teams() {
 				onChange={(e) => setQuery(e.target.value)}
 				className="w-full mb-4"
 			/>
-			{groups.map((g, i) => (
-				<section key={g.name} className="mb-5">
-					<h2 className="mb-2 text-center text-lg font-semibold tracking-tight md:text-left">
-						{groupLabel(g.name)}
-					</h2>
-					<ul className="grid list-none grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-1.5 p-0">
-						{g.teams.map((t) => {
-							const isSelected = selected.includes(t.id);
-							return (
-								<li key={t.id}>
-									<Button
-										variant="ghost"
-										onClick={() => toggle(t.id)}
-										aria-pressed={isSelected}
-										className={`w-full cursor-pointer justify-start gap-2 px-2 text-left text-[0.9rem] min-h-12 ${
-											isSelected
-												? "border-2 border-orange-500 bg-background hover:enabled:bg-background"
-												: "border border-input bg-background hover:border-orange-500 hover:enabled:bg-background"
-										}`}
-									>
-										{(() => {
-											const crest = crests.get(t.id);
-											return (
-												<Avatar className="size-6">
-													{crest ? (
-														<AvatarImage src={crestUrl(crest)} alt="" />
-													) : null}
-													<AvatarFallback className="bg-muted text-[11px] text-muted-foreground">
-														{t.name[0]}
-													</AvatarFallback>
-												</Avatar>
-											);
-										})()}
-										<span className="min-w-0 whitespace-normal break-words">
-											{t.name}
-										</span>
-									</Button>
-								</li>
-							);
-						})}
-					</ul>
-					{i < groups.length - 1 ? <hr className="my-4 border-border" /> : null}
-				</section>
-			))}
+			<div ref={groupsRef}>
+				{groups.map((g, i) => (
+					<section key={g.name} className="mb-5">
+						<h2 className="mb-2 text-center text-lg font-semibold tracking-tight md:text-left">
+							{groupLabel(g.name)}
+						</h2>
+						<ul className="grid list-none grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-1.5 p-0">
+							{g.teams.map((t) => {
+								const isSelected = selected.includes(t.id);
+								return (
+									<li key={t.id}>
+										<Button
+											variant="ghost"
+											onClick={() => toggle(t.id)}
+											aria-pressed={isSelected}
+											className={`w-full cursor-pointer justify-start gap-2 px-2 text-left text-[0.9rem] min-h-12 ${
+												isSelected
+													? "border-2 border-orange-500 bg-background hover:enabled:bg-background"
+													: "border border-input bg-background hover:border-orange-500 hover:enabled:bg-background"
+											}`}
+										>
+											{(() => {
+												const crest = crests.get(t.id);
+												return (
+													<Avatar className="size-6">
+														{crest ? (
+															<AvatarImage
+																src={crestUrl(crest)}
+																alt=""
+																width={24}
+																height={24}
+															/>
+														) : null}
+														<AvatarFallback className="bg-muted text-[11px] text-muted-foreground">
+															{t.name[0]}
+														</AvatarFallback>
+													</Avatar>
+												);
+											})()}
+											<span className="min-w-0 whitespace-normal break-words">
+												{t.name}
+											</span>
+										</Button>
+									</li>
+								);
+							})}
+						</ul>
+						{i < groups.length - 1 ? (
+							<hr className="my-4 border-border" />
+						) : null}
+					</section>
+				))}
+			</div>
 		</main>
 	);
 }

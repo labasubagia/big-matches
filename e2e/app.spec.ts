@@ -45,7 +45,7 @@ async function expectTeamsReady(page) {
 }
 async function openDateRange(page) {
 	for (let i = 0; i < 5; i++) {
-		await page.getByLabel("Date range").click();
+		await page.locator('button[aria-haspopup="dialog"]').click();
 		const cal = page.locator(".rdp-root");
 		try {
 			await cal.waitFor({ state: "visible", timeout: 600 });
@@ -318,7 +318,7 @@ test("faq page shows accordion Q&As with multiple-open behavior", async ({
 	await expect(navLink).toHaveAttribute("href", "/big-matches/faq");
 
 	// Each Q&A is an accordion item.
-	const items = page.locator("div:has(> h3)");
+	const items = page.locator("div:has(> h2)");
 	await expect(items).toHaveCount(FAQ_ENTRIES.length);
 
 	const toggle = async (i: number) => {

@@ -60,6 +60,7 @@ export const Route = createRootRoute({
 		],
 		links: [
 			{ rel: "manifest", href: "/big-matches/manifest.webmanifest" },
+			{ rel: "icon", href: "/big-matches/icon-192.png" },
 			{ rel: "apple-touch-icon", href: "/big-matches/icon-192.png" },
 		],
 		scripts: [

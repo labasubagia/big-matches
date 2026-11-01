@@ -9,7 +9,6 @@ export function getRouter() {
 	const router = createRouter({
 		routeTree,
 		basepath: "/big-matches/",
-		defaultPreload: "intent",
 		scrollRestoration: true,
 		defaultNotFoundComponent: NotFound,
 	});

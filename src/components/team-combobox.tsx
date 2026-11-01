@@ -35,6 +35,10 @@ export function TeamCombobox({
 	crests,
 }: TeamComboboxProps) {
 	const [open, setOpen] = React.useState(false);
+	const label =
+		selectedTeams.length === 0
+			? "Filter big clubs"
+			: `${selectedTeams.length} club${selectedTeams.length > 1 ? "s" : ""} selected`;
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
@@ -45,11 +49,10 @@ export function TeamCombobox({
 						role="combobox"
 						aria-expanded={open}
 						aria-haspopup="listbox"
+						aria-label={label}
 						className="w-full justify-between"
 					>
-						{selectedTeams.length === 0
-							? "Filter big clubs"
-							: `${selectedTeams.length} club${selectedTeams.length > 1 ? "s" : ""} selected`}
+						{label}
 						{selectedTeams.length === 0 && (
 							<ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
 						)}

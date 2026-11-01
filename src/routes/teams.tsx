@@ -1,5 +1,6 @@
-import { createFileRoute, lazyRouteComponent } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { SITE_URL } from "../config/site";
+import Teams from "./-teams.component";
 
 export const Route = createFileRoute("/teams")({
 	head: () => ({
@@ -18,5 +19,5 @@ export const Route = createFileRoute("/teams")({
 			},
 		],
 	}),
-	component: lazyRouteComponent(() => import("./-teams.component"), "default"),
+	component: Teams,
 });
