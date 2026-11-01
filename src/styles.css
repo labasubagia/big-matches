@@ -1,4 +1,7 @@
 @import "tailwindcss";
+html {
+	scrollbar-gutter: stable;
+}
 
 @theme inline {
 	--color-background: #ffffff;
