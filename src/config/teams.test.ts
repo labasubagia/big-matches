@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
+import type { Team } from "../lib/filterBigMatches";
 import fixtures from "../lib/fixtures.json";
 import { DEFAULT_SELECTED_IDS } from "./teams";
+
+const teams = fixtures.teams as Team[];
 
 // Mirrors scripts/generate-data.mjs: default selection = teams in a top-five
 // league roster that also appear in the UEFA Champions League roster.
@@ -14,12 +17,12 @@ const TOP5_LEAGUE_NAMES: Record<string, true> = {
 
 function intersection(): number[] {
 	const ucl = new Set(
-		fixtures.teams
+		teams
 			.filter((t) => t.competition === "UEFA Champions League")
 			.map((t) => t.id),
 	);
 	const top5 = new Set(
-		fixtures.teams
+		teams
 			.filter((t) => TOP5_LEAGUE_NAMES[t.competition] === true)
 			.map((t) => t.id),
 	);
