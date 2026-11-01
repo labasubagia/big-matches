@@ -16,8 +16,12 @@ function collect(dir) {
 	if (!existsSync(dir)) return [];
 	const rows = [];
 	for (const f of readdirSync(dir)) {
-		if (!f.endsWith(".report.json")) continue;
-		const lhr = JSON.parse(readFileSync(join(dir, f), "utf8"));
+		let lhr;
+		try {
+			lhr = JSON.parse(readFileSync(join(dir, f), "utf8"));
+		} catch {
+			continue; // skip malformed report
+		}
 		const cats = lhr.categories || {};
 		rows.push({
 			url: lhr.finalUrl || lhr.requestedUrl || "?",
