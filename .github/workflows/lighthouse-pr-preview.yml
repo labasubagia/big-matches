@@ -1,0 +1,54 @@
+name: Lighthouse PR preview (temporary)
+
+# TEMPORARY: for validating PR #50's summary changes. DELETE after validation.
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lh-pr-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Run Lighthouse desktop (all gates on all routes)
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            https://labasubagia.github.io/big-matches/
+            https://labasubagia.github.io/big-matches/teams
+            https://labasubagia.github.io/big-matches/faq
+          runs: 2
+          configPath: ./.lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          artifactName: lighthouse-desktop
+      - name: Save desktop reports
+        run: cp -r .lighthouseci /tmp/desktop-lhci
+      - name: Run Lighthouse mobile (all gates on all routes)
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            https://labasubagia.github.io/big-matches/
+            https://labasubagia.github.io/big-matches/teams
+            https://labasubagia.github.io/big-matches/faq
+          runs: 2
+          configPath: ./.lighthouserc.mobile.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          artifactName: lighthouse-mobile
+      - name: Post Lighthouse summary
+        run: node scripts/lighthouse-summary.mjs /tmp/desktop-lhci .lighthouseci
