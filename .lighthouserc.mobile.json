@@ -2,7 +2,8 @@
 	"ci": {
 		"collect": {
 			"settings": {
-				"preset": "mobile"
+				"preset": "mobile",
+				"throttlingMethod": "provided"
 			}
 		},
 		"assert": {
