@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import sharp from "sharp";
 
 // Generates the static data file the app reads at build time. Run in CI (see
 // .github/workflows/deploy.yml). Teams refresh weekly, matches daily; both are
@@ -100,8 +101,9 @@ async function fetchMatches() {
 
 // Download team crests from Football-Data's public CDN into public/crests/ so
 // the app never depends on a third-party origin at runtime: page loads stay
-// same-origin and fast. A failed download drops that crest (the UI falls back
-// to the team initial) and logs a dev warning.
+// same-origin and fast. Images are resized and converted to WebP (mobile
+// friendly). A failed download drops that crest (the UI falls back to the team
+// initial) and logs a dev warning.
 async function downloadCrests(urls) {
 	const dir = path.join(ROOT, "public", "crests");
 	mkdirSync(dir, { recursive: true });
@@ -121,11 +123,18 @@ async function downloadCrests(urls) {
 			try {
 				const res = await fetch(url);
 				if (!res.ok) throw new Error(`HTTP ${res.status}`);
-				writeFileSync(
-					path.join(dir, name),
-					Buffer.from(await res.arrayBuffer()),
-				);
-				map.set(url, `crests/${name}`);
+				const buf = Buffer.from(await res.arrayBuffer());
+				const webp = `${name.replace(/\.png$/, "")}.webp`;
+				await sharp(buf)
+					.resize({
+						width: 128,
+						height: 128,
+						fit: "inside",
+						withoutEnlargement: true,
+					})
+					.webp()
+					.toFile(path.join(dir, webp));
+				map.set(url, `crests/${webp}`);
 			} catch (e) {
 				console.warn(
 					`crest download failed for ${url}: ${e.message}; dropping crest`,
