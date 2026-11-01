@@ -109,15 +109,21 @@ async function downloadCrests(urls) {
 	mkdirSync(dir, { recursive: true });
 	const map = new Map();
 	const CONCURRENCY = 6;
+	let failed = 0;
+	let skipped = 0;
 	let i = 0;
 	const worker = async () => {
 		while (i < urls.length) {
 			const url = urls[i++];
-			if (!url?.startsWith("https://") || map.has(url)) continue;
+			if (!url?.startsWith("https://") || map.has(url)) {
+				skipped++;
+				continue;
+			}
 			let name;
 			try {
 				name = path.basename(new URL(url).pathname);
 			} catch {
+				skipped++;
 				continue;
 			}
 			try {
@@ -136,6 +142,7 @@ async function downloadCrests(urls) {
 					.toFile(path.join(dir, webp));
 				map.set(url, `crests/${webp}`);
 			} catch (e) {
+				failed++;
 				console.warn(
 					`crest download failed for ${url}: ${e.message}; dropping crest`,
 				);
@@ -144,6 +151,9 @@ async function downloadCrests(urls) {
 	};
 	await Promise.all(
 		Array.from({ length: Math.min(CONCURRENCY, urls.length) }, worker),
+	);
+	console.log(
+		`crests: downloaded ${map.size}, skipped ${skipped}, failed ${failed} (of ${urls.length})`,
 	);
 	return map;
 }
@@ -180,8 +190,10 @@ if (staleTeams) {
 } else {
 	teams = prev.teams;
 }
+console.log(`teams: ${staleTeams ? "refreshed" : "reused"} (${teams.length})`);
 
 const matches = await fetchMatches();
+console.log(`matches: ${matches.length} (season ${currentSeason()})`);
 
 if (teams.length === 0 && matches.length === 0) {
 	console.error("generated empty dataset; refusing to publish a blank site");
@@ -207,4 +219,8 @@ for (const m of matches) {
 
 const out = { generatedAt: new Date(now).toISOString(), teams, matches };
 writeFileSync(OUT, `${JSON.stringify(out, null, 2)}\n`);
-console.log(`wrote ${OUT}: ${teams.length} teams, ${matches.length} matches`);
+console.log(
+	`wrote ${OUT}: ${teams.length} teams, ${matches.length} matches (${(
+		(Date.now() - now) / 1000
+	).toFixed(1)}s)`,
+);
