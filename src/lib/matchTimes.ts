@@ -127,6 +127,14 @@ export function teamCrests(matches: Match[]): Map<number, string> {
 	return crests;
 }
 
+// Resolve a stored crest path to an absolute URL. Local paths (relative to the
+// app base) get BASE_URL prefixed; legacy absolute URLs pass through unchanged.
+export function crestUrl(path?: string): string | undefined {
+	if (!path) return undefined;
+	if (/^https?:\/\//.test(path)) return path;
+	return `${import.meta.env.BASE_URL}${path}`;
+}
+
 // Fixed DD/MM/YYYY display (en-GB 24h), independent of user locale.
 export function fmtShortDate(d: Date): string {
 	return d.toLocaleDateString("en-GB", {

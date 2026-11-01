@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -71,6 +71,7 @@ async function fetchTeams(code) {
 		name: t.name,
 		shortName: t.shortName,
 		competition: name,
+		crest: t.crest,
 	}));
 }
 
@@ -95,6 +96,37 @@ async function fetchMatches() {
 		}
 	}
 	return all;
+}
+
+// Download team crests from Football-Data's public CDN into public/crests/ so
+// the app never depends on a third-party origin at runtime: page loads stay
+// same-origin and fast. A failed download keeps the remote URL (renders fine,
+// just slower) and logs a dev warning.
+async function downloadCrests(urls) {
+	const dir = path.join(ROOT, "public", "crests");
+	mkdirSync(dir, { recursive: true });
+	const map = new Map();
+	for (const url of urls) {
+		if (!url?.startsWith("https://") || map.has(url)) continue;
+		let name;
+		try {
+			name = path.basename(new URL(url).pathname);
+		} catch {
+			continue;
+		}
+		const dest = path.join(dir, name);
+		try {
+			const res = await fetch(url);
+			if (!res.ok) throw new Error(`HTTP ${res.status}`);
+			writeFileSync(dest, Buffer.from(await res.arrayBuffer()));
+			map.set(url, `crests/${name}`);
+		} catch (e) {
+			console.warn(
+				`crest download failed for ${url}: ${e.message}; keeping remote`,
+			);
+		}
+	}
+	return map;
 }
 
 let prev = null;
@@ -135,6 +167,22 @@ const matches = await fetchMatches();
 if (teams.length === 0 && matches.length === 0) {
 	console.error("generated empty dataset; refusing to publish a blank site");
 	process.exit(1);
+}
+
+// Pull crests from the remote CDN into public/crests/ and point all references
+// at the local copies so the page loads entirely same-origin.
+const crestUrls = new Set();
+for (const t of teams) if (t.crest) crestUrls.add(t.crest);
+for (const m of matches) {
+	if (m.homeTeam?.crest) crestUrls.add(m.homeTeam.crest);
+	if (m.awayTeam?.crest) crestUrls.add(m.awayTeam.crest);
+}
+const crestMap = await downloadCrests([...crestUrls]);
+const localCrest = (url) => crestMap.get(url) ?? url;
+for (const t of teams) if (t.crest) t.crest = localCrest(t.crest);
+for (const m of matches) {
+	if (m.homeTeam?.crest) m.homeTeam.crest = localCrest(m.homeTeam.crest);
+	if (m.awayTeam?.crest) m.awayTeam.crest = localCrest(m.awayTeam.crest);
 }
 
 const out = { generatedAt: new Date(now).toISOString(), teams, matches };
