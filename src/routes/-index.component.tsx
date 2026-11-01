@@ -39,7 +39,7 @@ function Home() {
 				</p>
 			</section>
 
-			<section className="min-h-[80vh]">
+			<section className="min-h-screen">
 				{!loading && (
 					<>
 						<MatchFilters {...filters} />
