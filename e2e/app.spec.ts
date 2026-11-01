@@ -120,7 +120,9 @@ test("overview shows fixtures within the default 30-day range", async ({
 	).toHaveCount(1);
 
 	// Beyond the 30-day window -> hidden on the overview.
-	await expect(rowMatching(page, ["Liverpool", "Chelsea"])).toHaveCount(0);
+	await expect(
+		rowMatching(page, ["Bayern München", "Borussia Dortmund"]),
+	).toHaveCount(0);
 
 	// Only the in-range Real Madrid vs Barcelona row is present; the TBD
 	// fixture (far in the future) is hidden.
