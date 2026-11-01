@@ -12,10 +12,23 @@ if (!desktopDir || !mobileDir) {
 
 const CATS = ["performance", "accessibility", "best-practices", "seo"];
 
+// maps finalUrl -> temporary public storage report link (written by lhci upload)
+function loadLinks(dir) {
+	const p = join(dir, "links.json");
+	if (!existsSync(p)) return null;
+	try {
+		return JSON.parse(readFileSync(p, "utf8"));
+	} catch {
+		return null;
+	}
+}
+
 function collect(dir) {
 	if (!existsSync(dir)) return [];
+	const links = loadLinks(dir);
 	const rows = [];
 	for (const f of readdirSync(dir)) {
+		if (!f.endsWith(".report.json")) continue;
 		let lhr;
 		try {
 			lhr = JSON.parse(readFileSync(join(dir, f), "utf8"));
@@ -23,9 +36,12 @@ function collect(dir) {
 			continue; // skip malformed report
 		}
 		const cats = lhr.categories || {};
+		const url = lhr.finalUrl || lhr.requestedUrl;
+		if (!url) continue; // report without a resolvable url: nothing to tabulate
 		rows.push({
-			url: lhr.finalUrl || lhr.requestedUrl || "?",
+			url,
 			scores: CATS.map((c) => Math.round((cats[c]?.score ?? 0) * 100)),
+			link: links?.[url] ?? "",
 		});
 	}
 	return rows;
@@ -36,10 +52,12 @@ function summarize(rows) {
 	const m = new Map();
 	for (const r of rows) {
 		const prev = m.get(r.url);
-		m.set(
-			r.url,
-			prev ? prev.map((s, i) => Math.min(s, r.scores[i])) : r.scores,
-		);
+		m.set(r.url, {
+			scores: prev
+				? prev.scores.map((s, i) => Math.min(s, r.scores[i]))
+				: r.scores,
+			link: prev?.link || r.link,
+		});
 	}
 	return [...m.entries()].sort((a, b) => a[0].localeCompare(b[0]));
 }
@@ -48,13 +66,17 @@ const desktop = summarize(collect(desktopDir));
 const mobile = summarize(collect(mobileDir));
 
 const head =
-	"| Route | Preset | Performance | Accessibility | Best-Practices | SEO |\n" +
-	"| --- | --- | ---: | ---: | ---: | ---: |";
+	"| Route | Preset | Performance | Accessibility | Best-Practices | SEO | Report |\n" +
+	"| --- | --- | ---: | ---: | ---: | ---: | --- |";
 const lines = [];
-for (const [url, scores] of desktop)
-	lines.push(`| ${url} | desktop | ${scores.join(" | ")} |`);
-for (const [url, scores] of mobile)
-	lines.push(`| ${url} | mobile | ${scores.join(" | ")} |`);
+for (const [url, { scores, link }] of desktop)
+	lines.push(
+		`| ${url} | desktop | ${scores.join(" | ")} | ${link ? `[open](${link})` : "—"} |`,
+	);
+for (const [url, { scores, link }] of mobile)
+	lines.push(
+		`| ${url} | mobile | ${scores.join(" | ")} | ${link ? `[open](${link})` : "—"} |`,
+	);
 const table = [head, ...lines].join("\n");
 
 const summaryPath = process.env.GITHUB_STEP_SUMMARY;
