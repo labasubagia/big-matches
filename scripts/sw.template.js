@@ -42,19 +42,11 @@ registerRoute(
 	async ({ request }) => {
 		const url = new URL(request.url);
 		try {
-			const response = await fetch(request);
-			if (response.ok) {
-				const copy = response.clone();
-				caches.open("navigation").then((cache) => cache.put(request, copy));
-			}
-			return response;
+			return await fetch(request);
 		} catch {
-			const cache = await caches.open("navigation");
-			const routeShell = `${url.href.replace(/\/?$/, "")}/index.html`;
+			const routeShell = `${url.pathname.replace(/\/?$/, "")}/index.html`;
 			return (
-				(await cache.match(request)) ||
-				(await matchPrecache(routeShell)) ||
-				(await matchPrecache(NAV_FALLBACK))
+				(await matchPrecache(routeShell)) || (await matchPrecache(NAV_FALLBACK))
 			);
 		}
 	},

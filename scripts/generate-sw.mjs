@@ -27,6 +27,7 @@ for (const lib of runtimeLibs) {
 const { count, size, warnings } = await injectManifest({
 	globDirectory: clientDir,
 	globPatterns: ["**/*.{html,js,css,json}"],
+	globIgnores: ["workbox-v7.4.1/**"],
 	maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
 	swSrc: resolve("scripts/sw.template.js"),
 	swDest: resolve(clientDir, "sw.js"),
