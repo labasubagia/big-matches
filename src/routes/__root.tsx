@@ -8,6 +8,7 @@ import {
 import type { ReactNode } from "react";
 import { useEffect } from "react";
 import "../styles.css";
+import { SITE_URL } from "../config/site";
 
 const navLinkClass =
 	"rounded-md px-2.5 py-1 text-inherit [text-decoration-line:none]";
@@ -56,11 +57,23 @@ export const Route = createRootRoute({
 				content:
 					"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'",
 			},
-			{ title: "Big Matches" },
 		],
 		links: [
 			{ rel: "manifest", href: "/big-matches/manifest.webmanifest" },
 			{ rel: "apple-touch-icon", href: "/big-matches/icon-192.png" },
+		],
+		scripts: [
+			{
+				type: "application/ld+json",
+				children: JSON.stringify({
+					"@context": "https://schema.org",
+					"@type": "WebSite",
+					name: "Big Matches",
+					url: `${SITE_URL}/`,
+					description:
+						"Football fixtures between selected teams, filtered by date range and club, from the Football-Data.org free plan.",
+				}),
+			},
 		],
 	}),
 	component: RootComponent,

@@ -5,9 +5,26 @@ import {
 	AccordionItem,
 	AccordionTrigger,
 } from "../components/ui/accordion";
+import { SITE_URL } from "../config/site";
 import { FAQ_ENTRIES } from "../lib/faqContent";
 
 export const Route = createFileRoute("/faq")({
+	head: () => ({
+		meta: [
+			{ title: "FAQ | Big Matches" },
+			{
+				name: "description",
+				content:
+					"Which competitions Big Matches covers on the Football-Data.org free plan, which need a paid tier, and how team selection works.",
+			},
+		],
+		links: [
+			{
+				rel: "canonical",
+				href: `${SITE_URL}/faq`,
+			},
+		],
+	}),
 	component: Faq,
 });
 
