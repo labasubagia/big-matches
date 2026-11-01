@@ -100,32 +100,42 @@ async function fetchMatches() {
 
 // Download team crests from Football-Data's public CDN into public/crests/ so
 // the app never depends on a third-party origin at runtime: page loads stay
-// same-origin and fast. A failed download keeps the remote URL (renders fine,
-// just slower) and logs a dev warning.
+// same-origin and fast. A failed download drops that crest (the UI falls back
+// to the team initial) and logs a dev warning.
 async function downloadCrests(urls) {
 	const dir = path.join(ROOT, "public", "crests");
 	mkdirSync(dir, { recursive: true });
 	const map = new Map();
-	for (const url of urls) {
-		if (!url?.startsWith("https://") || map.has(url)) continue;
-		let name;
-		try {
-			name = path.basename(new URL(url).pathname);
-		} catch {
-			continue;
+	const CONCURRENCY = 6;
+	let i = 0;
+	const worker = async () => {
+		while (i < urls.length) {
+			const url = urls[i++];
+			if (!url?.startsWith("https://") || map.has(url)) continue;
+			let name;
+			try {
+				name = path.basename(new URL(url).pathname);
+			} catch {
+				continue;
+			}
+			try {
+				const res = await fetch(url);
+				if (!res.ok) throw new Error(`HTTP ${res.status}`);
+				writeFileSync(
+					path.join(dir, name),
+					Buffer.from(await res.arrayBuffer()),
+				);
+				map.set(url, `crests/${name}`);
+			} catch (e) {
+				console.warn(
+					`crest download failed for ${url}: ${e.message}; dropping crest`,
+				);
+			}
 		}
-		const dest = path.join(dir, name);
-		try {
-			const res = await fetch(url);
-			if (!res.ok) throw new Error(`HTTP ${res.status}`);
-			writeFileSync(dest, Buffer.from(await res.arrayBuffer()));
-			map.set(url, `crests/${name}`);
-		} catch (e) {
-			console.warn(
-				`crest download failed for ${url}: ${e.message}; keeping remote`,
-			);
-		}
-	}
+	};
+	await Promise.all(
+		Array.from({ length: Math.min(CONCURRENCY, urls.length) }, worker),
+	);
 	return map;
 }
 
@@ -178,7 +188,8 @@ for (const m of matches) {
 	if (m.awayTeam?.crest) crestUrls.add(m.awayTeam.crest);
 }
 const crestMap = await downloadCrests([...crestUrls]);
-const localCrest = (url) => crestMap.get(url) ?? url;
+const localCrest = (url) =>
+	!url || /^https?:\/\//.test(url) ? crestMap.get(url) : url;
 for (const t of teams) if (t.crest) t.crest = localCrest(t.crest);
 for (const m of matches) {
 	if (m.homeTeam?.crest) m.homeTeam.crest = localCrest(m.homeTeam.crest);
