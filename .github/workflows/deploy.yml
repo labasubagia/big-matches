@@ -33,6 +33,9 @@ jobs:
         run: npm run data:gen
         env:
           FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
+      - name: Derive deployed site URL
+        run: |
+          echo "VITE_SITE_URL=https://${GITHUB_REPOSITORY%%/*}.github.io/${GITHUB_REPOSITORY#*/}/" >> "$GITHUB_ENV"
       - run: npm run build
         env:
           VITE_FIXTURES: production
