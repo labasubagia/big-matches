@@ -23,8 +23,10 @@ function collect(dir) {
 			continue; // skip malformed report
 		}
 		const cats = lhr.categories || {};
+		const url = lhr.finalUrl || lhr.requestedUrl;
+		if (!url) continue; // report without a resolvable url: nothing to tabulate
 		rows.push({
-			url: lhr.finalUrl || lhr.requestedUrl || "?",
+			url,
 			scores: CATS.map((c) => Math.round((cats[c]?.score ?? 0) * 100)),
 		});
 	}
