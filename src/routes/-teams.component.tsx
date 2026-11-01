@@ -92,6 +92,7 @@ function Teams() {
 					<Button
 						variant="outline"
 						size="sm"
+						className="cursor-pointer"
 						onClick={resetToDefault}
 						disabled={!ready}
 					>
@@ -100,6 +101,7 @@ function Teams() {
 					<Button
 						variant="outline"
 						size="sm"
+						className="cursor-pointer"
 						onClick={reset}
 						disabled={!ready || selected.length === 0}
 					>
