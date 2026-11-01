@@ -115,7 +115,9 @@ function injectPreload(html) {
 		if (href) links.push(`<link rel="preload" as="style" href="${href}">`);
 	}
 	if (entry) {
-		links.push(`<link rel="preload" as="script" href="${entry[1]}">`);
+		links.push(
+			`<link rel="preload" as="script" crossorigin="anonymous" href="${entry[1]}">`,
+		);
 	}
 	if (links.length === 0) return html;
 	return html.replace("<head>", `<head>\n${links.join("\n")}`);
