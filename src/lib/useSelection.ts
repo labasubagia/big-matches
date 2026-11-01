@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { DEFAULT_SELECTED_IDS } from "../config/teams";
 import type { Team } from "./filterBigMatches";
 import { readSavedSelection, toggleId, writeSelection } from "./selections";
 
@@ -26,6 +27,11 @@ export function useSelection(teams: Team[]) {
 		setSelected([]);
 		writeSelection([]);
 	}, []);
+	const resetToDefault = useCallback(() => {
+		const next = DEFAULT_SELECTED_IDS.filter((id) => validIds.has(id));
+		setSelected(next);
+		writeSelection(next);
+	}, [validIds]);
 
-	return { selected, ready, toggle, reset };
+	return { selected, ready, toggle, reset, resetToDefault };
 }
