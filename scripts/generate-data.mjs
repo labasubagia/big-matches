@@ -17,6 +17,13 @@ const API_URL =
 	process.env.FOOTBALL_DATA_API_BASE ?? "https://api.football-data.org/v4";
 const KEY = process.env.FOOTBALL_DATA_API_KEY;
 const CODES = ["PL", "PD", "SA", "BL1", "FL1", "CL"];
+const TOP5_LEAGUE_NAMES = new Set([
+	"Premier League",
+	"Primera Division",
+	"Serie A",
+	"Bundesliga",
+	"Ligue 1",
+]);
 const TEAMS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 let lastRequestMs = 0;
@@ -191,6 +198,17 @@ if (staleTeams) {
 	teams = prev.teams;
 }
 console.log(`teams: ${staleTeams ? "refreshed" : "reused"} (${teams.length})`);
+const uclIds = new Set(
+	teams
+		.filter((t) => t.competition === "UEFA Champions League")
+		.map((t) => t.id),
+);
+const top5LeagueIds = new Set(
+	teams.filter((t) => TOP5_LEAGUE_NAMES.has(t.competition)).map((t) => t.id),
+);
+const defaultSelectedIds = [...uclIds]
+	.filter((id) => top5LeagueIds.has(id))
+	.sort((a, b) => a - b);
 
 const matches = await fetchMatches();
 console.log(`matches: ${matches.length} (season ${currentSeason()})`);
@@ -216,8 +234,12 @@ for (const m of matches) {
 	if (m.homeTeam?.crest) m.homeTeam.crest = localCrest(m.homeTeam.crest);
 	if (m.awayTeam?.crest) m.awayTeam.crest = localCrest(m.awayTeam.crest);
 }
-
-const out = { generatedAt: new Date(now).toISOString(), teams, matches };
+const out = {
+	generatedAt: new Date(now).toISOString(),
+	teams,
+	matches,
+	defaultSelectedIds,
+};
 writeFileSync(OUT, `${JSON.stringify(out, null, 2)}\n`);
 console.log(
 	`wrote ${OUT}: ${teams.length} teams, ${matches.length} matches (${(
