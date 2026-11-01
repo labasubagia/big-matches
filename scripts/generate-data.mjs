@@ -253,7 +253,7 @@ const trimmedMatches = matches.map((m) => ({
 const out = {
 	generatedAt: new Date(now).toISOString(),
 	teams,
-	trimmedMatches,
+	matches: trimmedMatches,
 };
 writeFileSync(OUT, `${JSON.stringify(out, null, 2)}\n`);
 console.log(
