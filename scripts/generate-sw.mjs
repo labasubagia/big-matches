@@ -102,29 +102,3 @@ self.addEventListener("fetch", (event) => {
 
 writeFileSync(join(CLIENT_DIR, "sw.js"), sw);
 console.log(`sw.js written (${precache.length} html urls, cache ${cacheName})`);
-
-// Inject <link rel="preload"> for the entry stylesheet + main script into each
-// prerendered route HTML so they start fetching before later chunks are seen.
-function injectPreload(html) {
-	const css = html.match(/<link[^>]*rel="stylesheet"[^>]*>/);
-	const entry = html.match(/<script[^>]*type="module"[^>]*src="([^"]+)"[^>]*>/);
-	if (!css && !entry) return html;
-	const links = [];
-	if (css) {
-		const href = css[0].match(/href="([^"]+)"/)?.[1];
-		if (href) links.push(`<link rel="preload" as="style" href="${href}">`);
-	}
-	if (entry) {
-		links.push(
-			`<link rel="preload" as="script" crossorigin="anonymous" href="${entry[1]}">`,
-		);
-	}
-	if (links.length === 0) return html;
-	return html.replace("<head>", `<head>\n${links.join("\n")}`);
-}
-
-for (const p of files.filter((f) => f.endsWith("index.html"))) {
-	const html = readFileSync(p, "utf8");
-	const out = injectPreload(html);
-	if (out !== html) writeFileSync(p, out);
-}
