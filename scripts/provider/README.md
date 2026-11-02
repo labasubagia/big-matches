@@ -78,14 +78,14 @@ Compatibility matrix vs the Football-Data.org free baseline (current-season
 fixtures for the big leagues + UCL, no Europa League / domestic cups). Sources
 are official provider docs/pages unless marked `[INFERENCE]`.
 
-| Provider | Free tier | Current season | UCL on free | Europa League + cups on free | Rosters / crests | Free rate limit |
-|---|---|---|---|---|---|---|
-| **Football-Data.org** (baseline) | ✅ | ✅ | ✅ | ❌ (paid) | ✅ full squads, crests | 10 req/min |
-| **TheSportsDB** | ✅ | ✅ | ⚠️ (15-event cap → qualifiers only) | ✅ | ⚠️ roster = clubs in the 15 events | 30 req/min, sticky 429 |
-| **API-Football** | ✅ | ❌ only 2022–24 | ❌ | ❌ | ✅ rich | 100 req/day |
-| **Sportmonks** | ✅ | ✅ | only if picked | ❌ (free = 2 leagues total) | ✅ rich | 3k calls/entity/hr |
-| **Football-API.com** | ❌ free trial only | ✅ | ✅ | ❌ (paid plans) | ✅ | n/a (trial) |
-| **StatsBomb Open Data** | ✅ (GitHub JSON) | ❌ historical/analytics | select comps | select comps | events, not rosters | n/a (static files) |
+| Provider | Free tier | Current season | UCL on free | Europa League + cups on free | Rosters / crests | Free rate limit | Source (proof) |
+|---|---|---|---|---|---|---|---|
+| **Football-Data.org** (baseline) | ✅ | ✅ | ✅ | ❌ (paid) | ✅ full squads, crests | 10 req/min | [coverage](https://www.football-data.org/coverage) |
+| **TheSportsDB** | ✅ | ✅ | ⚠️ (15-event cap → qualifiers only) | ✅ | ⚠️ roster = clubs in the 15 events | 30 req/min, sticky 429 | [API guide](https://www.thesportsdb.com/docs_api_guide) |
+| **API-Football** | ✅ | ❌ only 2022–24 | ❌ | ❌ | ✅ rich | 100 req/day | [docs](https://www.api-football.com/documentation-v3), [free-season article](https://www.api-football.com/news/post/how-to-get-all-data-from-a-league-with-api-football) |
+| **Sportmonks** | ✅ | ✅ | only if picked | ❌ (free = 2 leagues total) | ✅ rich | 3k calls/entity/hr | [pricing](https://www.sportmonks.com/football-api), [rate limits](https://docs.sportmonks.com/v3/welcome/best-practices.md) |
+| **Football-API.com** | ❌ free trial only | ✅ | ✅ | ❌ (paid plans) | ✅ | n/a (trial) | [FAQ](https://football-api.com/faq), [prices](https://football-api.com/prices) `[INFERENCE]` |
+| **StatsBomb Open Data** | ✅ (GitHub JSON) | ❌ historical/analytics | select comps | select comps | events, not rosters | n/a (static files) | [GitHub repo](https://github.com/hudl/open-data) |
 
 Sources:
 - Football-Data.org coverage/pricing: <https://www.football-data.org/coverage>
