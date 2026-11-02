@@ -46,6 +46,30 @@ const ROOT = path.resolve(
 	"../..",
 );
 const OUT = path.join(ROOT, "src", "lib", "fixtures.json");
+/** Minimal .env loader (npm scripts don't source it); only sets unset vars. */
+function loadDotEnv(dir: string): void {
+	try {
+		const text = readFileSync(path.join(dir, ".env"), "utf8");
+		for (const raw of text.split(/\r?\n/)) {
+			const line = raw.trim();
+			if (!line || line.startsWith("#")) continue;
+			const eq = line.indexOf("=");
+			if (eq === -1) continue;
+			const key = line.slice(0, eq).trim();
+			let val = line.slice(eq + 1).trim();
+			if (
+				(val.startsWith('"') && val.endsWith('"')) ||
+				(val.startsWith("'") && val.endsWith("'"))
+			) {
+				val = val.slice(1, -1);
+			}
+			if (key && process.env[key] === undefined) process.env[key] = val;
+		}
+	} catch {
+		// no .env — rely on ambient env
+	}
+}
+loadDotEnv(ROOT);
 
 const TEAMS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
