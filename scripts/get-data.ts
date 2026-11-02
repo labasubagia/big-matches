@@ -2,30 +2,10 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
-
-// Generates the static data file the app reads at build time. Run in CI (see
-// .github/workflows/deploy.yml). Teams refresh weekly, matches daily; both are
-// written to a single JSON file. Matches are the full season for each
-// competition (the aggregate /matches endpoint only returns upcoming fixtures).
-// Calls are paced 12s apart and retry once on 429: ~2 requests/competition (1
-// teams + 1 matches) stays within the free-tier 10 req/min budget.
-
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const OUT = path.join(ROOT, "src", "lib", "fixtures.json");
-
-const CODES = process.env.COMPETITION_CODES?.split(",")
-	.map((s) => s.trim())
-	.filter(Boolean) ?? ["PL", "PD", "SA", "BL1", "FL1", "CL"];
-const TEAMS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
-
-const sleep = (ms: number): Promise<void> => {
-	const { promise, resolve } = Promise.withResolvers<void>();
-	setTimeout(resolve, ms);
-	return promise;
-};
+import { createFootballDataProvider } from "./provider/football-data-org.ts";
 
 /** A team as the app consumes it (see src/lib/filterBigMatches.ts). */
-interface Team {
+export interface Team {
 	id: number;
 	name: string;
 	shortName?: string;
@@ -34,7 +14,7 @@ interface Team {
 }
 
 /** A match as the app consumes it (see src/lib/filterBigMatches.ts). */
-interface Match {
+export interface Match {
 	id: number;
 	utcDate: string;
 	status: string;
@@ -54,105 +34,20 @@ interface Match {
  * schema. Each provider owns its transport: auth, rate limiting, and error
  * handling.
  */
-interface DataProvider {
+export interface DataProvider {
 	name: string;
 	fetchTeams(code: string): Promise<Team[]>;
 	fetchMatches(code: string): Promise<Match[]>;
 	season(): string;
 }
 
-/**
- * Football-Data.org v4 provider. Free tier: 12 competitions (no UEFA Europa
- * League / domestic cups). Transport: X-Auth-Token header, 12s pacing (10
- * req/min), one retry on network error / 429.
- */
-function createFootballDataProvider({
-	baseUrl,
-	key,
-}: {
-	baseUrl: string;
-	key?: string;
-}): DataProvider {
-	let lastRequestMs = 0;
-	const REQUEST_GAP_MS = 12000;
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const OUT = path.join(ROOT, "src", "lib", "fixtures.json");
 
-	async function throttle() {
-		const wait = lastRequestMs
-			? Math.max(0, REQUEST_GAP_MS - (Date.now() - lastRequestMs))
-			: 0;
-		if (wait > 0) await sleep(wait);
-		lastRequestMs = Date.now();
-	}
-
-	async function fetchJson(p: string, isRetry = false): Promise<unknown> {
-		if (!key) {
-			throw new Error("FOOTBALL_DATA_API_KEY not set");
-		}
-		await throttle();
-		let res: Response;
-		try {
-			res = await fetch(`${baseUrl}${p}`, {
-				headers: { "X-Auth-Token": key },
-			});
-		} catch (err) {
-			if (isRetry) throw err;
-			console.warn(`network error (${p}); retrying in 10s`);
-			await sleep(10000);
-			return fetchJson(p, true);
-		}
-		if (res.status === 429) {
-			if (isRetry) {
-				throw new Error(`Football-Data API 429 for ${p} (still rate limited)`);
-			}
-			console.warn(`rate limited (${p}); retrying in 10s`);
-			await sleep(10000);
-			return fetchJson(p, true);
-		}
-		if (!res.ok) {
-			const detail = await res.text().catch(() => "");
-			throw new Error(
-				`Football-Data API ${res.status} for ${p}: ${detail.slice(0, 300)}`,
-			);
-		}
-		return res.json();
-	}
-
-	function currentSeason() {
-		const d = new Date();
-		return String(
-			d.getUTCMonth() + 1 >= 8 ? d.getUTCFullYear() : d.getUTCFullYear() - 1,
-		);
-	}
-
-	async function fetchTeams(code: string): Promise<Team[]> {
-		const data = (await fetchJson(`/competitions/${code}/teams`)) as {
-			competition?: { name?: string };
-			teams?: Team[];
-		};
-		const name = data.competition?.name ?? code;
-		return (data.teams ?? []).map((t) => ({
-			id: t.id,
-			name: t.name,
-			shortName: t.shortName,
-			competition: name,
-			crest: t.crest,
-		}));
-	}
-
-	async function fetchMatches(code: string): Promise<Match[]> {
-		const data = (await fetchJson(
-			`/competitions/${code}/matches?season=${currentSeason()}`,
-		)) as { matches?: Match[] };
-		return data.matches ?? [];
-	}
-
-	return {
-		name: "footballdata",
-		fetchTeams,
-		fetchMatches,
-		season: currentSeason,
-	};
-}
+const CODES = process.env.COMPETITION_CODES?.split(",")
+	.map((s) => s.trim())
+	.filter(Boolean) ?? ["PL", "PD", "SA", "BL1", "FL1", "CL"];
+const TEAMS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 /** Registered providers; pick one via DATA_PROVIDER env (default football-data). */
 const PROVIDERS: Record<string, DataProvider> = {
