@@ -3,8 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 import { createFootballDataProvider } from "./provider/football-data-org.ts";
-
-/** A team as the app consumes it (see src/lib/filterBigMatches.ts). */
+import { createTheSportsDBProvider } from "./provider/the-sport-db-com.ts";
 export interface Team {
 	id: number;
 	name: string;
@@ -55,6 +54,9 @@ const PROVIDERS: Record<string, DataProvider> = {
 		baseUrl:
 			process.env.FOOTBALL_DATA_API_BASE ?? "https://api.football-data.org/v4",
 		key: process.env.FOOTBALL_DATA_API_KEY,
+	}),
+	thesportsdb: createTheSportsDBProvider({
+		key: process.env.THESPORTSDB_API_KEY,
 	}),
 };
 
