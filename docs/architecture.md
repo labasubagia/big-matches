@@ -4,18 +4,22 @@ Internal design notes. For usage, see [../README.md](../README.md).
 
 ## Data pipeline
 
-Fully static. `scripts/generate-data.mjs` fetches teams and matches from
-Football-Data.org v4 and writes both to `src/lib/fixtures.json`. The frontend
-imports that JSON at build time — there is no runtime API access and no key in
-the browser or build.
+Fully static. `scripts/provider/index.ts` is the orchestrator: it loads the
+selected provider (default Football-Data.org v4), fetches teams and matches, and
+writes both to `src/lib/fixtures.json`. The frontend imports that JSON at build
+time — there is no runtime API access and no key in the browser or build.
 
-API base is `https://api.football-data.org/v4` unless `FOOTBALL_DATA_API_BASE`
-is set. Team codes: PL, PD, SA, BL1, FL1, CL. UEL is excluded — Football-Data.org
-serves it only on a paid plan.
+Providers implement the `DataProvider` interface (`fetchTeams`, `fetchMatches`,
+`season`, `defaultCompetitionCodes`); pick one with `DATA_PROVIDER`
+(`footballdata` default, `thesportsdb`). See `scripts/provider/README.md` for
+per-provider auth, pacing, and free-tier limits. Competition codes come from
+`COMPETITION_CODES` (per-provider defaults; Football-Data: PL, PD, SA, BL1,
+FL1, CL — UEL is excluded because it is paid-only there).
 
 Matches are the full season per competition (the aggregate `/matches` endpoint
-only returns upcoming fixtures). Requests are paced 12s apart and retried once on
-429: ~5 requests per run stays within the free-tier 10 req/min budget.
+only returns upcoming fixtures). Football-Data requests are paced 12s apart and
+retried once on 429: ~5 requests per run stays within the free-tier 10 req/min
+budget.
 
 ## CI cadence (.github/workflows/deploy.yml)
 

@@ -213,6 +213,7 @@ if (staleTeams) {
 		all,
 		prev,
 		provider.name,
+		CODES,
 	);
 	if (warned) {
 		console.error(

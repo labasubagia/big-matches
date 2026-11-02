@@ -39,4 +39,15 @@ describe("resolveTeams", () => {
 		expect(r.teams).toEqual([]);
 		expect(r.warned).toBe(false);
 	});
+
+	it("flags a fallback when competition codes changed (regression: old-code roster + new-code matches)", () => {
+		const prev = {
+			provider: "footballdata",
+			codes: ["PL"],
+			teams: [team(57, "Arsenal")],
+		};
+		const r = resolveTeams([], prev, "footballdata", ["PD"]);
+		expect(r.warned).toBe(true);
+		expect(r.teams).toEqual(prev.teams);
+	});
 });
