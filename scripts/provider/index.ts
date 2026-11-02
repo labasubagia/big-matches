@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -58,6 +59,10 @@ function loadDotEnv(dir: string): void {
 			if (eq === -1) continue;
 			const key = line.slice(0, eq).trim();
 			let val = line.slice(eq + 1).trim();
+			if (!val.startsWith('"') && !val.startsWith("'")) {
+				const hashIdx = val.indexOf("#");
+				if (hashIdx !== -1) val = val.slice(0, hashIdx).trim();
+			}
 			if (
 				(val.startsWith('"') && val.endsWith('"')) ||
 				(val.startsWith("'") && val.endsWith("'"))
@@ -128,7 +133,7 @@ async function downloadCrests(urls: string[]): Promise<Map<string, string>> {
 				const res = await fetch(url);
 				if (!res.ok) throw new Error(`HTTP ${res.status}`);
 				const buf = Buffer.from(await res.arrayBuffer());
-				const webp = `${name.replace(/\.png$/, "")}.webp`;
+				const webp = `${name.replace(/\.png$/, "")}-${createHash("sha1").update(url).digest("hex").slice(0, 8)}.webp`;
 				await sharp(buf)
 					.resize({
 						width: 48,
@@ -200,8 +205,9 @@ if (staleTeams) {
 	);
 	if (warned) {
 		console.error(
-			`WARNING: team fetch failed for every competition; reusing ${prev?.provider} roster while matches come from ${provider.name} — fixtures may be inconsistent; rerun generation to fix`,
+			`FATAL: team fetch failed for every competition; reusing ${prev?.provider} roster while matches come from ${provider.name} would publish an inconsistent fixture set`,
 		);
+		process.exit(1);
 	}
 	teams = resolvedTeams;
 } else if (prev) {

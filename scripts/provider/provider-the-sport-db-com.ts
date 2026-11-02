@@ -53,7 +53,8 @@ const mapStatus = (raw: unknown): string => {
 		.trim()
 		.toLowerCase();
 	if (!v) return "SCHEDULED";
-	if (v === "ft" || v.includes("finish")) return "FINISHED";
+	if (v === "ft" || v === "aet" || v === "pen" || v.includes("finish"))
+		return "FINISHED";
 	if (
 		v === "ns" ||
 		v.includes("not start") ||
@@ -82,8 +83,9 @@ const normalizeUtcDate = (raw: unknown): string => {
 	if (typeof raw !== "string" || !raw.trim()) return tbd();
 	const trimmed = raw.trim();
 	if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return `${trimmed}T00:00:00Z`;
-	const hasOffset = /(Z|[+-]\d{2}:\d{2})$/.test(trimmed);
-	const d = new Date(hasOffset ? trimmed : `${trimmed}Z`);
+	const normalized = trimmed.replace(/ /g, "T");
+	const hasOffset = /(Z|[+-]\d{2}:\d{2})$/.test(normalized);
+	const d = new Date(hasOffset ? normalized : `${normalized}Z`);
 	if (Number.isNaN(d.getTime())) return tbd();
 	return d.toISOString();
 };
@@ -229,16 +231,16 @@ export function createTheSportsDBProvider({
 			await sleep(RETRY_PAUSE_MS);
 			return fetchJson(endpoint, true);
 		}
-		if (res.status === 429 || !res.ok) {
-			const text = await res.text().catch(() => "");
-			if (/^error code/i.test(text.trim())) {
-				if (isRetry) {
-					throw new Error(`TheSportsDB rate-limited (${text.trim()})`);
-				}
-				console.warn(`TheSportsDB rate-limited; retrying in 30s`);
-				await sleep(RETRY_PAUSE_MS);
-				return fetchJson(endpoint, true);
+		if (res.status === 429) {
+			if (isRetry) {
+				throw new Error(`TheSportsDB 429 for ${endpoint}`);
 			}
+			console.warn(`TheSportsDB rate-limited; retrying in 30s`);
+			await sleep(RETRY_PAUSE_MS);
+			return fetchJson(endpoint, true);
+		}
+		if (!res.ok) {
+			const text = await res.text().catch(() => "");
 			throw new Error(
 				`TheSportsDB ${res.status} for ${endpoint}: ${text.slice(0, 200)}`,
 			);
@@ -250,7 +252,7 @@ export function createTheSportsDBProvider({
 		search: Team[];
 		events: Match[];
 	}> {
-		const cached = competitionCache.get(code);
+		const cached = competitionCache.get(`${code}:${currentSeason()}`);
 		if (cached) return cached;
 		const league = CODE_TO_LEAGUE[code];
 		if (!league) {
@@ -284,7 +286,7 @@ export function createTheSportsDBProvider({
 		);
 		const events = parsedEvents.filter((m): m is Match => m !== null);
 		const result = { search, events };
-		competitionCache.set(code, result);
+		competitionCache.set(`${code}:${currentSeason()}`, result);
 		return result;
 	}
 

@@ -230,4 +230,51 @@ describe("thesportsdb provider", () => {
 		expect(matches).toHaveLength(1);
 		expect(matches[0]?.competition?.code).toBe("PD");
 	});
+	it("parses a space-separated strTimestamp as a real kickoff, not TBD", async () => {
+		mockFetch(() =>
+			seasonEvents([
+				{
+					idEvent: "50",
+					strTimestamp: "2026-08-16 19:00:00",
+					strStatus: "FT",
+					intHomeScore: "2",
+					intAwayScore: "1",
+					idHomeTeam: "133612",
+					strHomeTeam: "Manchester United",
+					idAwayTeam: "133600",
+					strAwayTeam: "Fulham",
+					idLeague: String(EPL_ID),
+					strLeague: "English Premier League",
+				},
+			]),
+		);
+		const provider = createTheSportsDBProvider({});
+		const matches = await provider.fetchMatches("PL");
+		expect(matches).toHaveLength(1);
+		expect(matches[0]?.utcDate).toBe("2026-08-16T19:00:00.000Z");
+		expect(matches[0]?.status).toBe("FINISHED");
+	});
+
+	it("classifies AET finals as FINISHED", async () => {
+		mockFetch(() =>
+			seasonEvents([
+				{
+					idEvent: "51",
+					strTimestamp: "2026-08-20T19:00:00",
+					strStatus: "AET",
+					intHomeScore: "3",
+					intAwayScore: "2",
+					idHomeTeam: "133612",
+					strHomeTeam: "Manchester United",
+					idAwayTeam: "133600",
+					strAwayTeam: "Fulham",
+					idLeague: String(EPL_ID),
+					strLeague: "English Premier League",
+				},
+			]),
+		);
+		const provider = createTheSportsDBProvider({});
+		const matches = await provider.fetchMatches("PL");
+		expect(matches[0]?.status).toBe("FINISHED");
+	});
 });
