@@ -130,7 +130,8 @@ async function downloadCrests(urls: string[]): Promise<Map<string, string>> {
 	return map;
 }
 
-let prev: { generatedAt?: string; teams?: Team[] } | null = null;
+let prev: { generatedAt?: string; teams?: Team[]; provider?: string } | null =
+	null;
 if (existsSync(OUT)) {
 	try {
 		prev = JSON.parse(readFileSync(OUT, "utf8"));
@@ -140,13 +141,14 @@ if (existsSync(OUT)) {
 }
 
 const now = Date.now();
+const provider = await getProvider();
 const staleTeams =
 	!prev ||
 	!Array.isArray(prev.teams) ||
 	!prev.generatedAt ||
+	prev.provider !== provider.name ||
 	now - new Date(prev.generatedAt).getTime() >= TEAMS_TTL_MS;
 
-const provider = await getProvider();
 let teams: Team[];
 if (staleTeams) {
 	const all: Team[] = [];
@@ -238,6 +240,7 @@ const trimmedMatches = matches.map((m) => ({
 }));
 const out = {
 	generatedAt: new Date(now).toISOString(),
+	provider: provider.name,
 	teams,
 	matches: trimmedMatches,
 };
