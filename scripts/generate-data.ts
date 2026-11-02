@@ -18,29 +18,61 @@ const CODES = process.env.COMPETITION_CODES?.split(",")
 	.filter(Boolean) ?? ["PL", "PD", "SA", "BL1", "FL1", "CL"];
 const TEAMS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms: number): Promise<void> => {
+	const { promise, resolve } = Promise.withResolvers<void>();
+	setTimeout(resolve, ms);
+	return promise;
+};
+
+/** A team as the app consumes it (see src/lib/filterBigMatches.ts). */
+interface Team {
+	id: number;
+	name: string;
+	shortName?: string;
+	competition: string;
+	crest?: string;
+}
+
+/** A match as the app consumes it (see src/lib/filterBigMatches.ts). */
+interface Match {
+	id: number;
+	utcDate: string;
+	status: string;
+	matchday?: number | null;
+	stage?: string | null;
+	competition?: { code?: string; name?: string };
+	homeTeam: { id: number; name: string; shortName?: string; crest?: string };
+	awayTeam: { id: number; name: string; shortName?: string; crest?: string };
+	score?: {
+		winner?: string | null;
+		fullTime?: { home?: number | null; away?: number | null };
+	};
+}
 
 /**
  * A data provider adapts an external football API to the app's fixtures.json
- * schema (Match/Team shapes in src/lib/filterBigMatches.ts). Each provider owns
- * its transport: auth, rate limiting, and error handling. A provider MUST
- * expose:
- *   fetchTeams(code)   -> Promise<Team[]>   {id, name, shortName, crest}
- *   fetchMatches(code) -> Promise<Match[]>  (full season, app Match shape)
- *
- * @typedef {Object} DataProvider
- * @property {string} name
- * @property {(code: string) => Promise<Array<object>>} fetchTeams
- * @property {(code: string) => Promise<Array<object>>} fetchMatches
- * @property {() => string} season
+ * schema. Each provider owns its transport: auth, rate limiting, and error
+ * handling.
  */
+interface DataProvider {
+	name: string;
+	fetchTeams(code: string): Promise<Team[]>;
+	fetchMatches(code: string): Promise<Match[]>;
+	season(): string;
+}
 
 /**
  * Football-Data.org v4 provider. Free tier: 12 competitions (no UEFA Europa
  * League / domestic cups). Transport: X-Auth-Token header, 12s pacing (10
  * req/min), one retry on network error / 429.
  */
-function createFootballDataProvider({ baseUrl, key }) {
+function createFootballDataProvider({
+	baseUrl,
+	key,
+}: {
+	baseUrl: string;
+	key?: string;
+}): DataProvider {
 	let lastRequestMs = 0;
 	const REQUEST_GAP_MS = 12000;
 
@@ -52,12 +84,12 @@ function createFootballDataProvider({ baseUrl, key }) {
 		lastRequestMs = Date.now();
 	}
 
-	async function fetchJson(p, isRetry = false) {
+	async function fetchJson(p: string, isRetry = false): Promise<unknown> {
 		if (!key) {
 			throw new Error("FOOTBALL_DATA_API_KEY not set");
 		}
 		await throttle();
-		let res;
+		let res: Response;
 		try {
 			res = await fetch(`${baseUrl}${p}`, {
 				headers: { "X-Auth-Token": key },
@@ -92,8 +124,11 @@ function createFootballDataProvider({ baseUrl, key }) {
 		);
 	}
 
-	async function fetchTeams(code) {
-		const data = await fetchJson(`/competitions/${code}/teams`);
+	async function fetchTeams(code: string): Promise<Team[]> {
+		const data = (await fetchJson(`/competitions/${code}/teams`)) as {
+			competition?: { name?: string };
+			teams?: Team[];
+		};
 		const name = data.competition?.name ?? code;
 		return (data.teams ?? []).map((t) => ({
 			id: t.id,
@@ -104,10 +139,10 @@ function createFootballDataProvider({ baseUrl, key }) {
 		}));
 	}
 
-	async function fetchMatches(code) {
-		const data = await fetchJson(
+	async function fetchMatches(code: string): Promise<Match[]> {
+		const data = (await fetchJson(
 			`/competitions/${code}/matches?season=${currentSeason()}`,
-		);
+		)) as { matches?: Match[] };
 		return data.matches ?? [];
 	}
 
@@ -120,7 +155,7 @@ function createFootballDataProvider({ baseUrl, key }) {
 }
 
 /** Registered providers; pick one via DATA_PROVIDER env (default football-data). */
-const PROVIDERS = {
+const PROVIDERS: Record<string, DataProvider> = {
 	footballdata: createFootballDataProvider({
 		baseUrl:
 			process.env.FOOTBALL_DATA_API_BASE ?? "https://api.football-data.org/v4",
@@ -128,18 +163,13 @@ const PROVIDERS = {
 	}),
 };
 
-async function getProvider() {
+async function getProvider(): Promise<DataProvider> {
 	const name = process.env.DATA_PROVIDER ?? "footballdata";
 	const provider = PROVIDERS[name];
 	if (!provider) {
 		throw new Error(
 			`Unknown DATA_PROVIDER "${name}" (available: ${Object.keys(PROVIDERS).join(", ")})`,
 		);
-	}
-	for (const method of ["fetchTeams", "fetchMatches"]) {
-		if (typeof provider[method] !== "function") {
-			throw new Error(`DATA_PROVIDER "${name}" is missing ${method}()`);
-		}
 	}
 	return provider;
 }
@@ -149,10 +179,10 @@ async function getProvider() {
 // same-origin and fast. Images are resized and converted to WebP (mobile
 // friendly). A failed download drops that crest (the UI falls back to the team
 // initial) and logs a dev warning.
-async function downloadCrests(urls) {
+async function downloadCrests(urls: string[]): Promise<Map<string, string>> {
 	const dir = path.join(ROOT, "public", "crests");
 	mkdirSync(dir, { recursive: true });
-	const map = new Map();
+	const map = new Map<string, string>();
 	const CONCURRENCY = 6;
 	let failed = 0;
 	let skipped = 0;
@@ -164,7 +194,7 @@ async function downloadCrests(urls) {
 				skipped++;
 				continue;
 			}
-			let name;
+			let name: string;
 			try {
 				name = path.basename(new URL(url).pathname);
 			} catch {
@@ -189,7 +219,7 @@ async function downloadCrests(urls) {
 			} catch (e) {
 				failed++;
 				console.warn(
-					`crest download failed for ${url}: ${e.message}; dropping crest`,
+					`crest download failed for ${url}: ${e instanceof Error ? e.message : e}; dropping crest`,
 				);
 			}
 		}
@@ -203,7 +233,7 @@ async function downloadCrests(urls) {
 	return map;
 }
 
-let prev = null;
+let prev: { generatedAt?: string; teams?: Team[] } | null = null;
 if (existsSync(OUT)) {
 	try {
 		prev = JSON.parse(readFileSync(OUT, "utf8"));
@@ -220,30 +250,36 @@ const staleTeams =
 	now - new Date(prev.generatedAt).getTime() >= TEAMS_TTL_MS;
 
 const provider = await getProvider();
-let teams;
+let teams: Team[];
 if (staleTeams) {
-	const all = [];
+	const all: Team[] = [];
 	for (const code of CODES) {
 		try {
 			all.push(...(await provider.fetchTeams(code)));
 		} catch (e) {
-			console.error(`skip teams for ${code}: ${e.message}`);
+			console.error(
+				`skip teams for ${code}: ${e instanceof Error ? e.message : e}`,
+			);
 		}
 	}
 	// Keep the previous roster if this refresh yielded nothing, so a transient
 	// failure never clobbers good data with an empty list.
 	teams = all.length ? all : (prev?.teams ?? []);
+} else if (prev) {
+	teams = prev.teams ?? [];
 } else {
-	teams = prev.teams;
+	teams = [];
 }
 console.log(`teams: ${staleTeams ? "refreshed" : "reused"} (${teams.length})`);
 
-const matches = [];
+const matches: Match[] = [];
 for (const code of CODES) {
 	try {
 		matches.push(...(await provider.fetchMatches(code)));
 	} catch (e) {
-		console.error(`skip matches for ${code}: ${e.message}`);
+		console.error(
+			`skip matches for ${code}: ${e instanceof Error ? e.message : e}`,
+		);
 	}
 }
 console.log(`matches: ${matches.length} (season ${provider.season()})`);
@@ -255,15 +291,15 @@ if (teams.length === 0 && matches.length === 0) {
 
 // Pull crests from the remote CDN into public/crests/ and point all references
 // at the local copies so the page loads entirely same-origin.
-const crestUrls = new Set();
+const crestUrls = new Set<string>();
 for (const t of teams) if (t.crest) crestUrls.add(t.crest);
 for (const m of matches) {
 	if (m.homeTeam?.crest) crestUrls.add(m.homeTeam.crest);
 	if (m.awayTeam?.crest) crestUrls.add(m.awayTeam.crest);
 }
 const crestMap = await downloadCrests([...crestUrls]);
-const localCrest = (url) =>
-	!url || /^https?:\/\//.test(url) ? crestMap.get(url) : url;
+const localCrest = (url?: string): string | undefined =>
+	url && /^https?:\/\//.test(url) ? crestMap.get(url) : url;
 for (const t of teams) if (t.crest) t.crest = localCrest(t.crest);
 for (const m of matches) {
 	if (m.homeTeam?.crest) m.homeTeam.crest = localCrest(m.homeTeam.crest);
