@@ -8,7 +8,7 @@ Big Matches is a React app with three routes — Overview, Teams, FAQ — that s
 - User team selection lives in the browser (localStorage), is set on the Teams page (teams grouped by competition, selected teams highlighted), and is applied client-side as a pure filter over the fetched matches.
 - Teams are derived from each competition's team rosters (`/competitions/{code}/teams`, free tier) and cached stale-while-revalidate; Overview renders the filtered matches via a shared `MatchList`.
 - Data providers are swappable via a common interface in `scripts/provider/index.ts` (`DataProvider`: `fetchTeams(code)` / `fetchMatches(code)` / `season()`); implementations sit in the same `scripts/provider/` directory. Select one with `DATA_PROVIDER` env (`footballdata` default; `thesportsdb` also registered). Providers own their transport (auth, rate limiting, error retry). Competition codes are configurable via `COMPETITION_CODES` env (comma-separated; default `PL,PD,SA,BL1,FL1,CL`; extra codes: `EL`, `FAC`, `ELC`, `CDR`, `CIT`, `DFB`, `CDF`).
-- TheSportsDB free tier (`thesportsdb`, key `123`) caps the team-list endpoint at 10 rows and only indexes clubs under their primary league — so the provider resolves European competitions (CL/EL) via known league ids and builds full rosters from each season's matches.
+- TheSportsDB free tier (`thesportsdb`, key `123`, no signup; optional `THESPORTSDB_API_KEY` env override) caps the team-list endpoint at 10 rows and only indexes clubs under their primary league — so the provider resolves European competitions (CL/EL) via known league ids and builds full rosters from each season's matches.
 
 ## Key Directories
 - `src/routes/` — file-based routes. Adding a file here regenerates the routing tree automatically.
