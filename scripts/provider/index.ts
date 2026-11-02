@@ -192,6 +192,11 @@ if (staleTeams) {
 	}
 	// Keep the previous roster if this refresh yielded nothing, so a transient
 	// failure never clobbers good data with an empty list.
+	if (all.length === 0 && prev && prev.provider !== provider.name) {
+		console.error(
+			`WARNING: team fetch failed for every competition; reusing ${prev.provider} roster while matches come from ${provider.name} — fixtures may be inconsistent; rerun generation to fix`,
+		);
+	}
 	teams = all.length ? all : (prev?.teams ?? []);
 } else if (prev) {
 	teams = prev.teams ?? [];
