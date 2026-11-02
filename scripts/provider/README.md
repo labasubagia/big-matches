@@ -6,8 +6,8 @@ default). Each provider owns its transport (auth, rate limiting, retries).
 
 | Provider | File | Env | Free tier |
 |---|---|---|---|
-| Football-Data.org | `football-data-org.ts` | `FOOTBALL_DATA_API_KEY` | 12 competitions, 10 req/min |
-| TheSportsDB | `the-sport-db-com.ts` | `THESPORTSDB_API_KEY` (free key `123`) | 30 req/min, tight per-endpoint caps |
+| Football-Data.org | `provider-football-data-org.ts` | `FOOTBALL_DATA_API_KEY` | 12 competitions, 10 req/min |
+| TheSportsDB | `provider-the-sport-db-com.ts` | `THESPORTSDB_API_KEY` (free key `123`) | 30 req/min, tight per-endpoint caps |
 
 ---
 

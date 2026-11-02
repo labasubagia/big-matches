@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createTheSportsDBProvider } from "./the-sport-db-com";
+import { createTheSportsDBProvider } from "./provider-the-sport-db-com";
 
 const EPL_ID = 4328;
 const UCL_ID = 4480;
