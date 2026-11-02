@@ -9,7 +9,9 @@
 		"skipLibCheck": true,
 		"strict": true,
 		"strictNullChecks": true,
-		"types": ["node", "vite/client"]
+		"types": ["node", "vite/client"],
+		"noEmit": true,
+		"allowImportingTsExtensions": true
 	},
-	"include": ["src", "vite.config.ts"]
+	"include": ["src", "vite.config.ts", "scripts"]
 }
