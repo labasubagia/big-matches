@@ -1,17 +1,14 @@
 #!/usr/bin/env node
 // Used only by .github/workflows/deploy.yml (lighthouse job, "Post Lighthouse summary" step).
-// Usage: node scripts/lighthouse-summary.mjs <desktopDir> <mobileDir>
-import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { join } from "node:path";
-
-const [desktopDir, mobileDir] = process.argv.slice(2);
-if (!desktopDir || !mobileDir) {
-	console.error("usage: lighthouse-summary.mjs <desktopDir> <mobileDir>");
-	process.exit(2);
-}
+// Usage: node scripts/lighthouse-summary.ts <desktopDir> <mobileDir>
+import { appendFileSync, existsSync, readdirSync, readFileSync } from "node:fs";
+import { join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const CATS = ["performance", "accessibility", "best-practices", "seo"];
-type Row = { url: string; scores: number[]; link: string };
+
+export type Row = { url: string; scores: number[]; link: string };
+
 type Lhr = {
 	categories?: Record<string, { score?: number }>;
 	finalUrl?: string;
@@ -32,7 +29,7 @@ function loadLinks(dir: string): Record<string, string> | null {
 function collect(dir: string): Row[] {
 	if (!existsSync(dir)) return [];
 	const links = loadLinks(dir);
-	const rows = [];
+	const rows: Row[] = [];
 	for (const f of readdirSync(dir)) {
 		if (!f.endsWith(".report.json")) continue;
 		let lhr: Lhr;
@@ -54,7 +51,7 @@ function collect(dir: string): Row[] {
 }
 
 // worst score per url (across runs)
-function summarize(
+export function summarize(
 	rows: Row[],
 ): Array<[string, { scores: number[]; link: string }]> {
 	const m = new Map<string, { scores: number[]; link: string }>();
@@ -70,27 +67,40 @@ function summarize(
 	return [...m.entries()].sort((a, b) => a[0].localeCompare(b[0]));
 }
 
-const desktop = summarize(collect(desktopDir));
-const mobile = summarize(collect(mobileDir));
+function main() {
+	const [desktopDir, mobileDir] = process.argv.slice(2);
+	if (!desktopDir || !mobileDir) {
+		console.error("usage: lighthouse-summary.ts <desktopDir> <mobileDir>");
+		process.exit(2);
+	}
 
-const head =
-	"| Route | Preset | Performance | Accessibility | Best-Practices | SEO | Report |\n" +
-	"| --- | --- | ---: | ---: | ---: | ---: | --- |";
-const lines = [];
-for (const [url, { scores, link }] of desktop)
-	lines.push(
-		`| ${url} | desktop | ${scores.join(" | ")} | ${link ? `[open](${link})` : "—"} |`,
-	);
-for (const [url, { scores, link }] of mobile)
-	lines.push(
-		`| ${url} | mobile | ${scores.join(" | ")} | ${link ? `[open](${link})` : "—"} |`,
-	);
-const table = [head, ...lines].join("\n");
+	const desktop = summarize(collect(desktopDir));
+	const mobile = summarize(collect(mobileDir));
 
-const summaryPath = process.env.GITHUB_STEP_SUMMARY;
-if (summaryPath) {
-	const { appendFileSync } = await import("node:fs");
-	appendFileSync(summaryPath, `\n## Lighthouse results\n\n${table}\n`);
-} else {
-	console.log(table);
+	const head =
+		"| Route | Preset | Performance | Accessibility | Best-Practices | SEO | Report |\n" +
+		"| --- | --- | ---: | ---: | ---: | ---: | --- |";
+	const lines = [];
+	for (const [url, { scores, link }] of desktop)
+		lines.push(
+			`| ${url} | desktop | ${scores.join(" | ")} | ${link ? `[open](${link})` : "—"} |`,
+		);
+	for (const [url, { scores, link }] of mobile)
+		lines.push(
+			`| ${url} | mobile | ${scores.join(" | ")} | ${link ? `[open](${link})` : "—"} |`,
+		);
+	const table = [head, ...lines].join("\n");
+
+	const summaryPath = process.env.GITHUB_STEP_SUMMARY;
+	if (summaryPath) {
+		appendFileSync(summaryPath, `\n## Lighthouse results\n\n${table}\n`);
+	} else {
+		console.log(table);
+	}
 }
+
+const isMain =
+	process.argv[1] !== undefined &&
+	resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+
+if (isMain) void main();
