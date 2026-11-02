@@ -95,6 +95,7 @@ export function createFootballDataProvider({
 		name: "footballdata",
 		fetchTeams,
 		fetchMatches,
+		defaultCompetitionCodes: ["PL", "PD", "SA", "BL1", "FL1", "CL"],
 		season: currentSeason,
 	};
 }

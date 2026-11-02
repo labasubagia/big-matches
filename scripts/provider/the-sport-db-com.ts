@@ -322,5 +322,6 @@ export function createTheSportsDBProvider({
 			return events;
 		},
 		season: currentSeason,
+		defaultCompetitionCodes: ["EL", "FAC", "ELC", "CDR"],
 	};
 }

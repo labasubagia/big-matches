@@ -37,6 +37,7 @@ export interface DataProvider {
 	name: string;
 	fetchTeams(code: string): Promise<Team[]>;
 	fetchMatches(code: string): Promise<Match[]>;
+	defaultCompetitionCodes: string[];
 	season(): string;
 }
 
@@ -46,9 +47,6 @@ const ROOT = path.resolve(
 );
 const OUT = path.join(ROOT, "src", "lib", "fixtures.json");
 
-const CODES = process.env.COMPETITION_CODES?.split(",")
-	.map((s) => s.trim())
-	.filter(Boolean) ?? ["PL", "PD", "SA", "BL1", "FL1", "CL"];
 const TEAMS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 /** Registered providers; pick one via DATA_PROVIDER env (default football-data). */
@@ -145,6 +143,10 @@ if (existsSync(OUT)) {
 
 const now = Date.now();
 const provider = await getProvider();
+const CODES =
+	process.env.COMPETITION_CODES?.split(",")
+		.map((s) => s.trim())
+		.filter(Boolean) ?? provider.defaultCompetitionCodes;
 const staleTeams =
 	!prev ||
 	!Array.isArray(prev.teams) ||
