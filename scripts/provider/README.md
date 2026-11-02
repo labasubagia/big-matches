@@ -64,18 +64,6 @@ behind its paid plan (UEFA Europa League + domestic cups).
   into `public/crests/`). A single transient download failure drops just that
   crest (UI falls back to the club initial); a run typically has 0–1 failures.
 
-### When to use it
-Use `thesportsdb` for the competitions Football-Data.org gates behind its paid
-plan (UEFA Europa League `EL`, FA Cup `FAC`, EFL Cup `ELC`, Copa del Rey `CDR`,
-Coppa Italia `CIT`, DFB-Pokal `DFB`, Coupe de France `CDF`). Keep the big
-domestic leagues and Champions League on `footballdata` for accuracy.
-
-```
-DATA_PROVIDER=thesportsdb \
-COMPETITION_CODES=EL,FAC,ELC,CDR,CIT,DFB,CDF \
-npm run data:gen
-```
-
 ---
 
 ## Both providers
