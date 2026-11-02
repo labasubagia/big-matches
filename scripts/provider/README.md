@@ -71,3 +71,32 @@ behind its paid plan (UEFA Europa League + domestic cups).
   runs, only the `Map` dedupe within a single run).
 - The orchestrator refuses to write an empty dataset (exit `1`) and keeps the
   previous roster on a transient team-fetch failure.
+
+## Provider landscape (research, 2026-11)
+
+Compatibility matrix vs the Football-Data.org free baseline (current-season
+fixtures for the big leagues + UCL, no Europa League / domestic cups). Sources
+are official provider docs/pages unless marked `[INFERENCE]`.
+
+| Provider | Free tier | Current season | UCL on free | Europa League + cups on free | Rosters / crests | Free rate limit |
+|---|---|---|---|---|---|---|
+| **Football-Data.org** (baseline) | ✅ | ✅ | ✅ | ❌ (paid) | ✅ full squads, crests | 10 req/min |
+| **TheSportsDB** | ✅ | ✅ | ⚠️ (15-event cap → qualifiers only) | ✅ | ⚠️ roster = clubs in the 15 events | 30 req/min, sticky 429 |
+| **API-Football** | ✅ | ❌ only 2022–24 | ❌ | ❌ | ✅ rich | 100 req/day |
+| **Sportmonks** | ✅ | ✅ | only if picked | ❌ (free = 2 leagues total) | ✅ rich | 3k calls/entity/hr |
+| **Football-API.com** | ❌ free trial only | ✅ | ✅ | ❌ (paid plans) | ✅ | n/a (trial) |
+| **StatsBomb Open Data** | ✅ (GitHub JSON) | ❌ historical/analytics | select comps | select comps | events, not rosters | n/a (static files) |
+
+Sources:
+- Football-Data.org coverage/pricing: <https://www.football-data.org/coverage>
+- TheSportsDB API guide (free limits per endpoint):
+  <https://www.thesportsdb.com/docs_api_guide>
+- API-Football free plan: 100 req/day — account object in
+  <https://www.api-football.com/documentation-v3>; free-season restriction
+  (2022–24 only) — <https://www.api-football.com/news/post/how-to-get-all-data-from-a-league-with-api-football>
+- Sportmonks free plan (two full leagues, 3k calls/entity/hr):
+  <https://www.sportmonks.com/football-api> and
+  <https://docs.sportmonks.com/v3/welcome/best-practices.md>
+- Football-API.com: free trial + prepaid plans — <https://football-api.com/faq>,
+  <https://football-api.com/prices> `[INFERENCE: 403 on live read, from search snippet]`
+- StatsBomb Open Data (free static JSON, no live API): <https://github.com/hudl/open-data>
