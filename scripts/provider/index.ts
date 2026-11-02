@@ -161,8 +161,12 @@ async function downloadCrests(urls: string[]): Promise<Map<string, string>> {
 	return map;
 }
 
-let prev: { generatedAt?: string; teams?: Team[]; provider?: string } | null =
-	null;
+let prev: {
+	generatedAt?: string;
+	teams?: Team[];
+	provider?: string;
+	codes?: string[];
+} | null = null;
 if (existsSync(OUT)) {
 	try {
 		prev = JSON.parse(readFileSync(OUT, "utf8"));
@@ -177,12 +181,19 @@ const CODES =
 	process.env.COMPETITION_CODES?.split(",")
 		.map((s) => s.trim())
 		.filter(Boolean) ?? provider.defaultCompetitionCodes;
+const prevCodes = Array.isArray(prev?.codes) ? prev.codes : null;
+const generatedAtTime = prev?.generatedAt
+	? new Date(prev.generatedAt).getTime()
+	: NaN;
+const age = Number.isFinite(generatedAtTime) ? now - generatedAtTime : Infinity;
 const staleTeams =
 	!prev ||
 	!Array.isArray(prev.teams) ||
 	!prev.generatedAt ||
 	prev.provider !== provider.name ||
-	now - new Date(prev.generatedAt).getTime() >= TEAMS_TTL_MS;
+	!prevCodes ||
+	prevCodes.join(",") !== CODES.join(",") ||
+	age >= TEAMS_TTL_MS;
 
 let teams: Team[];
 if (staleTeams) {
@@ -287,6 +298,7 @@ const trimmedMatches = matches.map((m) => ({
 const out = {
 	generatedAt: new Date(now).toISOString(),
 	provider: provider.name,
+	codes: CODES,
 	teams,
 	matches: trimmedMatches,
 };

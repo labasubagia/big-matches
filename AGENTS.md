@@ -15,7 +15,7 @@ Big Matches is a React app with three routes — Overview, Teams, FAQ — that s
 - `src/lib/` — core application logic: the pure filtering function (with its test) + the committed data placeholder (`fixtures.json`).
 - `src/components/` — shared UI (`MatchList`, `MatchFilters`), shadcn primitives under `src/components/ui/` (button, input, popover, calendar, command), and the date-range picker / multi-select combobox powering the Overview filter.
 - `src/config/` — competition / default-selection configuration.
-- `scripts/` — CI data generation (`get-data.ts` orchestrator + `provider/` implementations, run via native Node TS type-stripping) + post-build PWA generation (`generate-sw.mjs`: Workbox-based service worker via `injectManifest`).
+- `scripts/` — CI data generation (`scripts/provider/index.ts` orchestrator + `provider/` implementations, run via native Node TS type-stripping) + post-build PWA generation (`generate-sw.mjs`: Workbox-based service worker via `injectManifest`).
 - `.github/workflows/` — CI checks + deploy (data generation, build, publish; post-deploy Lighthouse perf gate).
 
 ## Development Commands
