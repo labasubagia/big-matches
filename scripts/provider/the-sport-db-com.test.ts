@@ -193,4 +193,41 @@ describe("thesportsdb provider", () => {
 		expect(searchCalls).toBe(0);
 		expect(eventsCalls).toBe(1);
 	});
+	it("uses the search result's league id (not a team id) for season events", async () => {
+		let eventsUrl = "";
+		mockFetch((url) => {
+			if (url.includes("search_all_teams")) {
+				return {
+					teams: [
+						{
+							idTeam: "133604",
+							strTeam: "Barcelona",
+							idLeague: "4335",
+							strLeague: "Spanish La Liga",
+						},
+					],
+				};
+			}
+			eventsUrl = url;
+			return seasonEvents([
+				{
+					idEvent: "30",
+					strTimestamp: "2026-08-21T19:00:00",
+					strStatus: "FT",
+					intHomeScore: "1",
+					intAwayScore: "0",
+					idHomeTeam: "1",
+					strHomeTeam: "Home",
+					idAwayTeam: "2",
+					strAwayTeam: "Away",
+					strLeague: "Spanish La Liga",
+				},
+			]);
+		});
+		const provider = createTheSportsDBProvider({});
+		const matches = await provider.fetchMatches("PD");
+		expect(eventsUrl).toContain("id=4335");
+		expect(matches).toHaveLength(1);
+		expect(matches[0]?.competition?.code).toBe("PD");
+	});
 });

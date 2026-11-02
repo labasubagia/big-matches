@@ -270,7 +270,7 @@ export function createTheSportsDBProvider({
 				teamFromSearch(t, league),
 			);
 			search = parsedTeams.filter((t): t is Team => t !== null);
-			leagueId = Number(search[0]?.id ?? data.teams?.[0]?.idLeague);
+			leagueId = Number(data.teams?.find((t) => t.idLeague != null)?.idLeague);
 			if (!Number.isFinite(leagueId)) {
 				throw new Error(`Cannot resolve TheSportsDB league id for "${league}"`);
 			}

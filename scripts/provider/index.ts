@@ -40,7 +40,10 @@ export interface DataProvider {
 	season(): string;
 }
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = path.resolve(
+	path.dirname(fileURLToPath(import.meta.url)),
+	"../..",
+);
 const OUT = path.join(ROOT, "src", "lib", "fixtures.json");
 
 const CODES = process.env.COMPETITION_CODES?.split(",")
