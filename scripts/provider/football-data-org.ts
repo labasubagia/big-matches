@@ -1,4 +1,4 @@
-import type { DataProvider, Match, Team } from "../get-data";
+import type { DataProvider, Match, Team } from "./index";
 
 const sleep = (ms: number): Promise<void> => {
 	const { promise, resolve } = Promise.withResolvers<void>();

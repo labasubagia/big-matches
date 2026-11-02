@@ -2,8 +2,8 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
-import { createFootballDataProvider } from "./provider/football-data-org.ts";
-import { createTheSportsDBProvider } from "./provider/the-sport-db-com.ts";
+import { createFootballDataProvider } from "./football-data-org.ts";
+import { createTheSportsDBProvider } from "./the-sport-db-com.ts";
 export interface Team {
 	id: number;
 	name: string;

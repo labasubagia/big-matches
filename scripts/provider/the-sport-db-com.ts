@@ -1,4 +1,4 @@
-import type { DataProvider, Match, Team } from "../get-data";
+import type { DataProvider, Match, Team } from "./index";
 
 const FREE_KEY = "123";
 const REQUEST_GAP_MS = 3000;

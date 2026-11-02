@@ -10,7 +10,7 @@
 		"check": "biome check",
 		"format": "biome format --write",
 		"test:e2e": "node e2e/run.mjs",
-		"data:gen": "node scripts/get-data.ts",
+		"data:gen": "node scripts/provider/index.ts",
 		"prepare": "husky"
 	},
 	"dependencies": {
