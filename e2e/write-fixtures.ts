@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from "node:fs";
-import { buildFixtures } from "./build-fixtures.mjs";
+import { buildFixtures } from "./build-fixtures.ts";
 
 const template = JSON.parse(
 	readFileSync(new URL("./fixtures.mock.json", import.meta.url), "utf8"),

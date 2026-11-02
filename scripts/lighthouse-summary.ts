@@ -11,9 +11,15 @@ if (!desktopDir || !mobileDir) {
 }
 
 const CATS = ["performance", "accessibility", "best-practices", "seo"];
+type Row = { url: string; scores: number[]; link: string };
+type Lhr = {
+	categories?: Record<string, { score?: number }>;
+	finalUrl?: string;
+	requestedUrl?: string;
+};
 
 // maps finalUrl -> temporary public storage report link (written by lhci upload)
-function loadLinks(dir) {
+function loadLinks(dir: string): Record<string, string> | null {
 	const p = join(dir, "links.json");
 	if (!existsSync(p)) return null;
 	try {
@@ -23,13 +29,13 @@ function loadLinks(dir) {
 	}
 }
 
-function collect(dir) {
+function collect(dir: string): Row[] {
 	if (!existsSync(dir)) return [];
 	const links = loadLinks(dir);
 	const rows = [];
 	for (const f of readdirSync(dir)) {
 		if (!f.endsWith(".report.json")) continue;
-		let lhr;
+		let lhr: Lhr;
 		try {
 			lhr = JSON.parse(readFileSync(join(dir, f), "utf8"));
 		} catch {
@@ -48,8 +54,10 @@ function collect(dir) {
 }
 
 // worst score per url (across runs)
-function summarize(rows) {
-	const m = new Map();
+function summarize(
+	rows: Row[],
+): Array<[string, { scores: number[]; link: string }]> {
+	const m = new Map<string, { scores: number[]; link: string }>();
 	for (const r of rows) {
 		const prev = m.get(r.url);
 		m.set(r.url, {
