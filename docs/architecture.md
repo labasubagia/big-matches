@@ -57,7 +57,7 @@ New entries go inside their theme group, not appended to the end.
 ## Testing
 
 - Unit: vitest, colocated `*.test.ts`, run via `npm test`
-  (`--exclude "e2e/**"`).
+  (`--exclude "e2e/**/*.spec.ts"` — Playwright specs only).
 - E2E: `npm run test:e2e` → `e2e/run.ts`:
   - builds mock fixtures from `e2e/fixtures.mock.json` via `build-fixtures.ts`
     into `src/lib/fixtures.mock.json` (never touches the real file);
