@@ -3,13 +3,13 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "node scripts/ensure-fixtures.mjs && vite dev",
-		"build": "node scripts/ensure-fixtures.mjs && vite build && node scripts/generate-sw.mjs && tsc --noEmit",
+		"dev": "node scripts/ensure-fixtures.ts && vite dev",
+		"build": "node scripts/ensure-fixtures.ts && vite build && node scripts/generate-sw.ts && tsc --noEmit",
 		"preview": "vite preview",
-		"test": "vitest run --exclude \"e2e/**\"",
+		"test": "vitest run --exclude \"e2e/**/*.spec.ts\"",
 		"check": "biome check",
 		"format": "biome format --write",
-		"test:e2e": "node e2e/run.mjs",
+		"test:e2e": "node e2e/run.ts",
 		"data:gen": "node scripts/provider/index.ts",
 		"prepare": "husky"
 	},

@@ -30,7 +30,7 @@ budget.
 
 ## Placeholder fallback
 
-`src/lib/fixtures.example.json` is committed. `scripts/ensure-fixtures.mjs` copies
+`src/lib/fixtures.example.json` is committed. `scripts/ensure-fixtures.ts` copies
 it over `src/lib/fixtures.json` when that file is missing, so dev/build never fail
 on an absent file. With empty data the app shows an error prompting
 `npm run data:gen`.
@@ -57,9 +57,9 @@ New entries go inside their theme group, not appended to the end.
 ## Testing
 
 - Unit: vitest, colocated `*.test.ts`, run via `npm test`
-  (`--exclude "e2e/**"`).
-- E2E: `npm run test:e2e` → `e2e/run.mjs`:
-  - builds mock fixtures from `e2e/fixtures.mock.json` via `build-fixtures.mjs`
+  (`--exclude "e2e/**/*.spec.ts"` — Playwright specs only).
+- E2E: `npm run test:e2e` → `e2e/run.ts`:
+  - builds mock fixtures from `e2e/fixtures.mock.json` via `build-fixtures.ts`
     into `src/lib/fixtures.mock.json` (never touches the real file);
   - sets `VITE_FIXTURES=mock` so `src/lib/loadFixtures.ts` loads the mock file;
   - starts the dev server on :3100 and runs Playwright against `/big-matches/`.

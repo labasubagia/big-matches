@@ -1,7 +1,7 @@
-import { spawn } from "node:child_process";
+import { type ChildProcess, spawn } from "node:child_process";
 import fs from "node:fs";
 import http from "node:http";
-import { buildFixtures } from "./build-fixtures.mjs";
+import { buildFixtures } from "./build-fixtures.ts";
 
 function waitFor(port, path, timeoutMs = 60_000) {
 	const start = Date.now();
@@ -29,7 +29,7 @@ const MOCK_FIXTURES = new URL("./fixtures.mock.json", import.meta.url);
 // Test-scoped mock fixtures; the real src/lib/fixtures.json is never touched.
 const MOCK_OUT = new URL("../src/lib/fixtures.mock.json", import.meta.url);
 
-let dev;
+let dev: ChildProcess | undefined;
 try {
 	const template = JSON.parse(fs.readFileSync(MOCK_FIXTURES, "utf8"));
 	fs.writeFileSync(MOCK_OUT, JSON.stringify(buildFixtures(template), null, 2));
