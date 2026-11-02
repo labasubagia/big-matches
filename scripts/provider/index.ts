@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 import { createFootballDataProvider } from "./football-data-org.ts";
+import { resolveTeams } from "./resolve-teams.ts";
 import { createTheSportsDBProvider } from "./the-sport-db-com.ts";
 export interface Team {
 	id: number;
@@ -192,12 +193,17 @@ if (staleTeams) {
 	}
 	// Keep the previous roster if this refresh yielded nothing, so a transient
 	// failure never clobbers good data with an empty list.
-	if (all.length === 0 && prev && prev.provider !== provider.name) {
+	const { teams: resolvedTeams, warned } = resolveTeams(
+		all,
+		prev,
+		provider.name,
+	);
+	if (warned) {
 		console.error(
-			`WARNING: team fetch failed for every competition; reusing ${prev.provider} roster while matches come from ${provider.name} — fixtures may be inconsistent; rerun generation to fix`,
+			`WARNING: team fetch failed for every competition; reusing ${prev?.provider} roster while matches come from ${provider.name} — fixtures may be inconsistent; rerun generation to fix`,
 		);
 	}
-	teams = all.length ? all : (prev?.teams ?? []);
+	teams = resolvedTeams;
 } else if (prev) {
 	teams = prev.teams ?? [];
 } else {
