@@ -4,6 +4,7 @@ fallback_models = []
 custom_model_max_tokens = 32000
 output_run_details = true
 output_run_cost = true
+reaction_on_start = "eyes"
 
 [github_action_config]
 handle_push_trigger = true
@@ -23,6 +24,8 @@ enable_large_pr_chunking = true
 require_merge_recommendation = true
 require_risk_assessment = true
 require_priority_files = true
+require_todo_scan = true
+require_failure_modes = true
 publish_output_no_suggestions = false
 
 [pr_description]
