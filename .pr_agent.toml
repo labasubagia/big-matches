@@ -2,3 +2,7 @@
 model = "openai/default-combo"
 fallback_models = []
 custom_model_max_tokens = 32000
+
+[github_action_config]
+handle_push_trigger = true
+push_commands = ["/review"]
