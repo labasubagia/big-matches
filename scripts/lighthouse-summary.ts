@@ -27,7 +27,13 @@ function loadLinks(dir: string): Record<string, string> | null {
 }
 
 function collect(dir: string): Row[] {
-	if (!existsSync(dir)) return [];
+	if (!existsSync(dir))
+		throw new Error(`Lighthouse reports dir not found: ${dir}`);
+	if (
+		!readdirSync(dir).some((f) => f.startsWith("lhr-") && f.endsWith(".json"))
+	) {
+		throw new Error(`No lhr-*.json report files found in ${dir}`);
+	}
 	const links = loadLinks(dir);
 	const rows: Row[] = [];
 	for (const f of readdirSync(dir)) {
