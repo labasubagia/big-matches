@@ -2,7 +2,7 @@
 publish_as_check_run = true
 
 [config]
-model = "openai/default-combo"
+model = "openai/mercury-coder"
 fallback_models = []
 custom_model_max_tokens = 32000
 output_run_details = true
