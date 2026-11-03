@@ -59,9 +59,9 @@ jobs:
       matrix:
         include:
           - preset: desktop
-            flags: LHCI_COLLECT__SETTINGS__PRESET=desktop
+            settings: --collect.settings.preset=desktop
           - preset: mobile
-            flags: LHCI_COLLECT__SETTINGS__FORMFACTOR=mobile
+            settings: --collect.settings.formFactor=mobile
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -71,8 +71,8 @@ jobs:
       - run: npm ci
       - name: Run Lighthouse (${{ matrix.preset }})
         run: |
-          ${{ matrix.flags }} \
-            npx lhci autorun --config=./.lighthouserc.json \
+          npx lhci autorun --config=./.lighthouserc.json \
+            ${{ matrix.settings }} \
             --collect.url="${{ needs.deploy.outputs.page_url }}" \
             --collect.url="${{ needs.deploy.outputs.page_url }}teams/" \
             --collect.url="${{ needs.deploy.outputs.page_url }}faq/"
