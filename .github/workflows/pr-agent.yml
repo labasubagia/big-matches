@@ -25,3 +25,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OPENAI__API_BASE: ${{ vars.OPENAI_COMPATIBLE_URL }}
           OPENAI__KEY: ${{ secrets.OPENAI_COMPATIBLE_KEY }}
+          GITHUB_ACTION_CONFIG__HANDLE_PUSH_TRIGGER: "true"
+          GITHUB_ACTION_CONFIG__PUSH_COMMANDS: "/review"
