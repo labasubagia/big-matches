@@ -1,0 +1,54 @@
+name: Lighthouse Check (throwaway)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  lighthouse:
+    name: Lighthouse ${{ matrix.preset }} (all gates on all routes)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - preset: desktop
+            settings: --collect.settings.preset=desktop
+          - preset: mobile
+            settings: --collect.settings.formFactor=mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26
+          cache: npm
+      - run: npm ci
+      - name: Run Lighthouse (${{ matrix.preset }})
+        env:
+          PAGE_URL: https://labasubagia.github.io/big-matches/
+        run: |
+          npx lhci autorun --config=./.lighthouserc.json \
+            ${{ matrix.settings }} \
+            --collect.url="$PAGE_URL" \
+            --collect.url="${PAGE_URL}teams/" \
+            --collect.url="${PAGE_URL}faq/"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-${{ matrix.preset }}
+          path: .lighthouseci
+          include-hidden-files: true
+          if-no-files-found: error
+  lighthouse-summary:
+    name: Post Lighthouse summary
+    needs: lighthouse
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: lighthouse-desktop
+          path: /tmp/desktop-lhci
+      - uses: actions/download-artifact@v4
+        with:
+          name: lighthouse-mobile
+          path: /tmp/mobile-lhci
+      - run: node scripts/lighthouse-summary.ts /tmp/desktop-lhci /tmp/mobile-lhci
