@@ -2,7 +2,12 @@
 
 `scripts/provider/` holds the swappable data providers behind the `DataProvider`
 interface (`index.ts`). Pick one with `DATA_PROVIDER` env (`footballdata`
-default). Each provider owns its transport (auth, rate limiting, retries).
+default). **Exactly one provider is active per data-generation run.** The
+orchestrator resolves a single `DataProvider` from `DATA_PROVIDER` and builds the
+entire `fixtures.json` (teams *and* matches) from that one provider — there is no
+mixing, cross-provider fallback, or per-competition provider switching. All
+fixtures in a released build come from that one provider, so parse quirks (and
+the limitations below) belong to the provider the build was generated with.
 
 | Provider | File | Env | Free tier |
 |---|---|---|---|
