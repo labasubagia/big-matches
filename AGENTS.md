@@ -16,7 +16,7 @@ Big Matches is a React app with three routes — Overview, Teams, FAQ — that s
 - `src/components/` — shared UI (`MatchList`, `MatchFilters`), shadcn primitives under `src/components/ui/` (button, input, popover, calendar, command), and the date-range picker / multi-select combobox powering the Overview filter.
 - `src/config/` — competition / default-selection configuration.
 - `scripts/` — CI data generation (`scripts/provider/index.ts` orchestrator + `provider/` implementations, run via native Node TS type-stripping) + post-build PWA generation (`generate-sw.ts`: Workbox-based service worker via `injectManifest`).
-- `.github/workflows/` — CI checks + deploy (data generation, build, publish; post-deploy Lighthouse perf gate).
+- `.github/workflows/` — CI checks + deploy (data generation, build, publish; post-deploy Lighthouse perf gate) + **PR Agent** (`pr-agent.yml`: Codium-ai/pr-agent auto-review on PRs, wired to a 9router OpenAI-compatible endpoint via `OPENAI_COMPATIBLE_URL` var / `OPENAI_COMPATIBLE_KEY` secret; model `openai/default-combo` with `handle_push_trigger` + `push_commands=["/review"]`).
 
 ## Development Commands
 Package manager: **npm** (lockfile `package-lock.json`).
@@ -61,6 +61,7 @@ Setup: copy `.env.example` to `.env` and set the Football-Data.org API key.
 - `.lighthouserc.json` / `.lighthouserc.mobile.json` — Lighthouse CI configs (desktop/mobile; assert Performance ≥ 0.9 and Accessibility/Best-Practices/SEO = 100 on the deployed origin).
 - `scripts/lighthouse-summary.ts` — post-deploy Lighthouse runner: prints desktop + mobile score tables (with per-route report links) to the workflow run summary.
 - `vite.config.ts`, `tsconfig.json`, `package.json` — build/tooling configuration (Tailwind via `@tailwindcss/vite`; `components.json` configures the shadcn-style `ui/` components).
+- `.pr_agent.toml` — PR Agent config (model `openai/default-combo`, fallback disabled, 32000 max tokens); effective post-merge, as the action reads repo settings from the default branch. Pre-merge equivalent values are set as workflow env (`CONFIG__MODEL` etc.).
 
 ## Runtime/Tooling Preferences
 - **Runtime**: Node ≥ 26 (current LTS; native TS type-stripping runs `scripts/provider/index.ts` without a transpile step; no `engines` declared).
