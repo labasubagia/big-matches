@@ -48,17 +48,17 @@ export function withinRange(m: Match, from: number, to: number): boolean {
 	return t >= from && t <= to;
 }
 
-// A fixture shows in a date window when its kickoff lands inside it, or when
-// the kickoff is still undecided (TBD): an undated fixture can't be excluded
-// by date selection, so it is always kept.
+// A fixture shows in a date window when its kickoff date lands inside it. A
+// TBD (kickoff time undecided) fixture still has a real date (midnight
+// placeholder on the scheduled day), so it is filtered by date like any other
+// fixture.
 export function withinFilteredRange(
 	m: Match,
 	from: number,
 	to: number,
 ): boolean {
-	return isTBD(m) || withinRange(m, from, to);
+	return withinRange(m, from, to);
 }
-
 // Epoch ms at local midnight for a `YYYY-MM-DD` date string. Date-only
 // strings parse as UTC, so build the datetime form to get local semantics.
 export function localMidnightMs(isoDate: string): number {

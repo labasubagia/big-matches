@@ -112,25 +112,18 @@ describe("withinFilteredRange", () => {
 		).toBe(false);
 	});
 
-	it("keeps a TBD match regardless of its placeholder date", () => {
+	it("keeps a TBD match only when its date is inside the range", () => {
 		const tbd = match({
 			status: "SCHEDULED",
 			utcDate: "2026-12-31T00:00:00Z",
 		});
+		// Inside the window → kept.
 		expect(withinFilteredRange(tbd, NOW, NOW + 90 * 24 * 3600 * 1000)).toBe(
 			true,
 		);
-		expect(withinFilteredRange(tbd, NOW - 30 * 24 * 3600 * 1000, NOW)).toBe(
-			true,
-		);
-	});
-	it("keeps a TBD match even outside a forward window", () => {
-		const tbd = match({
-			status: "SCHEDULED",
-			utcDate: "2027-12-31T00:00:00Z",
-		});
+		// Equal the default 30-day window → excluded.
 		expect(withinFilteredRange(tbd, NOW, NOW + 30 * 24 * 3600 * 1000)).toBe(
-			true,
+			false,
 		);
 	});
 });
