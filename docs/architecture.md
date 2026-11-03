@@ -11,8 +11,11 @@ time — there is no runtime API access and no key in the browser or build.
 
 Providers implement the `DataProvider` interface (`fetchTeams`, `fetchMatches`,
 `season`, `defaultCompetitionCodes`); pick one with `DATA_PROVIDER`
-(`footballdata` default, `thesportsdb`). See `scripts/provider/README.md` for
-per-provider auth, pacing, and free-tier limits. Competition codes come from
+(`footballdata` default, `thesportsdb`). **Exactly one provider is active per
+generation run** — the orchestrator builds the whole `fixtures.json` (teams +
+matches) from that single provider; there is no mixing or cross-provider
+fallback. See `scripts/provider/README.md` for per-provider auth, pacing, and
+free-tier limits. Competition codes come from
 `COMPETITION_CODES` (per-provider defaults; Football-Data: PL, PD, SA, BL1,
 FL1, CL — UEL is excluded because it is paid-only there).
 
