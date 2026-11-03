@@ -17,8 +17,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Validate required configuration
-        if: vars.OPENAI_COMPATIBLE_URL == '' || secrets.OPENAI_COMPATIBLE_KEY == ''
-        run: echo "::error::OPENAI_COMPATIBLE_URL variable and OPENAI_COMPATIBLE_KEY secret must be configured" && exit 1
+        env:
+          API_URL: ${{ vars.OPENAI_COMPATIBLE_URL }}
+          API_KEY: ${{ secrets.OPENAI_COMPATIBLE_KEY }}
+        run: |
+          if [[ -z "$API_URL" || -z "$API_KEY" ]]; then
+            echo "::error::OPENAI_COMPATIBLE_URL variable and OPENAI_COMPATIBLE_KEY secret must be configured"
+            exit 1
+          fi
       - name: PR Agent
         uses: Codium-ai/pr-agent@efdde4afe14aa401a3889012c7f3e9ef3081a430
         env:
@@ -51,5 +57,5 @@ jobs:
           PR_CODE_SUGGESTIONS__DEMAND_CODE_SUGGESTIONS_SELF_REVIEW: "true"
           PR_CODE_SUGGESTIONS__PUBLISH_OUTPUT_NO_SUGGESTIONS: "false"
           PR_CODE_SUGGESTIONS__ENABLE_CHAT_TEXT: "true"
-          PR_DESCRIPTION__GENERATE_AI_TITLE: "true"
+          PR_DESCRIPTION__GENERATE_AI_TITLE: "false"
           PR_DESCRIPTION__PUBLISH_LABELS: "true"

@@ -35,5 +35,5 @@ require_can_be_split_review = true
 publish_output_no_suggestions = false
 
 [pr_description]
-generate_ai_title = true
+generate_ai_title = false
 publish_labels = true
