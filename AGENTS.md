@@ -46,7 +46,7 @@ Setup: copy `.env.example` to `.env` and set the Football-Data.org API key.
 - This file is the source of truth for repo conventions; keep it accurate when conventions evolve.
 
 ## Merging
-- Do NOT merge any pull request without explicit user permission.
+- PR Agent review findings MUST be resolved before merge: fix the issue and resolve the thread; if a finding cannot or will not be fixed (e.g. reviewer misread or intentional design), reply on the thread with the reason, then resolve it. No unresolved review threads may remain on a PR at merge time.
 
 ## Important Files
 - `src/router.tsx` — app router setup.
