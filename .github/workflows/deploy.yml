@@ -8,6 +8,7 @@ on:
     - cron: "17 3 * * *"
 
 permissions:
+  actions: write
   contents: read
   pages: write
   id-token: write
@@ -50,9 +51,13 @@ jobs:
       - id: deployment
         uses: actions/deploy-pages@v4
   lighthouse:
-    name: Lighthouse performance check (desktop + mobile)
+    name: Lighthouse ${{ matrix.preset }} (all gates on all routes)
     needs: deploy
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        preset: [desktop, mobile]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -60,30 +65,30 @@ jobs:
           node-version: 26
           cache: npm
       - run: npm ci
-      - name: Run Lighthouse desktop (all gates on all routes)
-        uses: treosh/lighthouse-ci-action@v12
+      - name: Run Lighthouse (${{ matrix.preset }})
+        run: |
+          LHCI_COLLECT__SETTINGS__PRESET=${{ matrix.preset }} \
+            npx lhci autorun --config=./.lighthouserc.json \
+            --collect.url="${{ needs.deploy.outputs.page_url }}" \
+            --collect.url="${{ needs.deploy.outputs.page_url }}teams/" \
+            --collect.url="${{ needs.deploy.outputs.page_url }}faq/"
+      - uses: actions/upload-artifact@v4
         with:
-          urls: |
-            ${{ needs.deploy.outputs.page_url }}
-            ${{ needs.deploy.outputs.page_url }}teams
-            ${{ needs.deploy.outputs.page_url }}faq
-          runs: 2
-          configPath: ./.lighthouserc.json
-          artifactName: lighthouse-desktop
-          temporaryPublicStorage: true
-      - name: Save desktop reports
-        run: cp -r .lighthouseci /tmp/desktop-lhci
-      - name: Run Lighthouse mobile (all gates on all routes)
-        uses: treosh/lighthouse-ci-action@v12
+          name: lighthouse-${{ matrix.preset }}
+          path: .lighthouseci/
+          if-no-files-found: error
+  lighthouse-summary:
+    name: Post Lighthouse summary
+    needs: lighthouse
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
         with:
-          urls: |
-            ${{ needs.deploy.outputs.page_url }}
-            ${{ needs.deploy.outputs.page_url }}teams/
-            ${{ needs.deploy.outputs.page_url }}faq/
-          runs: 2
-          configPath: ./.lighthouserc.mobile.json
-          artifactName: lighthouse-mobile
-          temporaryPublicStorage: true
-      # Summary table: consumes saved desktop reports + mobile .lighthouseci. Script is only used here.
-      - name: Post Lighthouse summary
-        run: node scripts/lighthouse-summary.ts /tmp/desktop-lhci .lighthouseci
+          name: lighthouse-desktop
+          path: /tmp/desktop-lhci
+      - uses: actions/download-artifact@v4
+        with:
+          name: lighthouse-mobile
+          path: /tmp/mobile-lhci
+      - run: node scripts/lighthouse-summary.ts /tmp/desktop-lhci /tmp/mobile-lhci

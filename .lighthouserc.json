@@ -1,10 +1,7 @@
 {
 	"ci": {
 		"collect": {
-			"settings": {
-				"preset": "desktop",
-				"throttlingMethod": "provided"
-			}
+			"numberOfRuns": 2
 		},
 		"assert": {
 			"assertions": {
@@ -13,6 +10,9 @@
 				"categories:best-practices": ["error", { "minScore": 1 }],
 				"categories:seo": ["error", { "minScore": 1 }]
 			}
+		},
+		"upload": {
+			"target": "temporary-public-storage"
 		}
 	}
 }

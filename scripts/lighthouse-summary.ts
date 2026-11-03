@@ -31,7 +31,7 @@ function collect(dir: string): Row[] {
 	const links = loadLinks(dir);
 	const rows: Row[] = [];
 	for (const f of readdirSync(dir)) {
-		if (!f.endsWith(".report.json")) continue;
+		if (!f.startsWith("lhr-") || !f.endsWith(".json")) continue;
 		let lhr: Lhr;
 		try {
 			lhr = JSON.parse(readFileSync(join(dir, f), "utf8"));
