@@ -16,7 +16,7 @@ Big Matches is a React app with three routes — Overview, Teams, FAQ — that s
 - `src/components/` — shared UI (`MatchList`, `MatchFilters`), shadcn primitives under `src/components/ui/` (button, input, popover, calendar, command), and the date-range picker / multi-select combobox powering the Overview filter.
 - `src/config/` — competition / default-selection configuration.
 - `scripts/` — CI data generation (`scripts/provider/index.ts` orchestrator + `provider/` implementations, run via native Node TS type-stripping) + post-build PWA generation (`generate-sw.ts`: Workbox-based service worker via `injectManifest`).
-- `.github/workflows/` — CI checks + deploy (data generation, build, publish; post-deploy Lighthouse perf gate).
+- `.github/workflows/` — CI checks + deploy (data generation, build, publish; post-deploy Lighthouse perf gate) + **PR Agent** (`pr-agent.yml`: Codium-ai/pr-agent auto-review on PRs, wired to a 9router OpenAI-compatible endpoint via `OPENAI_COMPATIBLE_URL` var / `OPENAI_COMPATIBLE_KEY` secret; model `openai/default-combo` with `handle_push_trigger` + `push_commands=["/describe","/review","/improve"]`).
 
 ## Development Commands
 Package manager: **npm** (lockfile `package-lock.json`).
@@ -47,6 +47,7 @@ Setup: copy `.env.example` to `.env` and set the Football-Data.org API key.
 
 ## Merging
 - Do NOT merge any pull request without explicit user permission.
+- PR Agent review findings MUST be resolved before merge: fix the issue and resolve the thread; if a finding cannot or will not be fixed (e.g. reviewer misread or intentional design), reply on the thread with the reason, then resolve it. No unresolved review threads may remain on a PR at merge time.
 
 ## Important Files
 - `src/router.tsx` — app router setup.
@@ -61,6 +62,8 @@ Setup: copy `.env.example` to `.env` and set the Football-Data.org API key.
 - `.lighthouserc.json` / `.lighthouserc.mobile.json` — Lighthouse CI configs (desktop/mobile; assert Performance ≥ 0.9 and Accessibility/Best-Practices/SEO = 100 on the deployed origin).
 - `scripts/lighthouse-summary.ts` — post-deploy Lighthouse runner: prints desktop + mobile score tables (with per-route report links) to the workflow run summary.
 - `vite.config.ts`, `tsconfig.json`, `package.json` — build/tooling configuration (Tailwind via `@tailwindcss/vite`; `components.json` configures the shadcn-style `ui/` components).
+- `.pr_agent.toml` — canonical PR Agent config (model `openai/default-combo`, fallback disabled, 32000 max tokens, English responses, `handle_push_trigger` + `push_commands=["/describe","/review","/improve"]`, full reviewer-guidance set, committable code suggestions, AI title + labels). It is the single persistent config source. The action reads repo settings from the **default branch**, so this file is only effective post-merge; while a config PR is open, `main` still holds the prior file.
+- **Config is mirrored as workflow env vars** (`pr-agent.yml` env block) under `SECTION__KEY` naming (e.g. `CONFIG__MODEL`, `PR_REVIEWER__REQUIRE_RISK_ASSESSMENT`). Per PR-Agent docs, environment variables take precedence over `.pr_agent.toml`, so the env block is the **authoritative pre-merge config** — it guarantees the running action uses the same values that will apply post-merge. `OPENAI__API_BASE` / `OPENAI__KEY` must stay in env: provider endpoint/auth settings are host-controlled and ignored in repo-local `.pr_agent.toml`. Keep the env mirror in sync with `.pr_agent.toml`; if the TOML changes, update the matching env keys. (After merge, the env mirror could be trimmed to the host-controlled keys, but the full mirror is kept by convention as belt-and-suspenders.)
 
 ## Runtime/Tooling Preferences
 - **Runtime**: Node ≥ 26 (current LTS; native TS type-stripping runs `scripts/provider/index.ts` without a transpile step; no `engines` declared).

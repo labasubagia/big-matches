@@ -1,0 +1,39 @@
+[github]
+publish_as_check_run = true
+
+[config]
+model = "openai/default-combo"
+fallback_models = []
+custom_model_max_tokens = 32000
+output_run_details = true
+output_run_cost = true
+reaction_on_start = "eyes"
+response_language = "en-US"
+
+[github_action_config]
+handle_push_trigger = true
+push_commands = ["/describe", "/review", "/improve"]
+
+[pr_code_suggestions]
+committable_code_suggestions = true
+suggestions_score_threshold = 3
+demand_code_suggestions_self_review = true
+publish_output_no_suggestions = false
+enable_chat_text = true
+
+[pr_reviewer]
+inline_key_issues = true
+persistent_inline_comments = true
+enable_large_pr_chunking = true
+require_merge_recommendation = true
+require_risk_assessment = true
+require_priority_files = true
+require_todo_scan = true
+require_failure_modes = true
+require_score_review = true
+require_can_be_split_review = true
+publish_output_no_suggestions = false
+
+[pr_description]
+generate_ai_title = false
+publish_labels = true
