@@ -9,6 +9,7 @@ import {
 	localMidnightMs,
 	matchBucket,
 	teamCrests,
+	withinFilteredRange,
 	withinRange,
 } from "./matchTimes";
 
@@ -95,6 +96,42 @@ describe("withinRange", () => {
 				NOW + 90 * 24 * 3600 * 1000,
 			),
 		).toBe(false);
+	});
+});
+describe("withinFilteredRange", () => {
+	it("keeps a non-TBD match only inside its range", () => {
+		expect(withinFilteredRange(match(), NOW, NOW + 90 * 24 * 3600 * 1000)).toBe(
+			true,
+		);
+		expect(
+			withinFilteredRange(
+				match({ utcDate: "2027-06-01T20:00:00Z" }),
+				NOW,
+				NOW + 90 * 24 * 3600 * 1000,
+			),
+		).toBe(false);
+	});
+
+	it("keeps a TBD match regardless of its placeholder date", () => {
+		const tbd = match({
+			status: "SCHEDULED",
+			utcDate: "2026-12-31T00:00:00Z",
+		});
+		expect(withinFilteredRange(tbd, NOW, NOW + 90 * 24 * 3600 * 1000)).toBe(
+			true,
+		);
+		expect(withinFilteredRange(tbd, NOW - 30 * 24 * 3600 * 1000, NOW)).toBe(
+			true,
+		);
+	});
+	it("keeps a TBD match even outside a forward window", () => {
+		const tbd = match({
+			status: "SCHEDULED",
+			utcDate: "2027-12-31T00:00:00Z",
+		});
+		expect(withinFilteredRange(tbd, NOW, NOW + 30 * 24 * 3600 * 1000)).toBe(
+			true,
+		);
 	});
 });
 describe("localMidnightMs", () => {

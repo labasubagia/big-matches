@@ -57,4 +57,29 @@ describe("defaultBigTeamIds", () => {
 			4, 5, 57, 64, 81, 100, 524, 7397,
 		]);
 	});
+	it("falls back to a roster prefix when no UCL ∩ top-five teams exist", () => {
+		const ROSTER: Team[] = [
+			{ id: 30, name: "Fulham", competition: "English Premier League" },
+			{ id: 40, name: "Arsenal", competition: "English Premier League" },
+			{ id: 50, name: "Chelsea", competition: "English Premier League" },
+		];
+		expect(defaultBigTeamIds(ROSTER)).toEqual([30, 40, 50]);
+	});
+	it("dedupes teams across competitions in the fallback", () => {
+		const ROSTER: Team[] = [
+			{ id: 30, name: "Fulham", competition: "English Premier League" },
+			{ id: 30, name: "Fulham", competition: "FA Cup" },
+			{ id: 40, name: "Arsenal", competition: "English Premier League" },
+		];
+		expect(defaultBigTeamIds(ROSTER)).toEqual([30, 40]);
+	});
+
+	it("truncates the fallback to the first 8 teams by id", () => {
+		const ROSTER: Team[] = Array.from({ length: 12 }, (_, i) => ({
+			id: 100 - i,
+			name: `Team ${i}`,
+			competition: "English Premier League",
+		}));
+		expect(defaultBigTeamIds(ROSTER)).toEqual([89, 90, 91, 92, 93, 94, 95, 96]);
+	});
 });

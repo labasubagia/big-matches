@@ -114,11 +114,15 @@ export function groupByMonth(
 		g.matches.push(m);
 	}
 	const groups = [...byKey.values()];
-	const first = groups[0];
+	// Anchor the range-edge notes to the first/last group holding an actual
+	// in-range fixture. TBD rows (undated placeholders) can land in a later
+	// month and must not claim the "until" boundary.
+	const hasInRange = (g: MonthGroup) => g.matches.some((m) => !isTBD(m));
+	const first = groups.find(hasInRange);
 	if (first && rangeFrom && rangeFrom.getDate() !== 1) {
 		first.note = `from ${fmtShortDate(rangeFrom)}`;
 	}
-	const last = groups[groups.length - 1];
+	const last = [...groups].reverse().find(hasInRange);
 	if (last && rangeTo && rangeTo.getDate() !== lastDayOfMonth(rangeTo)) {
 		const note = `until ${fmtShortDate(rangeTo)}`;
 		last.note = last.note ? `${last.note} . ${note}` : note;

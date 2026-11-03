@@ -5,7 +5,7 @@ import { groupByMonth } from "./MatchList";
 // utcDate strings are UTC; pin to UTC so month labels are deterministic.
 process.env.TZ = "UTC";
 
-function m(utcDate: string): Match {
+function m(utcDate: string, overrides: Partial<Match> = {}): Match {
 	return {
 		id: Math.floor(Math.random() * 1e9),
 		utcDate,
@@ -13,8 +13,10 @@ function m(utcDate: string): Match {
 		competition: { name: "Premier League", code: "PL" },
 		homeTeam: { id: 86, name: "Real Madrid", crest: "" },
 		awayTeam: { id: 81, name: "Barcelona", crest: "" },
+		...overrides,
 	};
 }
+const tbd = (date: string) => m(date, { status: "SCHEDULED" });
 
 describe("groupByMonth", () => {
 	it("groups matches by month regardless of input order", () => {
@@ -64,5 +66,38 @@ describe("groupByMonth", () => {
 			new Date(2026, 9, 23),
 		);
 		expect(groups[0].note).toBe("from 29/10/2026 . until 23/10/2026");
+	});
+	it("does not put the until note on a trailing TBD-only group", () => {
+		const groups = groupByMonth(
+			[m("2026-11-10T20:00:00Z"), tbd("2027-12-31T00:00:00Z")],
+			undefined,
+			new Date(2027, 0, 23), // 23 January 2027
+		);
+		expect(groups.map((g) => g.label)).toEqual([
+			"November 2026",
+			"December 2027",
+		]);
+		expect(groups[0].note).toBe("until 23/01/2027");
+		expect(groups[1].note).toBeUndefined();
+	});
+
+	it("keeps the note on a group mixing an in-range match and a TBD row", () => {
+		const groups = groupByMonth(
+			[tbd("2027-12-31T00:00:00Z"), m("2027-12-10T20:00:00Z")],
+			undefined,
+			new Date(2027, 11, 23), // 23 December 2027
+		);
+		expect(groups).toHaveLength(1);
+		expect(groups[0].note).toBe("until 23/12/2027");
+	});
+
+	it("suppresses both notes when every visible match is TBD", () => {
+		const groups = groupByMonth(
+			[tbd("2027-12-31T00:00:00Z")],
+			new Date(2027, 0, 15),
+			new Date(2027, 0, 23),
+		);
+		expect(groups).toHaveLength(1);
+		expect(groups[0].note).toBeUndefined();
 	});
 });

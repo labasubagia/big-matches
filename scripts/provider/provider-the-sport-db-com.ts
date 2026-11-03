@@ -79,7 +79,8 @@ const mapStatus = (raw: unknown): string => {
  *  missing / date-only / midnight value yields the midnight placeholder the UI
  *  renders as TBD. */
 const normalizeUtcDate = (raw: unknown): string => {
-	const tbd = () => `${currentSeason().slice(0, 4)}-01-01T00:00:00Z`;
+	const tbd = () =>
+		`${Number(currentSeason().slice(0, 4)) + 1}-12-31T00:00:00Z`;
 	if (typeof raw !== "string" || !raw.trim()) return tbd();
 	const trimmed = raw.trim();
 	if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return `${trimmed}T00:00:00Z`;

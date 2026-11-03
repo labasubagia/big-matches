@@ -25,7 +25,12 @@ export function defaultBigTeamIds(teams: readonly Team[]): number[] {
 			.filter((t) => TOP5_LEAGUE_NAMES[t.competition] === true)
 			.map((t) => t.id),
 	);
-	return [...ucl].filter((id) => top5.has(id)).sort((a, b) => a - b);
+	const big = [...ucl].filter((id) => top5.has(id)).sort((a, b) => a - b);
+	if (big.length > 0) return big;
+	// No clearly-"big" roster (providers whose league names/codes fall outside
+	// the top-five/UCL mapping, e.g. TheSportsDB): fall back to a deterministic
+	// roster prefix so a first-time visitor still gets a non-empty overview.
+	return [...new Set(teams.map((t) => t.id))].sort((a, b) => a - b).slice(0, 8);
 }
 
 export function readSavedSelection(
