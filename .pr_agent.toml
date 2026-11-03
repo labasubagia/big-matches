@@ -5,4 +5,11 @@ custom_model_max_tokens = 32000
 
 [github_action_config]
 handle_push_trigger = true
-push_commands = ["/review"]
+push_commands = ["/describe", "/review"]
+
+[pr_reviewer]
+inline_key_issues = true
+persistent_inline_comments = true
+enable_large_pr_chunking = true
+require_merge_recommendation = true
+require_risk_assessment = true
