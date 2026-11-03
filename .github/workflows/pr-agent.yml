@@ -20,7 +20,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: PR Agent
-        uses: codiumai/pr-agent@v0
+        uses: Codium-ai/pr-agent@v0.49.0
         env:
           OPENAI__API_BASE: ${{ vars.OPENAI_COMPATIBLE_URL }}
           OPENAI__KEY: ${{ secrets.OPENAI_COMPATIBLE_KEY }}
