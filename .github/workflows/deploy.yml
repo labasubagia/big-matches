@@ -78,8 +78,8 @@ jobs:
         with:
           urls: |
             ${{ needs.deploy.outputs.page_url }}
-            ${{ needs.deploy.outputs.page_url }}teams
-            ${{ needs.deploy.outputs.page_url }}faq
+            ${{ needs.deploy.outputs.page_url }}teams/
+            ${{ needs.deploy.outputs.page_url }}faq/
           runs: 2
           configPath: ./.lighthouserc.mobile.json
           artifactName: lighthouse-mobile
