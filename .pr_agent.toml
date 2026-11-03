@@ -36,3 +36,4 @@ publish_output_no_suggestions = false
 
 [pr_description]
 generate_ai_title = true
+publish_labels = true
