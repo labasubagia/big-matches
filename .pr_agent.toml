@@ -1,3 +1,6 @@
+[github]
+publish_as_check_run = true
+
 [config]
 model = "openai/default-combo"
 fallback_models = []
