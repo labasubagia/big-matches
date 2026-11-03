@@ -16,9 +16,6 @@ jobs:
   pr-agent:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - name: PR Agent
         uses: Codium-ai/pr-agent@v0.49.0
         env:
