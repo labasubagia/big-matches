@@ -31,6 +31,7 @@ require_priority_files = true
 require_todo_scan = true
 require_failure_modes = true
 require_score_review = true
+require_can_be_split_review = true
 publish_output_no_suggestions = false
 
 [pr_description]
