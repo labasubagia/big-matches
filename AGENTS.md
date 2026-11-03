@@ -16,7 +16,7 @@ Big Matches is a React app with three routes — Overview, Teams, FAQ — that s
 - `src/components/` — shared UI (`MatchList`, `MatchFilters`), shadcn primitives under `src/components/ui/` (button, input, popover, calendar, command), and the date-range picker / multi-select combobox powering the Overview filter.
 - `src/config/` — competition / default-selection configuration.
 - `scripts/` — CI data generation (`scripts/provider/index.ts` orchestrator + `provider/` implementations, run via native Node TS type-stripping) + post-build PWA generation (`generate-sw.ts`: Workbox-based service worker via `injectManifest`).
-- `.github/workflows/` — CI checks + deploy (data generation, build, publish; post-deploy Lighthouse perf gate) + **PR Agent** (`pr-agent.yml`: Codium-ai/pr-agent auto-review on PRs, wired to a 9router OpenAI-compatible endpoint via `OPENAI_COMPATIBLE_URL` var / `OPENAI_COMPATIBLE_KEY` secret; model `openai/default-combo` with `handle_push_trigger` + `push_commands=["/review"]`).
+- `.github/workflows/` — CI checks + deploy (data generation, build, publish; post-deploy Lighthouse perf gate) + **PR Agent** (`pr-agent.yml`: Codium-ai/pr-agent auto-review on PRs, wired to a 9router OpenAI-compatible endpoint via `OPENAI_COMPATIBLE_URL` var / `OPENAI_COMPATIBLE_KEY` secret; model `openai/default-combo` with `handle_push_trigger` + `push_commands=["/describe","/review","/improve"]`).
 
 ## Development Commands
 Package manager: **npm** (lockfile `package-lock.json`).
