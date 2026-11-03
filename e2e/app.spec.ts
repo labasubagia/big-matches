@@ -124,9 +124,9 @@ test("overview shows fixtures within the default 30-day range", async ({
 		rowMatching(page, ["Bayern München", "Borussia Dortmund"]),
 	).toHaveCount(0);
 
-	// Only the in-range Real Madrid vs Barcelona row is present; the TBD
-	// fixture (far in the future) is hidden.
-	await expect(rowMatching(page, ["Real Madrid", "Barcelona"])).toHaveCount(1);
+	// Both Real Madrid vs Barcelona rows show: the in-range timed fixture plus
+	// the TBD one (undated — always kept regardless of the date window).
+	await expect(rowMatching(page, ["Real Madrid", "Barcelona"])).toHaveCount(2);
 });
 
 test("search fuzzy-narrows candidates and applies immediately", async ({
@@ -186,7 +186,7 @@ test("selecting two teams restricts results to their mutual fixtures", async ({
 	await expect(page.getByTestId("selected-count")).toHaveText(
 		"2 clubs selected",
 	);
-	await expect(rowMatching(page, ["Real Madrid", "Barcelona"])).toHaveCount(1);
+	await expect(rowMatching(page, ["Real Madrid", "Barcelona"])).toHaveCount(2);
 	await expect(
 		rowMatching(page, ["Manchester United", "Manchester City"]),
 	).toHaveCount(0);

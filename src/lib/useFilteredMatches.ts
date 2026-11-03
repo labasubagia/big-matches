@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import type { Match } from "./filterBigMatches";
 import { filterOverviewMatches } from "./filterBigMatches";
-import { withinRange } from "./matchTimes";
+import { withinFilteredRange } from "./matchTimes";
 import type { MatchFilterState } from "./useMatchFilters";
 
 // Overview compute: mutual-pairing filter, date-range clip, and date sort.
@@ -20,7 +20,7 @@ export function useFilteredMatches(
 			new Set(selected),
 			new Set(filters.selectedTeams),
 		)
-			.filter((m) => withinRange(m, range.from, range.to))
+			.filter((m) => withinFilteredRange(m, range.from, range.to))
 			.sort((a, b) => a.utcDate.localeCompare(b.utcDate));
 	}, [ready, fixtures, selected, filters.range, filters.selectedTeams]);
 }
