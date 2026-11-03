@@ -9,9 +9,13 @@ push_commands = ["/describe", "/review"]
 
 [pr_code_suggestions]
 committable_code_suggestions = true
+suggestions_score_threshold = 3
+demand_code_suggestions_self_review = true
+
 [pr_reviewer]
 inline_key_issues = true
 persistent_inline_comments = true
 enable_large_pr_chunking = true
 require_merge_recommendation = true
 require_risk_assessment = true
+require_priority_files = true
