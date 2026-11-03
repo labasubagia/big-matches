@@ -1,6 +1,10 @@
 import type { Match, Team } from "./filterBigMatches";
-import realFixturesUrl from "./fixtures.json?url";
-import mockFixturesUrl from "./fixtures.mock.json?url";
+
+const FIXTURES_URL =
+	import.meta.env.BASE_URL +
+	(import.meta.env.VITE_FIXTURES === "mock"
+		? "fixtures.mock.json"
+		: "fixtures.json");
 
 export interface Fixtures {
 	matches: Match[];
@@ -30,11 +34,7 @@ function processFixtures(data: {
 let fixturesPromise: Promise<Fixtures> | null = null;
 
 async function loadFixturesUncached(): Promise<Fixtures> {
-	const url =
-		import.meta.env.VITE_FIXTURES === "mock"
-			? mockFixturesUrl
-			: realFixturesUrl;
-	const res = await fetch(url);
+	const res = await fetch(FIXTURES_URL);
 	if (!res.ok) {
 		throw new Error(`Failed to load fixtures (HTTP ${res.status})`);
 	}
