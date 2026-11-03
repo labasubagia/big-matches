@@ -57,7 +57,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        preset: [desktop, mobile]
+        include:
+          - preset: desktop
+            flags: LHCI_COLLECT__SETTINGS__PRESET=desktop
+          - preset: mobile
+            flags: LHCI_COLLECT__SETTINGS__FORMFACTOR=mobile
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -67,7 +71,7 @@ jobs:
       - run: npm ci
       - name: Run Lighthouse (${{ matrix.preset }})
         run: |
-          LHCI_COLLECT__SETTINGS__PRESET=${{ matrix.preset }} \
+          ${{ matrix.flags }} \
             npx lhci autorun --config=./.lighthouserc.json \
             --collect.url="${{ needs.deploy.outputs.page_url }}" \
             --collect.url="${{ needs.deploy.outputs.page_url }}teams/" \
