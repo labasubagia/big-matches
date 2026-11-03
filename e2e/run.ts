@@ -26,8 +26,8 @@ function waitFor(port, path, timeoutMs = 60_000) {
 }
 
 const MOCK_FIXTURES = new URL("./fixtures.mock.json", import.meta.url);
-// Test-scoped mock fixtures; the real src/lib/fixtures.json is never touched.
-const MOCK_OUT = new URL("../src/lib/fixtures.mock.json", import.meta.url);
+// Test-scoped mock fixtures; the real public/fixtures.json is never touched.
+const MOCK_OUT = new URL("../public/fixtures.mock.json", import.meta.url);
 
 let dev: ChildProcess | undefined;
 try {

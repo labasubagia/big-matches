@@ -6,8 +6,8 @@ Internal design notes. For usage, see [../README.md](../README.md).
 
 Fully static. `scripts/provider/index.ts` is the orchestrator: it loads the
 selected provider (default Football-Data.org v4), fetches teams and matches, and
-writes both to `src/lib/fixtures.json`. The frontend imports that JSON at build
-time — there is no runtime API access and no key in the browser or build.
+writes both to `public/fixtures.json`. The frontend fetches that JSON at runtime
+— there is no runtime API access and no key in the browser or build.
 
 Providers implement the `DataProvider` interface (`fetchTeams`, `fetchMatches`,
 `season`, `defaultCompetitionCodes`); pick one with `DATA_PROVIDER`
@@ -33,8 +33,8 @@ budget.
 
 ## Placeholder fallback
 
-`src/lib/fixtures.example.json` is committed. `scripts/ensure-fixtures.ts` copies
-it over `src/lib/fixtures.json` when that file is missing, so dev/build never fail
+`data/fixtures.example.json` is committed. `scripts/ensure-fixtures.ts` copies
+it over `public/fixtures.json` when that file is missing, so dev/build never fail
 on an absent file. With empty data the app shows an error prompting
 `npm run data:gen`.
 
@@ -63,7 +63,7 @@ New entries go inside their theme group, not appended to the end.
   (`--exclude "e2e/**/*.spec.ts"` — Playwright specs only).
 - E2E: `npm run test:e2e` → `e2e/run.ts`:
   - builds mock fixtures from `e2e/fixtures.mock.json` via `build-fixtures.ts`
-    into `src/lib/fixtures.mock.json` (never touches the real file);
+    into `public/fixtures.mock.json` (never touches the real file);
   - sets `VITE_FIXTURES=mock` so `src/lib/loadFixtures.ts` loads the mock file;
   - starts the dev server on :3100 and runs Playwright against `/big-matches/`.
 

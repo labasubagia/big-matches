@@ -47,7 +47,7 @@ const ROOT = path.resolve(
 	path.dirname(fileURLToPath(import.meta.url)),
 	"../..",
 );
-const OUT = path.join(ROOT, "src", "lib", "fixtures.json");
+const OUT = path.join(ROOT, "public", "fixtures.json");
 /** Minimal .env loader (npm scripts don't source it); only sets unset vars. */
 function loadDotEnv(dir: string): void {
 	try {
