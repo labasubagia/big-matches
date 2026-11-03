@@ -309,7 +309,7 @@ test("overview shows all matches including the past with bucket background color
 	const tbdRow = rowMatching(page, ["Real Madrid", "Barcelona"]).last();
 	await expect(tbdRow.getByText("(time TBD)")).toHaveCSS(
 		"color",
-		"rgb(249, 115, 22)",
+		"rgb(194, 65, 12)",
 	);
 });
 
