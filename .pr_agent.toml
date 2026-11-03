@@ -7,6 +7,8 @@ custom_model_max_tokens = 32000
 handle_push_trigger = true
 push_commands = ["/describe", "/review"]
 
+[pr_code_suggestions]
+committable_code_suggestions = true
 [pr_reviewer]
 inline_key_issues = true
 persistent_inline_comments = true

@@ -7,7 +7,7 @@ on:
     types: [created]
 
 permissions:
-  contents: read
+  contents: write
   issues: write
   pull-requests: write
   checks: read
@@ -32,3 +32,4 @@ jobs:
           PR_REVIEWER__ENABLE_LARGE_PR_CHUNKING: "true"
           PR_REVIEWER__REQUIRE_MERGE_RECOMMENDATION: "true"
           PR_REVIEWER__REQUIRE_RISK_ASSESSMENT: "true"
+          PR_CODE_SUGGESTIONS__COMMITTABLE_CODE_SUGGESTIONS: "true"
