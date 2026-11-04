@@ -1,4 +1,4 @@
-import Fuse from "fuse.js";
+import MiniSearch from "minisearch";
 export type Match = {
 	id: number;
 	utcDate: string;
@@ -63,15 +63,16 @@ const fold = (s: string): string =>
 export function filterTeamsByName(teams: Team[], query: string): Team[] {
 	const q = fold(query.trim());
 	if (!q) return teams;
-	const indexed = teams.map((t) => ({
+	const indexed = teams.map((t, i) => ({
+		id: i,
 		t,
 		n: fold(t.name),
 		s: t.shortName ? fold(t.shortName) : "",
 	}));
-	const fuse = new Fuse(indexed, {
-		keys: ["n", "s"],
-		threshold: 0.3,
-		ignoreLocation: true,
+	const index = new MiniSearch({
+		fields: ["n", "s"],
+		storeFields: ["t"],
 	});
-	return fuse.search(q).map((r) => r.item.t);
+	index.addAll(indexed);
+	return index.search(q, { prefix: true, fuzzy: 0.2 }).map((r) => r.t);
 }
