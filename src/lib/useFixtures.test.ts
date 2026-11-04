@@ -8,8 +8,9 @@ function deferred<T>() {
 	return { promise, resolve, reject };
 }
 const flush = async () => {
-	await Promise.resolve();
-	await Promise.resolve();
+	for (let i = 0; i < 5; i++) {
+		await Promise.resolve();
+	}
 };
 
 describe("retryAsyncLoad", () => {
@@ -31,7 +32,7 @@ describe("retryAsyncLoad", () => {
 		const onError = vi.fn();
 
 		const cancel = retryAsyncLoad(load, onReady, onError, 2, 100);
-
+		await flush();
 		expect(load).toHaveBeenCalledTimes(1);
 		d1.reject(new TypeError("blip"));
 		await flush();
@@ -39,11 +40,13 @@ describe("retryAsyncLoad", () => {
 		expect(onReady).not.toHaveBeenCalled();
 
 		vi.advanceTimersByTime(100);
+		await flush();
 		expect(load).toHaveBeenCalledTimes(2);
 		d2.reject(new TypeError("blip"));
 		await flush();
 
 		vi.advanceTimersByTime(100);
+		await flush();
 		expect(load).toHaveBeenCalledTimes(3);
 		d3.resolve(FIXTURES);
 		await flush();
@@ -93,5 +96,25 @@ describe("retryAsyncLoad", () => {
 		expect(load).toHaveBeenCalledTimes(1);
 		expect(onReady).not.toHaveBeenCalled();
 		expect(onError).not.toHaveBeenCalled();
+	});
+	it("converts a synchronous throw from load into the retry/error path", async () => {
+		vi.useFakeTimers();
+		const load = vi.fn(() => {
+			throw new Error("sync boom");
+		});
+		const onReady = vi.fn();
+		const onError = vi.fn();
+
+		const cancel = retryAsyncLoad(load, onReady, onError, 1, 100);
+		await flush();
+
+		vi.advanceTimersByTime(100);
+		await flush();
+
+		expect(load).toHaveBeenCalledTimes(2); // initial + 1 retry
+		expect(onError).toHaveBeenCalledTimes(1);
+		expect(onError.mock.calls[0][0].message).toBe("sync boom");
+		expect(onReady).not.toHaveBeenCalled();
+		cancel();
 	});
 });

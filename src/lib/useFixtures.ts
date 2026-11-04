@@ -26,20 +26,22 @@ export function retryAsyncLoad(
 	let retries = 0;
 
 	const attempt = () => {
-		load().then(
-			(fixtures) => {
-				if (!cancelled) onReady(fixtures);
-			},
-			(error: unknown) => {
-				if (cancelled) return;
-				if (retries < maxRetries) {
-					retries++;
-					timer = setTimeout(attempt, delayMs);
-				} else {
-					onError(error instanceof Error ? error : new Error(String(error)));
-				}
-			},
-		);
+		Promise.resolve()
+			.then(load)
+			.then(
+				(fixtures) => {
+					if (!cancelled) onReady(fixtures);
+				},
+				(error: unknown) => {
+					if (cancelled) return;
+					if (retries < maxRetries) {
+						retries++;
+						timer = setTimeout(attempt, delayMs);
+					} else {
+						onError(error instanceof Error ? error : new Error(String(error)));
+					}
+				},
+			);
 	};
 	attempt();
 
