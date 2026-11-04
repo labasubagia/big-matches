@@ -44,6 +44,12 @@ describe("filterTeamsByName", () => {
 		]);
 	});
 
+	it("matches substrings anywhere in the name, not just prefixes", () => {
+		expect(filterTeamsByName(teams, "rid").map((t) => t.name)).toEqual([
+			"Real Madrid",
+		]);
+	});
+
 	it("preserves duplicate entries across competitions", () => {
 		expect(filterTeamsByName(teams, "barcelona")).toHaveLength(2);
 	});

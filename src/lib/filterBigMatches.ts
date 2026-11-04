@@ -63,6 +63,7 @@ const fold = (s: string): string =>
 export function filterTeamsByName(teams: Team[], query: string): Team[] {
 	const q = fold(query.trim());
 	if (!q) return teams;
+	const terms = q.split(/\s+/);
 	const indexed = teams.map((t, i) => ({
 		id: i,
 		t,
@@ -72,7 +73,25 @@ export function filterTeamsByName(teams: Team[], query: string): Team[] {
 	const index = new MiniSearch({
 		fields: ["n", "s"],
 		storeFields: ["t"],
+		combineWith: "AND",
 	});
 	index.addAll(indexed);
-	return index.search(q, { prefix: true, fuzzy: 0.2 }).map((r) => r.t);
+	const seen = new Set<Team>();
+	const out: Team[] = [];
+	for (const r of index.search(q, { prefix: true, fuzzy: 2 })) {
+		if (!seen.has(r.t)) {
+			seen.add(r.t);
+			out.push(r.t);
+		}
+	}
+	for (const t of teams) {
+		if (seen.has(t)) continue;
+		const n = fold(t.name);
+		const s = t.shortName ? fold(t.shortName) : "";
+		if (terms.every((term) => n.includes(term) || s.includes(term))) {
+			seen.add(t);
+			out.push(t);
+		}
+	}
+	return out;
 }
