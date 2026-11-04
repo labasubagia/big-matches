@@ -11,8 +11,7 @@ reaction_on_start = "eyes"
 response_language = "en-US"
 
 [github_action_config]
-handle_push_trigger = true
-push_commands = ["/describe", "/review", "/improve"]
+handle_push_trigger = false
 
 [pr_code_suggestions]
 committable_code_suggestions = true
