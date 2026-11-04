@@ -61,7 +61,7 @@ const fold = (s: string): string =>
 // page search. Preserves input order and duplicate entries for empty queries
 // (a team may appear under several competitions); non-empty queries return
 // relevance-ranked matches.
-const indexCache = new WeakMap<Team[], MiniSearch>();
+const indexCache = new Map<string, MiniSearch>();
 
 export function filterTeamsByName(teams: Team[], query: string): Team[] {
 	const q = fold(query.trim());
@@ -74,7 +74,8 @@ export function filterTeamsByName(teams: Team[], query: string): Team[] {
 		n: fold(t.name),
 		s: t.shortName ? fold(t.shortName) : "",
 	}));
-	let index = indexCache.get(teams);
+	const cacheKey = indexed.map((e) => `${e.n}\u0000${e.s}`).join("\u0001");
+	let index = indexCache.get(cacheKey);
 	if (!index) {
 		index = new MiniSearch({
 			fields: ["n", "s"],
@@ -82,7 +83,7 @@ export function filterTeamsByName(teams: Team[], query: string): Team[] {
 			searchOptions: { combineWith: "AND", prefix: true },
 		});
 		index.addAll(indexed);
-		indexCache.set(teams, index);
+		indexCache.set(cacheKey, index);
 	}
 	const seen = new Set<number>();
 	const out: Team[] = [];
@@ -94,11 +95,15 @@ export function filterTeamsByName(teams: Team[], query: string): Team[] {
 			out.push(teams[i]);
 		}
 	}
-	const fuzzy = terms.every((t) => t.length >= 3) ? 2 : 0;
+	const fuzzy = terms.every((t) => t.length >= 4)
+		? 2
+		: terms.every((t) => t.length >= 3)
+			? 1
+			: 0;
 	for (const r of index.search(terms.join(" "), { fuzzy })) {
 		if (!seen.has(r.id)) {
 			seen.add(r.id);
-			out.push(r.t);
+			out.push(teams[r.id]);
 		}
 	}
 	return out;
