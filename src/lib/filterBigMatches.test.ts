@@ -38,10 +38,66 @@ describe("filterTeamsByName", () => {
 		expect(filterTeamsByName(teams, "   ")).toEqual(teams);
 	});
 
+	it("returns empty for punctuation-only query without crashing", () => {
+		expect(filterTeamsByName(teams, "!!!")).toEqual([]);
+	});
+
 	it("filters case-insensitively by substring", () => {
 		expect(filterTeamsByName(teams, "mad").map((t) => t.name)).toEqual([
 			"Real Madrid",
 		]);
+	});
+
+	it("matches substrings anywhere in the name, not just prefixes", () => {
+		expect(filterTeamsByName(teams, "rid").map((t) => t.name)).toEqual([
+			"Real Madrid",
+		]);
+	});
+
+	it("ranks exact substring matches above fuzzy near-misses", () => {
+		const local = [...teams, { id: 9, name: "Red Bull", competition: "BL1" }];
+		const names = filterTeamsByName(local, "rid").map((t) => t.name);
+		expect(names).toContain("Real Madrid");
+		expect(names.indexOf("Real Madrid")).toBeLessThan(
+			names.indexOf("Red Bull"),
+		);
+	});
+
+	it("tokenizes punctuation identically to the search index", () => {
+		expect(filterTeamsByName(teams, "mad.").map((t) => t.name)).toEqual([
+			"Real Madrid",
+		]);
+	});
+
+	it("returns the exact input team references", () => {
+		const res = filterTeamsByName(teams, "barcelona");
+		expect(res).toHaveLength(2);
+		expect(res[0]).toBe(teams[1]);
+		expect(res[1]).toBe(teams[2]);
+		expect(filterTeamsByName(teams, "asenal")[0]).toBe(teams[5]);
+	});
+
+	it("returns consistent results across repeated calls (cache hits)", () => {
+		expect(filterTeamsByName(teams, "mad")).toEqual(
+			filterTeamsByName(teams, "mad"),
+		);
+	});
+
+	it("requires every query term in the fuzzy pass (AND)", () => {
+		const local = [
+			...teams,
+			{ id: 999, name: "Manchester United", competition: "PL" },
+		];
+		expect(filterTeamsByName(local, "man chelsea")).toEqual([]);
+	});
+
+	it("stays correct across many distinct rosters (cache eviction)", () => {
+		for (let k = 0; k < 40; k++) {
+			const roster = [{ id: k, name: `Club ${k}`, competition: "PL" }];
+			expect(filterTeamsByName(roster, `club ${k}`).map((t) => t.name)).toEqual(
+				[`Club ${k}`],
+			);
+		}
 	});
 
 	it("preserves duplicate entries across competitions", () => {

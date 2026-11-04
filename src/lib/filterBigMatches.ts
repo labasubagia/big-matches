@@ -1,4 +1,4 @@
-import Fuse from "fuse.js";
+import MiniSearch from "minisearch";
 export type Match = {
 	id: number;
 	utcDate: string;
@@ -56,22 +56,69 @@ const fold = (s: string): string =>
 		.replace(/[\u0300-\u036f]/g, "")
 		.toLowerCase();
 
-// Fuzzy team-name search via Fuse.js. Shares the production matcher across the
-// Overview club search and the Teams page search. Preserves input
-// order and duplicate entries for empty queries (a team may appear under
-// several competitions); non-empty queries return relevance-ranked matches.
+// Fuzzy team-name search via MiniSearch, with an exact-substring fallback.
+// Shares the production matcher across the Overview club search and the Teams
+// page search. Preserves input order and duplicate entries for empty queries
+// (a team may appear under several competitions); non-empty queries return
+// relevance-ranked matches.
+const indexCache = new Map<string, MiniSearch>();
+const MAX_CACHE_ENTRIES = 32;
+// Teams are treated as immutable. The cache key is a content fingerprint
+// (id + competition + folded name/shortName), so any roster change produces a
+// fresh key/index and a stale index can never be served for changed teams.
+
 export function filterTeamsByName(teams: Team[], query: string): Team[] {
 	const q = fold(query.trim());
 	if (!q) return teams;
-	const indexed = teams.map((t) => ({
+	const terms = q.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+	if (terms.length === 0) return [];
+	const indexed = teams.map((t, i) => ({
+		id: i,
 		t,
+		c: t.competition,
 		n: fold(t.name),
 		s: t.shortName ? fold(t.shortName) : "",
 	}));
-	const fuse = new Fuse(indexed, {
-		keys: ["n", "s"],
-		threshold: 0.3,
-		ignoreLocation: true,
-	});
-	return fuse.search(q).map((r) => r.item.t);
+	const cacheKey = indexed
+		.map((e) => `${e.t.id}\u0000${e.c}\u0000${e.n}\u0000${e.s}`)
+		.join("\u0001");
+	let index = indexCache.get(cacheKey);
+	if (index) {
+		indexCache.delete(cacheKey);
+		indexCache.set(cacheKey, index);
+	} else {
+		index = new MiniSearch({
+			fields: ["n", "s"],
+			storeFields: ["t"],
+			searchOptions: { combineWith: "AND", prefix: true },
+		});
+		index.addAll(indexed);
+		indexCache.set(cacheKey, index);
+		if (indexCache.size > MAX_CACHE_ENTRIES) {
+			const oldestKey = indexCache.keys().next().value;
+			if (oldestKey !== undefined) indexCache.delete(oldestKey);
+		}
+	}
+	const seen = new Set<number>();
+	const out: Team[] = [];
+	for (let i = 0; i < teams.length; i++) {
+		const n = indexed[i].n;
+		const s = indexed[i].s;
+		if (terms.every((term) => n.includes(term) || s.includes(term))) {
+			seen.add(i);
+			out.push(teams[i]);
+		}
+	}
+	const fuzzy = (term: string): number =>
+		term.length >= 7 ? 2 : term.length >= 3 ? 1 : 0;
+	for (const r of index.search(terms.join(" "), {
+		fuzzy,
+		combineWith: "AND",
+	})) {
+		if (!seen.has(r.id)) {
+			seen.add(r.id);
+			out.push(teams[r.id]);
+		}
+	}
+	return out;
 }
