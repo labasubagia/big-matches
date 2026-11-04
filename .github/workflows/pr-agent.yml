@@ -12,7 +12,7 @@ permissions:
   pull-requests: write
   checks: write
 concurrency:
-  group: pr-agent-${{ github.event.pull_request.number }}
+  group: pr-agent-${{ github.event.pull_request.number || github.event.issue.number }}
   cancel-in-progress: true
 
 jobs:
