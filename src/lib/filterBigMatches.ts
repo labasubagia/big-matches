@@ -63,11 +63,12 @@ const fold = (s: string): string =>
 // relevance-ranked matches.
 const indexCache = new Map<string, MiniSearch>();
 const MAX_CACHE_ENTRIES = 32;
+const weakKeyCache = new WeakMap<Team[], string>();
 
 export function filterTeamsByName(teams: Team[], query: string): Team[] {
 	const q = fold(query.trim());
 	if (!q) return teams;
-	const terms = q.split(/\s+/).filter((t) => /[\p{L}\p{N}]/u.test(t));
+	const terms = q.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
 	if (terms.length === 0) return [];
 	const indexed = teams.map((t, i) => ({
 		id: i,
@@ -76,9 +77,13 @@ export function filterTeamsByName(teams: Team[], query: string): Team[] {
 		n: fold(t.name),
 		s: t.shortName ? fold(t.shortName) : "",
 	}));
-	const cacheKey = indexed
-		.map((e) => `${e.t.id}\u0000${e.c}\u0000${e.n}\u0000${e.s}`)
-		.join("\u0001");
+	let cacheKey = weakKeyCache.get(teams);
+	if (!cacheKey) {
+		cacheKey = indexed
+			.map((e) => `${e.t.id}\u0000${e.c}\u0000${e.n}\u0000${e.s}`)
+			.join("\u0001");
+		weakKeyCache.set(teams, cacheKey);
+	}
 	let index = indexCache.get(cacheKey);
 	if (index) {
 		indexCache.delete(cacheKey);
@@ -87,7 +92,7 @@ export function filterTeamsByName(teams: Team[], query: string): Team[] {
 		index = new MiniSearch({
 			fields: ["n", "s"],
 			storeFields: ["t"],
-			searchOptions: { combineWith: "OR", prefix: true },
+			searchOptions: { combineWith: "AND", prefix: true },
 		});
 		index.addAll(indexed);
 		indexCache.set(cacheKey, index);
@@ -107,8 +112,11 @@ export function filterTeamsByName(teams: Team[], query: string): Team[] {
 		}
 	}
 	const fuzzy = (term: string): number =>
-		term.length >= 4 ? 2 : term.length >= 3 ? 1 : 0;
-	for (const r of index.search(terms.join(" "), { fuzzy })) {
+		term.length >= 7 ? 2 : term.length >= 3 ? 1 : 0;
+	for (const r of index.search(terms.join(" "), {
+		fuzzy,
+		combineWith: "AND",
+	})) {
 		if (!seen.has(r.id)) {
 			seen.add(r.id);
 			out.push(teams[r.id]);

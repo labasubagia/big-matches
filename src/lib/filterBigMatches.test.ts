@@ -63,6 +63,12 @@ describe("filterTeamsByName", () => {
 		);
 	});
 
+	it("tokenizes punctuation identically to the search index", () => {
+		expect(filterTeamsByName(teams, "mad.").map((t) => t.name)).toEqual([
+			"Real Madrid",
+		]);
+	});
+
 	it("preserves duplicate entries across competitions", () => {
 		expect(filterTeamsByName(teams, "barcelona")).toHaveLength(2);
 	});
