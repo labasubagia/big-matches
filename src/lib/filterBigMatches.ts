@@ -80,18 +80,21 @@ export function filterTeamsByName(teams: Team[], query: string): Team[] {
 		.map((e) => `${e.t.id}\u0000${e.c}\u0000${e.n}\u0000${e.s}`)
 		.join("\u0001");
 	let index = indexCache.get(cacheKey);
-	if (!index) {
+	if (index) {
+		indexCache.delete(cacheKey);
+		indexCache.set(cacheKey, index);
+	} else {
 		index = new MiniSearch({
 			fields: ["n", "s"],
 			storeFields: ["t"],
-			searchOptions: { combineWith: "AND", prefix: true },
+			searchOptions: { combineWith: "OR", prefix: true },
 		});
 		index.addAll(indexed);
-		if (indexCache.size >= MAX_CACHE_ENTRIES) {
+		indexCache.set(cacheKey, index);
+		if (indexCache.size > MAX_CACHE_ENTRIES) {
 			const oldestKey = indexCache.keys().next().value;
 			if (oldestKey !== undefined) indexCache.delete(oldestKey);
 		}
-		indexCache.set(cacheKey, index);
 	}
 	const seen = new Set<number>();
 	const out: Team[] = [];
