@@ -49,6 +49,7 @@ Setup: copy `.env.example` to `.env` and set the Football-Data.org API key.
 - Do NOT merge any pull request without explicit user permission.
 - PR Agent review findings MUST be resolved before merge: fix the issue and resolve the thread; if a finding cannot or will not be fixed (e.g. reviewer misread or intentional design), reply on the thread with the reason, then resolve it. No unresolved review threads may remain on a PR at merge time.
 - PR Agent runs on PR open/ready/review-requested/reopened + manual `/review` comments and can post new review threads, so only treat threads as final after the last update. Before merging, enumerate **all** review threads with an uncapped query (the default `first:10` cap silently hides threads — 10+ are possible) and confirm **0 unresolved**, then re-check once CI (incl. `pr-agent`) has completed.
+- PR Agent rewrites the PR body on `opened`/`ready_for_review`/`review_requested`/`reopened` and on manual `/describe`: it wraps the author's text in `<!-- pr-agent-generated -->` + `### **User description**` and appends its generated analysis. When editing a PR body (`gh pr edit` / REST PATCH), NEVER replace the whole body — fetch it, change text only inside the `### **User description**` section, and keep the `<!-- pr-agent-generated -->` header plus the generated tail. A wholesale replace drops the marker and the pr-agent analysis; restore with a manual `/describe` comment.
 
 ## Important Files
 - `src/router.tsx` — app router setup.
