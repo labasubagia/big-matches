@@ -62,19 +62,23 @@ const fold = (s: string): string =>
 // (a team may appear under several competitions); non-empty queries return
 // relevance-ranked matches.
 const indexCache = new Map<string, MiniSearch>();
+const MAX_CACHE_ENTRIES = 32;
 
 export function filterTeamsByName(teams: Team[], query: string): Team[] {
 	const q = fold(query.trim());
 	if (!q) return teams;
-	const terms = q.split(/\s+/).filter((t) => /[a-z0-9]/.test(t));
+	const terms = q.split(/\s+/).filter((t) => /[\p{L}\p{N}]/u.test(t));
 	if (terms.length === 0) return [];
 	const indexed = teams.map((t, i) => ({
 		id: i,
 		t,
+		c: t.competition,
 		n: fold(t.name),
 		s: t.shortName ? fold(t.shortName) : "",
 	}));
-	const cacheKey = indexed.map((e) => `${e.n}\u0000${e.s}`).join("\u0001");
+	const cacheKey = indexed
+		.map((e) => `${e.t.id}\u0000${e.c}\u0000${e.n}\u0000${e.s}`)
+		.join("\u0001");
 	let index = indexCache.get(cacheKey);
 	if (!index) {
 		index = new MiniSearch({
@@ -83,6 +87,10 @@ export function filterTeamsByName(teams: Team[], query: string): Team[] {
 			searchOptions: { combineWith: "AND", prefix: true },
 		});
 		index.addAll(indexed);
+		if (indexCache.size >= MAX_CACHE_ENTRIES) {
+			const oldestKey = indexCache.keys().next().value;
+			if (oldestKey !== undefined) indexCache.delete(oldestKey);
+		}
 		indexCache.set(cacheKey, index);
 	}
 	const seen = new Set<number>();
@@ -95,11 +103,8 @@ export function filterTeamsByName(teams: Team[], query: string): Team[] {
 			out.push(teams[i]);
 		}
 	}
-	const fuzzy = terms.every((t) => t.length >= 4)
-		? 2
-		: terms.every((t) => t.length >= 3)
-			? 1
-			: 0;
+	const fuzzy = (term: string): number =>
+		term.length >= 4 ? 2 : term.length >= 3 ? 1 : 0;
 	for (const r of index.search(terms.join(" "), { fuzzy })) {
 		if (!seen.has(r.id)) {
 			seen.add(r.id);
