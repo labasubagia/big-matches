@@ -73,12 +73,16 @@ export function filterTeamsByName(teams: Team[], query: string): Team[] {
 	const index = new MiniSearch({
 		fields: ["n", "s"],
 		storeFields: ["t"],
-		combineWith: "AND",
+		searchOptions: {
+			combineWith: "AND",
+			prefix: true,
+			fuzzy: 2,
+		},
 	});
 	index.addAll(indexed);
 	const seen = new Set<Team>();
 	const out: Team[] = [];
-	for (const r of index.search(q, { prefix: true, fuzzy: 2 })) {
+	for (const r of index.search(q)) {
 		if (!seen.has(r.t)) {
 			seen.add(r.t);
 			out.push(r.t);
