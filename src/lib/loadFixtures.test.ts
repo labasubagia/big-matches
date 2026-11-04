@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { loadFixtures } from "./loadFixtures";
 
 const VALID = {
@@ -8,11 +8,6 @@ const VALID = {
 
 describe("loadFixtures retry contract", () => {
 	const originalFetch = globalThis.fetch;
-
-	beforeEach(() => {
-		vi.resetModules();
-	});
-
 	afterEach(() => {
 		globalThis.fetch = originalFetch;
 	});
