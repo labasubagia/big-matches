@@ -1,19 +1,10 @@
-import { Check, ChevronsUpDown, X } from "lucide-react";
+import { ChevronsUpDown, X } from "lucide-react";
 import * as React from "react";
 import type { Team } from "../lib/filterBigMatches";
-import { crestUrl } from "../lib/matchTimes";
-import { cn } from "../lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from "./ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+
+const TeamComboboxContent = React.lazy(() => import("./team-combobox-content"));
 
 type TeamComboboxProps = {
 	onReset: () => void;
@@ -73,51 +64,22 @@ export function TeamCombobox({
 				)}
 			</div>
 			<PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-				<Command shouldFilter={false}>
-					<CommandInput
-						placeholder="Search clubs…"
-						value={query}
-						onValueChange={setQuery}
+				<React.Suspense
+					fallback={
+						<div className="p-4 text-sm text-muted-foreground">
+							Loading clubs…
+						</div>
+					}
+				>
+					<TeamComboboxContent
+						candidates={candidates}
+						selectedTeams={selectedTeams}
+						toggleTeam={toggleTeam}
+						query={query}
+						setQuery={setQuery}
+						crests={crests}
 					/>
-					<CommandList>
-						<CommandEmpty>No clubs found.</CommandEmpty>
-						<CommandGroup>
-							{[...candidates]
-								.sort((a, b) => a.name.localeCompare(b.name))
-								.map((team) => {
-									const checked = selectedTeams.includes(team.id);
-									const crest = crests.get(team.id);
-									return (
-										<CommandItem
-											key={team.id}
-											value={String(team.id)}
-											onSelect={() => toggleTeam(team.id)}
-										>
-											<span
-												className={cn(
-													"mr-2 flex size-4 items-center justify-center rounded-sm border",
-													checked
-														? "border-primary bg-primary text-primary-foreground"
-														: "border-input",
-												)}
-											>
-												{checked && <Check className="size-3" />}
-											</span>
-											<Avatar className="size-5">
-												{crest ? (
-													<AvatarImage src={crestUrl(crest)} alt="" />
-												) : null}
-												<AvatarFallback className="bg-muted text-[9px] text-muted-foreground">
-													{team.name[0]}
-												</AvatarFallback>
-											</Avatar>
-											{team.name}
-										</CommandItem>
-									);
-								})}
-						</CommandGroup>
-					</CommandList>
-				</Command>
+				</React.Suspense>
 			</PopoverContent>
 		</Popover>
 	);
