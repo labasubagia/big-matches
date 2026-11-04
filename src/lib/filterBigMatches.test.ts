@@ -50,6 +50,15 @@ describe("filterTeamsByName", () => {
 		]);
 	});
 
+	it("ranks exact substring matches above fuzzy near-misses", () => {
+		const local = [...teams, { id: 9, name: "Red Bull", competition: "BL1" }];
+		const names = filterTeamsByName(local, "rid").map((t) => t.name);
+		expect(names).toContain("Real Madrid");
+		expect(names.indexOf("Real Madrid")).toBeLessThan(
+			names.indexOf("Red Bull"),
+		);
+	});
+
 	it("preserves duplicate entries across competitions", () => {
 		expect(filterTeamsByName(teams, "barcelona")).toHaveLength(2);
 	});

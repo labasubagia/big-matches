@@ -82,19 +82,18 @@ export function filterTeamsByName(teams: Team[], query: string): Team[] {
 	index.addAll(indexed);
 	const seen = new Set<number>();
 	const out: Team[] = [];
-	for (const r of index.search(q)) {
-		if (!seen.has(r.id)) {
-			seen.add(r.id);
-			out.push(r.t);
-		}
-	}
 	for (let i = 0; i < teams.length; i++) {
-		if (seen.has(i)) continue;
 		const n = indexed[i].n;
 		const s = indexed[i].s;
 		if (terms.every((term) => n.includes(term) || s.includes(term))) {
 			seen.add(i);
 			out.push(teams[i]);
+		}
+	}
+	for (const r of index.search(q)) {
+		if (!seen.has(r.id)) {
+			seen.add(r.id);
+			out.push(r.t);
 		}
 	}
 	return out;
