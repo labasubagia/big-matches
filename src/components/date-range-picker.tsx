@@ -3,8 +3,11 @@ import * as React from "react";
 import { fmtShortDate } from "../lib/matchTimes";
 import { cn } from "../lib/utils";
 import { Button } from "./ui/button";
-import { Calendar } from "./ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+
+const Calendar = React.lazy(() =>
+	import("./ui/calendar").then((m) => ({ default: m.Calendar })),
+);
 
 function isoLocal(d: Date): string {
 	return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -54,18 +57,20 @@ export function DateRangePicker({
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent className="w-auto p-0" align="start">
-				<Calendar
-					mode="range"
-					selected={selected}
-					defaultMonth={from}
-					onSelect={(range) => {
-						if (!range?.from) return;
-						const f = range.from;
-						onFromChange(isoLocal(f));
-						const t = range.to ?? to;
-						onToChange(isoLocal(t && t >= f ? t : f));
-					}}
-				/>
+				<React.Suspense fallback={<div className="p-3">…</div>}>
+					<Calendar
+						mode="range"
+						selected={selected}
+						defaultMonth={from}
+						onSelect={(range) => {
+							if (!range?.from) return;
+							const f = range.from;
+							onFromChange(isoLocal(f));
+							const t = range.to ?? to;
+							onToChange(isoLocal(t && t >= f ? t : f));
+						}}
+					/>
+				</React.Suspense>
 			</PopoverContent>
 		</Popover>
 	);
