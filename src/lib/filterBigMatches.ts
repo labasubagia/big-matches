@@ -63,7 +63,9 @@ const fold = (s: string): string =>
 // relevance-ranked matches.
 const indexCache = new Map<string, MiniSearch>();
 const MAX_CACHE_ENTRIES = 32;
-const weakKeyCache = new WeakMap<Team[], string>();
+// Teams are treated as immutable. The cache key is a content fingerprint
+// (id + competition + folded name/shortName), so any roster change produces a
+// fresh key/index and a stale index can never be served for changed teams.
 
 export function filterTeamsByName(teams: Team[], query: string): Team[] {
 	const q = fold(query.trim());
@@ -77,13 +79,9 @@ export function filterTeamsByName(teams: Team[], query: string): Team[] {
 		n: fold(t.name),
 		s: t.shortName ? fold(t.shortName) : "",
 	}));
-	let cacheKey = weakKeyCache.get(teams);
-	if (!cacheKey) {
-		cacheKey = indexed
-			.map((e) => `${e.t.id}\u0000${e.c}\u0000${e.n}\u0000${e.s}`)
-			.join("\u0001");
-		weakKeyCache.set(teams, cacheKey);
-	}
+	const cacheKey = indexed
+		.map((e) => `${e.t.id}\u0000${e.c}\u0000${e.n}\u0000${e.s}`)
+		.join("\u0001");
 	let index = indexCache.get(cacheKey);
 	if (index) {
 		indexCache.delete(cacheKey);
