@@ -38,6 +38,10 @@ describe("filterTeamsByName", () => {
 		expect(filterTeamsByName(teams, "   ")).toEqual(teams);
 	});
 
+	it("returns empty for punctuation-only query without crashing", () => {
+		expect(filterTeamsByName(teams, "!!!")).toEqual([]);
+	});
+
 	it("filters case-insensitively by substring", () => {
 		expect(filterTeamsByName(teams, "mad").map((t) => t.name)).toEqual([
 			"Real Madrid",

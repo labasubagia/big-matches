@@ -56,30 +56,34 @@ const fold = (s: string): string =>
 		.replace(/[\u0300-\u036f]/g, "")
 		.toLowerCase();
 
-// Fuzzy team-name search via Fuse.js. Shares the production matcher across the
-// Overview club search and the Teams page search. Preserves input
-// order and duplicate entries for empty queries (a team may appear under
-// several competitions); non-empty queries return relevance-ranked matches.
+// Fuzzy team-name search via MiniSearch, with an exact-substring fallback.
+// Shares the production matcher across the Overview club search and the Teams
+// page search. Preserves input order and duplicate entries for empty queries
+// (a team may appear under several competitions); non-empty queries return
+// relevance-ranked matches.
+const indexCache = new WeakMap<Team[], MiniSearch>();
+
 export function filterTeamsByName(teams: Team[], query: string): Team[] {
 	const q = fold(query.trim());
 	if (!q) return teams;
-	const terms = q.split(/\s+/);
+	const terms = q.split(/\s+/).filter((t) => /[a-z0-9]/.test(t));
+	if (terms.length === 0) return [];
 	const indexed = teams.map((t, i) => ({
 		id: i,
 		t,
 		n: fold(t.name),
 		s: t.shortName ? fold(t.shortName) : "",
 	}));
-	const index = new MiniSearch({
-		fields: ["n", "s"],
-		storeFields: ["t"],
-		searchOptions: {
-			combineWith: "AND",
-			prefix: true,
-			fuzzy: 2,
-		},
-	});
-	index.addAll(indexed);
+	let index = indexCache.get(teams);
+	if (!index) {
+		index = new MiniSearch({
+			fields: ["n", "s"],
+			storeFields: ["t"],
+			searchOptions: { combineWith: "AND", prefix: true },
+		});
+		index.addAll(indexed);
+		indexCache.set(teams, index);
+	}
 	const seen = new Set<number>();
 	const out: Team[] = [];
 	for (let i = 0; i < teams.length; i++) {
@@ -90,7 +94,8 @@ export function filterTeamsByName(teams: Team[], query: string): Team[] {
 			out.push(teams[i]);
 		}
 	}
-	for (const r of index.search(q)) {
+	const fuzzy = terms.every((t) => t.length >= 3) ? 2 : 0;
+	for (const r of index.search(terms.join(" "), { fuzzy })) {
 		if (!seen.has(r.id)) {
 			seen.add(r.id);
 			out.push(r.t);
