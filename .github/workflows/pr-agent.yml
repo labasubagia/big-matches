@@ -15,7 +15,7 @@ jobs:
   pr-agent:
     if: ((github.event_name != 'issue_comment' && github.event.pull_request.draft != true) || github.event.issue.pull_request) && (github.event.sender.type || 'User') != 'Bot'
     concurrency:
-      group: pr-agent-${{ github.event.pull_request.number || github.event.issue.number || github.run_id }}-${{ github.event_name }}
+      group: pr-agent-${{ github.event.pull_request.number || github.event.issue.number || github.run_id }}
       cancel-in-progress: true
     runs-on: ubuntu-latest
     steps:
