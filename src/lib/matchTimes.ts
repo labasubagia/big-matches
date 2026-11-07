@@ -46,12 +46,15 @@ export function matchBucket(m: Match, now: number = Date.now()): MatchBucket {
 // TBD fixture's kickoff is a midnight placeholder on its scheduled day; in
 // UTC-negative zones that instant is the previous day locally, so a boundary
 // TBD would fall outside the local window. Compare TBD matches by their local
-// scheduled date instead of the UTC epoch.
+// calendar day instead of the UTC epoch: the fixture is in range whenever the
+// window overlaps any part of that day.
+const DAY_MS = 24 * 60 * 60 * 1000;
+
 export function withinRange(m: Match, from: number, to: number): boolean {
 	const t = new Date(m.utcDate).getTime();
 	if (isTBD(m)) {
 		const localMidnight = localMidnightMs(m.utcDate.slice(0, 10));
-		return localMidnight >= from && localMidnight <= to;
+		return localMidnight <= to && localMidnight + DAY_MS > from;
 	}
 	return t >= from && t <= to;
 }

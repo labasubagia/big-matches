@@ -123,8 +123,21 @@ describe("withinRange · UTC-midnight boundary", () => {
 					localMidnightMs("2026-11-29"),
 				),
 			).toBe(false);
+			// Window starting later on the fixture's own day (arbitrary timestamp)
+			// still overlaps the local calendar day → kept.
+			expect(
+				withinRange(
+					tbd,
+					localMidnightMs("2026-12-01") + 14 * 3600 * 1000,
+					localMidnightMs("2026-12-02"),
+				),
+			).toBe(true);
 		} finally {
-			process.env.TZ = prevTZ;
+			if (prevTZ === undefined) {
+				delete process.env.TZ;
+			} else {
+				process.env.TZ = prevTZ;
+			}
 		}
 	});
 });
@@ -138,7 +151,11 @@ describe("localMidnightMs", () => {
 				Date.parse("2026-10-28T07:00:00Z"),
 			);
 		} finally {
-			process.env.TZ = prevTZ;
+			if (prevTZ === undefined) {
+				delete process.env.TZ;
+			} else {
+				process.env.TZ = prevTZ;
+			}
 		}
 	});
 });
