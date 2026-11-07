@@ -10,3 +10,6 @@ playwright-report/
 public/fixtures.json
 public/fixtures.mock.json
 public/crests/
+
+# Local Lighthouse CI temp storage
+.lighthouseci/
