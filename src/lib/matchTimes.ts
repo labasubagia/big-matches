@@ -42,23 +42,23 @@ export function matchBucket(m: Match, now: number = Date.now()): MatchBucket {
 	return "near";
 }
 
-// True when the match kickoff falls within the inclusive range [from, to].
+// True when the match kickoff falls within the inclusive range [from, to]. A
+// TBD fixture's kickoff is a midnight placeholder on its scheduled day; in
+// UTC-negative zones that instant is the previous day locally, so a boundary
+// TBD would fall outside the local window. Compare TBD matches by their local
+// calendar day instead of the UTC epoch: the fixture is in range whenever the
+// window overlaps any part of that day.
+const DAY_MS = 24 * 60 * 60 * 1000;
+
 export function withinRange(m: Match, from: number, to: number): boolean {
 	const t = new Date(m.utcDate).getTime();
+	if (isTBD(m)) {
+		const localMidnight = localMidnightMs(m.utcDate.slice(0, 10));
+		return localMidnight <= to && localMidnight + DAY_MS > from;
+	}
 	return t >= from && t <= to;
 }
 
-// A fixture shows in a date window when its kickoff date lands inside it. A
-// TBD (kickoff time undecided) fixture still has a real date (midnight
-// placeholder on the scheduled day), so it is filtered by date like any other
-// fixture.
-export function withinFilteredRange(
-	m: Match,
-	from: number,
-	to: number,
-): boolean {
-	return withinRange(m, from, to);
-}
 // Epoch ms at local midnight for a `YYYY-MM-DD` date string. Date-only
 // strings parse as UTC, so build the datetime form to get local semantics.
 export function localMidnightMs(isoDate: string): number {

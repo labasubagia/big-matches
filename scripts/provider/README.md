@@ -42,7 +42,7 @@ Free key `123` (no signup). Gives access to competitions Football-Data.org gates
 behind its paid plan (UEFA Europa League + domestic cups).
 
 ### Limitations / problems (all verified against the live free API + official docs)
-- **`eventsseason` caps at 15 events per league-season** (documented free limit).
+- **events season caps at 15 events per league-season** (documented free limit).
   The roster is derived from the distinct clubs in those 15 events, so it only
   reflects clubs that had a fixture in that window.
   - **UCL is effectively unusable**: the 15 events returned for the UCL season
@@ -50,7 +50,7 @@ behind its paid plan (UEFA Europa League + domestic cups).
     not the league-phase clubs. Use Football-Data.org for Champions League.
   - League rosters come out slightly short (e.g. La Liga 19/20, Bundesliga
     18/20) because one or two clubs have no fixture inside the 15-event window.
-- **`search_all_teams` caps at 10 rows** and only indexes clubs under their
+- **search_all_teams caps at 10 rows** and only indexes clubs under their
   *primary* league. European competitions (CL/EL) return **0 rows** via `?l=`,
   so they resolve through known league ids instead. The 10-row cap means
   short-names/crests are only enriched for those 10 clubs; every other club's

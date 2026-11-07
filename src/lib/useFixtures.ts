@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { type Fixtures, loadFixtures } from "./loadFixtures";
+import { type Fixtures, loadFixturesOrThrow } from "./loadFixtures";
 
 export type FixturesState =
 	| { status: "loading"; fixtures: null; error: null }
@@ -62,7 +62,7 @@ export function useFixtures(): FixturesState {
 
 	useEffect(() => {
 		return retryAsyncLoad(
-			loadFixtures,
+			loadFixturesOrThrow,
 			(fixtures) => setState({ status: "ready", fixtures, error: null }),
 			(error) => setState({ status: "error", fixtures: null, error }),
 		);
