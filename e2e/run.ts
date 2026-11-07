@@ -40,7 +40,6 @@ try {
 		"npm",
 		["run", "dev", "--", "--port", "3100", "--host", "127.0.0.1"],
 		{
-			shell: true,
 			detached: true,
 			stdio: ["ignore", "inherit", "inherit"],
 			env: { ...process.env, VITE_FIXTURES: "mock" },

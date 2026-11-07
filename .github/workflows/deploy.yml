@@ -26,8 +26,8 @@ jobs:
     outputs:
       page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 26
           cache: npm
@@ -44,12 +44,12 @@ jobs:
           VITE_FIXTURES: production
           VITE_GITHUB_URL: https://github.com/${{ github.repository }}
       - run: cp dist/client/index.html dist/client/404.html
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist/client
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
   lighthouse:
     name: Lighthouse ${{ matrix.preset }} (all gates on all routes)
     needs: deploy
@@ -63,8 +63,8 @@ jobs:
           - preset: mobile
             settings: --collect.settings.formFactor=mobile
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 26
           cache: npm
@@ -76,7 +76,7 @@ jobs:
             --collect.url="${{ needs.deploy.outputs.page_url }}" \
             --collect.url="${{ needs.deploy.outputs.page_url }}teams/" \
             --collect.url="${{ needs.deploy.outputs.page_url }}faq/"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: lighthouse-${{ matrix.preset }}
           path: .lighthouseci
@@ -87,12 +87,12 @@ jobs:
     needs: lighthouse
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v8
         with:
           name: lighthouse-desktop
           path: /tmp/desktop-lhci
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: lighthouse-mobile
           path: /tmp/mobile-lhci
