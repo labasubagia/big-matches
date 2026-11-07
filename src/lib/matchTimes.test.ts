@@ -9,7 +9,6 @@ import {
 	localMidnightMs,
 	matchBucket,
 	teamCrests,
-	withinFilteredRange,
 	withinRange,
 } from "./matchTimes";
 
@@ -98,33 +97,35 @@ describe("withinRange", () => {
 		).toBe(false);
 	});
 });
-describe("withinFilteredRange", () => {
-	it("keeps a non-TBD match only inside its range", () => {
-		expect(withinFilteredRange(match(), NOW, NOW + 90 * 24 * 3600 * 1000)).toBe(
-			true,
-		);
-		expect(
-			withinFilteredRange(
-				match({ utcDate: "2027-06-01T20:00:00Z" }),
-				NOW,
-				NOW + 90 * 24 * 3600 * 1000,
-			),
-		).toBe(false);
-	});
-
-	it("keeps a TBD match only when its date is inside the range", () => {
-		const tbd = match({
-			status: "SCHEDULED",
-			utcDate: "2026-12-31T00:00:00Z",
-		});
-		// Inside the window → kept.
-		expect(withinFilteredRange(tbd, NOW, NOW + 90 * 24 * 3600 * 1000)).toBe(
-			true,
-		);
-		// Equal the default 30-day window → excluded.
-		expect(withinFilteredRange(tbd, NOW, NOW + 30 * 24 * 3600 * 1000)).toBe(
-			false,
-		);
+describe("withinRange · UTC-midnight boundary", () => {
+	it("keeps a boundary TBD match inside its local window in UTC-negative zones", () => {
+		const prevTZ = process.env.TZ;
+		process.env.TZ = "Etc/GMT+8"; // UTC−8, fixed
+		try {
+			const tbd = match({
+				status: "SCHEDULED",
+				utcDate: "2026-12-01T00:00:00Z",
+			});
+			// UTC midnight (Dec 1 00:00Z) is Nov 30 16:00 locally; the fixture's
+			// scheduled date Dec 1 still lands inside this local window.
+			expect(
+				withinRange(
+					tbd,
+					localMidnightMs("2026-11-30"),
+					localMidnightMs("2026-12-02"),
+				),
+			).toBe(true);
+			// Outside the local window → excluded.
+			expect(
+				withinRange(
+					tbd,
+					localMidnightMs("2026-11-01"),
+					localMidnightMs("2026-11-29"),
+				),
+			).toBe(false);
+		} finally {
+			process.env.TZ = prevTZ;
+		}
 	});
 });
 describe("localMidnightMs", () => {
