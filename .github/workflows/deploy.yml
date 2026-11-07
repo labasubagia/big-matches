@@ -30,10 +30,17 @@ jobs:
         if: github.event_name == 'schedule'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WORKFLOW_NAME: ${{ github.workflow }}
         run: |
           sha="${{ github.sha }}"
-          count=$(gh api "/repos/$GITHUB_REPOSITORY/actions/runs?event=push&head_sha=${sha}&per_page=100" \
-            --jq '[.workflow_runs[] | select(.status != "completed" or .conclusion == "success")] | length')
+          count=0
+          if count=$(gh api "/repos/$GITHUB_REPOSITORY/actions/runs?event=push&head_sha=${sha}&per_page=100" \
+            --jq '[.workflow_runs[] | select(.name == env.WORKFLOW_NAME and (.status != "completed" or .conclusion == "success"))] | length'); then
+            :
+          else
+            echo "Warning: could not query GitHub API; proceeding with scheduled deploy."
+            count=0
+          fi
           if [ "${count}" -gt 0 ]; then
             echo "Commit ${sha} already deployed (or in progress) via push; cancelling scheduled run."
             gh run cancel "${{ github.run_id }}"
