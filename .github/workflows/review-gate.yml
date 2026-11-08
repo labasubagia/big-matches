@@ -18,6 +18,18 @@ jobs:
           PR_NUMBER: ${{ github.event.number }}
         run: |
           repo="${{ github.repository }}"
+
+          # Wait for pr-agent, if it ran on this event, so the gate
+          # evaluates the threads it posts. (pr-agent only runs on
+          # open/ready/review-requested/reopened, not every push.)
+          for _ in $(seq 1 60); do
+            pending=$(gh pr checks "$PR_NUMBER" --json name,status \
+              -q '[.[] | select((.name | ascii_downcase | (contains("pr-agent") or contains("pr agent"))) and .status != "completed")] | length' \
+              2>/dev/null || echo 0)
+            [ "${pending:-0}" -eq 0 ] && break
+            sleep 10
+          done
+
           out=$(gh api graphql \
             -F owner="${repo%/*}" -F name="${repo#*/}" -F number="$PR_NUMBER" \
             -f query='query ($owner: String!, $name: String!, $number: Int!) {
