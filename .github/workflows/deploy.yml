@@ -26,7 +26,7 @@ jobs:
     outputs:
       page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Skip scheduled deploy if already deployed via push
+      - name: Skip scheduled deploy if a push deploy is in progress
         if: github.event_name == 'schedule'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -35,17 +35,17 @@ jobs:
           sha="${{ github.sha }}"
           count=0
           if count=$(gh api "/repos/$GITHUB_REPOSITORY/actions/runs?event=push&head_sha=${sha}&per_page=100" \
-            --jq '[.workflow_runs[] | select(.name == env.WORKFLOW_NAME and (.status != "completed" or .conclusion == "success"))] | length'); then
+            --jq '[.workflow_runs[] | select(.name == env.WORKFLOW_NAME and .status != "completed")] | length'); then
             :
           else
             echo "Warning: could not query GitHub API; proceeding with scheduled deploy."
             count=0
           fi
           if [ "${count}" -gt 0 ]; then
-            echo "Commit ${sha} already deployed (or in progress) via push; cancelling scheduled run."
-            gh run cancel "${{ github.run_id }}"
+            echo "Push deploy in progress for ${sha}; cancelling scheduled run."
+            gh run cancel --repo "$GITHUB_REPOSITORY" "${{ github.run_id }}"
           else
-            echo "No push deploy for ${sha}; proceeding with scheduled deploy."
+            echo "No push deploy in progress for ${sha}; proceeding with scheduled deploy."
           fi
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
