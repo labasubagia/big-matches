@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    versioning-strategy: increase
+    groups:
+      radix-ui:
+        patterns: ["@radix-ui/*"]
+      tanstack:
+        patterns: ["@tanstack/*"]
+      tailwind:
+        patterns: ["tailwindcss", "@tailwindcss/*"]
+    ignore:
+      - dependency-name: "@lhci/cli"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "workbox-build"
+        update-types: ["version-update:semver-major"]
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5

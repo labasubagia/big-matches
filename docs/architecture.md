@@ -79,3 +79,26 @@ The route lives under `/big-matches/` (`base` in `vite.config.ts` and router
 The Football-Data key is required only by the generator, in CI:
 `FOOTBALL_DATA_API_KEY` as a repository secret.
 
+## Dependency security
+
+`npm audit` reports three known advisories in **dev/build-time transitive
+dependencies only** (nothing ships to the client bundle):
+
+- `basic-ftp` (high, GHSA-c475-qrg2-pj4r) — `Client.list()` CPU DoS. Pulled via
+  get-uri → proxy-agent → `@lhci/cli` (Lighthouse CI only). The vulnerable code
+  path only activates when a proxy is configured; GitHub-hosted runners use
+  none.
+- `deepmerge` (GHSA-gcqx-w48m-w2h4) — prototype poisoning in `mergeObject()`,
+  pulled via `@rollup/plugin-node-resolve` → `workbox-build`. No fixed release
+  of `deepmerge` > 4.3.1 exists; it merges config objects at build time, not
+  untrusted input.
+- `glob` (moderate, GHSA-3g3m-2fjr-6pw4) — AbortSignal-cancellation filesystem
+  traversal bypass, pulled via `@sentry/bundler-plugins` (← lighthouse) and
+  `workbox-build`. Fix exists (`glob` ≥ 14), but forcing a major bump across the
+  Lighthouse/Sentry chain risks the deploy gate for no production exposure.
+
+These are intentionally **not** force-fixed: the only `npm audit fix --force`
+options downgrade `@lhci/cli` (0.16 → 0.13) and `workbox-build` (7.4.1 →
+7.3.0), trading active tooling for CVEs that never reach the running site.
+Track via Dependabot (`.github/dependabot.yml`); revisit when a non-breaking
+upstream fix lands.
