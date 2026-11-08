@@ -16,26 +16,37 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
+          PR_ACTION: ${{ github.event.action }}
         run: |
           repo="${{ github.repository }}"
 
-          # Wait for pr-agent, if it ran on this event, so the gate
-          # evaluates the threads it posts. (pr-agent only runs on
-          # open/ready/review-requested/reopened, not every push.)
-          for _ in $(seq 1 60); do
-            pending=$(gh pr checks "$PR_NUMBER" --json name,status \
-              -q '[.[] | select((.name | ascii_downcase | (contains("pr-agent") or contains("pr agent"))) and .status != "completed")] | length' \
-              2>/dev/null || echo 0)
-            [ "${pending:-0}" -eq 0 ] && break
-            sleep 10
-          done
+          # pr-agent only runs on open/ready/review-requested/reopened.
+          # On those events, wait for its check to exist and complete so
+          # the threads it posts are present before we evaluate. On any
+          # other event (push/synchronize) pr-agent does not run, so we
+          # skip the wait entirely and just take a fresh snapshot.
+          case "$PR_ACTION" in
+            opened|ready_for_review|review_requested|reopened)
+              for _ in $(seq 1 18); do
+                statuses=$(gh pr checks "$PR_NUMBER" --json name,status \
+                  -q '.[] | select((.name | ascii_downcase | (contains("pr-agent") or contains("pr agent")))) | .status' \
+                  2>/dev/null || true)
+                if [ -n "$statuses" ]; then
+                  if ! printf '%s\n' "$statuses" | grep -qE 'queued|in_progress'; then
+                    break
+                  fi
+                fi
+                sleep 10
+              done
+              ;;
+          esac
 
           out=$(gh api graphql \
             -F owner="${repo%/*}" -F name="${repo#*/}" -F number="$PR_NUMBER" \
             -f query='query ($owner: String!, $name: String!, $number: Int!) {
               repository(owner: $owner, name: $name) {
                 pullRequest(number: $number) {
-                  reviewThreads(first: 100) {
+                  reviewThreads(first: 250) {
                     totalCount
                     nodes { isResolved }
                   }
