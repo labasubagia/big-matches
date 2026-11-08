@@ -13,6 +13,10 @@ jobs:
         run: |
           python3 - <<'EOF'
           import json, os, sys
+          if os.environ.get("GITHUB_ACTOR") == "dependabot[bot]":
+              print("Skipping template check for Dependabot PR")
+              sys.exit(0)
+
 
           with open(os.environ["GITHUB_EVENT_PATH"]) as f:
               body = json.load(f)["pull_request"]["body"] or ""
