@@ -43,7 +43,7 @@ jobs:
           fi
           if [ "${count}" -gt 0 ]; then
             echo "Push deploy in progress for ${sha}; cancelling scheduled run."
-            gh run cancel --repo "$GITHUB_REPOSITORY" "${{ github.run_id }}"
+            gh run cancel --repo "$GITHUB_REPOSITORY" "${{ github.run_id }}" || echo "Warning: failed to cancel scheduled run; proceeding with scheduled deploy."
           else
             echo "No push deploy in progress for ${sha}; proceeding with scheduled deploy."
           fi
