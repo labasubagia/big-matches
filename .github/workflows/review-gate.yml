@@ -41,24 +41,42 @@ jobs:
               ;;
           esac
 
-          out=$(gh api graphql \
-            -F owner="${repo%/*}" -F name="${repo#*/}" -F number="$PR_NUMBER" \
-            -f query='query ($owner: String!, $name: String!, $number: Int!) {
-              repository(owner: $owner, name: $name) {
-                pullRequest(number: $number) {
-                  reviewThreads(first: 250) {
-                    totalCount
-                    nodes { isResolved }
-                  }
+          # reviewThreads caps at 100 per page, so paginate through all
+          # threads to count unresolved ones.
+          python3 - "$PR_NUMBER" <<'PYEOF'
+          import json, os, subprocess, sys
+          num = sys.argv[1]
+          owner, name = os.environ["GITHUB_REPOSITORY"].split("/")
+          query = """query ($owner: String!, $name: String!, $number: Int!, $cursor: String) {
+            repository(owner: $owner, name: $name) {
+              pullRequest(number: $number) {
+                reviewThreads(first: 100, after: $cursor) {
+                  pageInfo { hasNextPage endCursor }
+                  nodes { isResolved }
                 }
               }
-            }' \
-            -q '.data.repository.pullRequest.reviewThreads')
-          total=$(printf '%s' "$out" | jq -r '.totalCount')
-          unresolved=$(printf '%s' "$out" | jq '[.nodes[] | select(.isResolved == false)] | length')
-          echo "total_threads=$total unresolved=$unresolved"
-          if [ "$unresolved" -ne 0 ]; then
-            echo "::error::Merge blocked: $unresolved unresolved review thread(s) remain."
-            exit 1
-          fi
-          echo "All review threads resolved."
+            }
+          }"""
+          total = unresolved = 0
+          cursor = None
+          while True:
+              args = ["gh", "api", "graphql", "-f", f"query={query}",
+                      "-F", f"owner={owner}", "-F", f"name={name}", "-F", f"number={num}"]
+              if cursor:
+                  args += ["-F", f"cursor={cursor}"]
+              p = subprocess.run(args, capture_output=True, text=True)
+              if p.returncode != 0:
+                  print("::error::" + p.stderr[-500:])
+                  sys.exit(1)
+              d = json.loads(p.stdout)["data"]["repository"]["pullRequest"]["reviewThreads"]
+              total += len(d["nodes"])
+              unresolved += sum(1 for nd in d["nodes"] if not nd["isResolved"])
+              if not d["pageInfo"]["hasNextPage"]:
+                  break
+              cursor = d["pageInfo"]["endCursor"]
+          print(f"total_threads={total} unresolved={unresolved}")
+          if unresolved:
+              print(f"::error::Merge blocked: {unresolved} unresolved review thread(s) remain.")
+              sys.exit(1)
+          print("All review threads resolved.")
+          PYEOF
