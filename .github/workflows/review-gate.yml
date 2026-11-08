@@ -1,0 +1,41 @@
+name: Review gate
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  review-gate:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login != 'dependabot[bot]'
+    steps:
+      - name: Block merge while review threads are unresolved
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.number }}
+        run: |
+          repo="${{ github.repository }}"
+          out=$(gh api graphql \
+            -F owner="${repo%/*}" -F name="${repo#*/}" -F number="$PR_NUMBER" \
+            -f query='query ($owner: String!, $name: String!, $number: Int!) {
+              repository(owner: $owner, name: $name) {
+                pullRequest(number: $number) {
+                  reviewThreads(first: 100) {
+                    totalCount
+                    nodes { isResolved }
+                  }
+                }
+              }
+            }' \
+            -q '.data.repository.pullRequest.reviewThreads')
+          total=$(printf '%s' "$out" | jq -r '.totalCount')
+          unresolved=$(printf '%s' "$out" | jq '[.nodes[] | select(.isResolved == false)] | length')
+          echo "total_threads=$total unresolved=$unresolved"
+          if [ "$unresolved" -ne 0 ]; then
+            echo "::error::Merge blocked: $unresolved unresolved review thread(s) remain."
+            exit 1
+          fi
+          echo "All review threads resolved."
