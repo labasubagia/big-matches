@@ -388,3 +388,19 @@ test("combobox X resets club filter", async ({ page }) => {
 	);
 	await expect(page.getByRole("combobox")).toContainText("Filter big clubs");
 });
+
+test("dark mode: system default, toggle flips class, persists across reload", async ({
+	page,
+}) => {
+	await page.emulateMedia({ colorScheme: "dark" });
+	await page.goto("/big-matches/");
+	await expect(page.locator("html")).toHaveClass(/dark/);
+	// The toggle button renders its themed label only after hydration (mounted
+	// gate), so getByLabel already waits for the interactive state.
+	await page.getByLabel("Switch to light mode").click();
+	await expect(page.locator("html")).not.toHaveClass(/dark/);
+	await page.reload();
+	await expect(page.locator("html")).not.toHaveClass(/dark/);
+	await page.getByLabel("Switch to dark mode").click();
+	await expect(page.locator("html")).toHaveClass(/dark/);
+});
