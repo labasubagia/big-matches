@@ -13,7 +13,7 @@ permissions:
   checks: write
 jobs:
   pr-agent:
-    if: github.actor != 'dependabot[bot]' && ((github.event_name != 'issue_comment' && ((github.event.action != 'opened' && github.event.action != 'reopened') || github.event.pull_request.draft != true)) || github.event.issue.pull_request) && (github.event.comment.user.type != 'Bot' || github.event_name != 'issue_comment')
+    if: (github.event_name != 'pull_request' || github.event.pull_request.user.login != 'dependabot[bot]') && ((github.event_name != 'issue_comment' && ((github.event.action != 'opened' && github.event.action != 'reopened') || github.event.pull_request.draft != true)) || github.event.issue.pull_request) && (github.event.comment.user.type != 'Bot' || github.event_name != 'issue_comment')
     concurrency:
       group: pr-agent-${{ github.event.pull_request.number || github.event.issue.number || github.run_id }}
       cancel-in-progress: true
