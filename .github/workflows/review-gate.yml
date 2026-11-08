@@ -10,7 +10,6 @@ permissions:
 jobs:
   review-gate:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.user.login != 'dependabot[bot]'
     steps:
       - name: Block merge while review threads are unresolved
         env:
