@@ -1,0 +1,82 @@
+name: Review gate
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  review-gate:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login != 'dependabot[bot]'
+    steps:
+      - name: Block merge while review threads are unresolved
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.number }}
+          PR_ACTION: ${{ github.event.action }}
+        run: |
+          repo="${{ github.repository }}"
+
+          # pr-agent only runs on open/ready/review-requested/reopened.
+          # On those events, wait for its check to exist and complete so
+          # the threads it posts are present before we evaluate. On any
+          # other event (push/synchronize) pr-agent does not run, so we
+          # skip the wait entirely and just take a fresh snapshot.
+          case "$PR_ACTION" in
+            opened|ready_for_review|review_requested|reopened)
+              for _ in $(seq 1 18); do
+                statuses=$(gh pr checks "$PR_NUMBER" --json name,status \
+                  -q '.[] | select((.name | ascii_downcase | (contains("pr-agent") or contains("pr agent")))) | .status' \
+                  2>/dev/null || true)
+                if [ -n "$statuses" ]; then
+                  if ! printf '%s\n' "$statuses" | grep -qE 'queued|in_progress'; then
+                    break
+                  fi
+                fi
+                sleep 10
+              done
+              ;;
+          esac
+
+          # reviewThreads caps at 100 per page, so paginate through all
+          # threads to count unresolved ones.
+          python3 - "$PR_NUMBER" <<'PYEOF'
+          import json, os, subprocess, sys
+          num = sys.argv[1]
+          owner, name = os.environ["GITHUB_REPOSITORY"].split("/")
+          query = """query ($owner: String!, $name: String!, $number: Int!, $cursor: String) {
+            repository(owner: $owner, name: $name) {
+              pullRequest(number: $number) {
+                reviewThreads(first: 100, after: $cursor) {
+                  pageInfo { hasNextPage endCursor }
+                  nodes { isResolved }
+                }
+              }
+            }
+          }"""
+          total = unresolved = 0
+          cursor = None
+          while True:
+              args = ["gh", "api", "graphql", "-f", f"query={query}",
+                      "-F", f"owner={owner}", "-F", f"name={name}", "-F", f"number={num}"]
+              if cursor:
+                  args += ["-F", f"cursor={cursor}"]
+              p = subprocess.run(args, capture_output=True, text=True)
+              if p.returncode != 0:
+                  print("::error::" + p.stderr[-500:])
+                  sys.exit(1)
+              d = json.loads(p.stdout)["data"]["repository"]["pullRequest"]["reviewThreads"]
+              total += len(d["nodes"])
+              unresolved += sum(1 for nd in d["nodes"] if not nd["isResolved"])
+              if not d["pageInfo"]["hasNextPage"]:
+                  break
+              cursor = d["pageInfo"]["endCursor"]
+          print(f"total_threads={total} unresolved={unresolved}")
+          if unresolved:
+              print(f"::error::Merge blocked: {unresolved} unresolved review thread(s) remain.")
+              sys.exit(1)
+          print("All review threads resolved.")
+          PYEOF
