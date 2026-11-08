@@ -20,6 +20,12 @@ Use the on-page picker: teams are grouped by competition (Premier League, La
 Liga, Serie A, Bundesliga, Ligue 1, UEFA Champions League); select the ones you
 want to follow. Your selection is saved in the browser and restored on next visit.
 
+## Dark mode
+
+The app follows your system color preference by default. A toggle in the nav
+switches between light and dark; your choice is saved in the browser and
+restored on next visit.
+
 ## Tests
 
 - Unit: `npm test`

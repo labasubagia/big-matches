@@ -5,8 +5,10 @@ import {
 	Outlet,
 	Scripts,
 } from "@tanstack/react-router";
+import { Moon, Sun } from "lucide-react";
 import type { ReactNode } from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useTheme } from "../lib/useTheme";
 import "../styles.css";
 import { SITE_URL } from "../config/site";
 
@@ -15,6 +17,13 @@ const navLinkClass =
 const activeNavLinkClass = `${navLinkClass} bg-muted`;
 
 function Nav() {
+	const { theme, toggle } = useTheme();
+	const [mounted, setMounted] = useState(false);
+
+	useEffect(() => {
+		setMounted(true);
+	}, []);
+
 	return (
 		<nav className="border-b border-border font-sans md:mx-auto md:w-full md:max-w-[760px]">
 			<div className="flex w-full items-center gap-2 px-4 py-3">
@@ -40,6 +49,28 @@ function Nav() {
 				>
 					FAQ
 				</Link>
+				<button
+					type="button"
+					aria-label={
+						mounted
+							? theme === "dark"
+								? "Switch to light mode"
+								: "Switch to dark mode"
+							: "Toggle color theme"
+					}
+					className="ml-auto cursor-pointer rounded-md p-1.5 text-muted-foreground hover:text-foreground"
+					onClick={toggle}
+				>
+					{mounted ? (
+						theme === "dark" ? (
+							<Sun className="size-4" />
+						) : (
+							<Moon className="size-4" />
+						)
+					) : (
+						<span className="size-4" />
+					)}
+				</button>
 			</div>
 		</nav>
 	);
@@ -74,6 +105,12 @@ export const Route = createRootRoute({
 					description:
 						"Football fixtures between selected teams, filtered by date range and club, from the Football-Data.org free plan.",
 				}),
+			},
+			{
+				children:
+					'try{var t=localStorage.getItem("big-matches-theme");' +
+					'if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";' +
+					'document.documentElement.classList.toggle("dark",t==="dark")}catch(e){}',
 			},
 		],
 	}),

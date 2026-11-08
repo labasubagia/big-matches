@@ -1,32 +1,91 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 html {
 	scrollbar-gutter: stable;
 }
 
 @theme inline {
-	--color-background: #ffffff;
-	--color-card: #ffffff;
-	--color-foreground: #3f3f46;
-	--color-popover: #ffffff;
-	--color-border: #e0e0e0;
-	--color-popover-foreground: #3f3f46;
-	--color-card-foreground: #3f3f46;
-	--color-input: #cccccc;
-	--color-ring: #f97316;
-	--color-primary: #111111;
-	--color-primary-foreground: #ffffff;
-	--color-secondary: #f0f0f0;
-	--color-secondary-foreground: #3f3f46;
-	--color-accent: #f0f0f0;
-	--color-accent-foreground: #3f3f46;
-	--color-winner: #c2410c;
-	--color-winner-foreground: #111111;
-	--color-muted: #f0f0f0;
-	--color-muted-foreground: #666666;
-	--color-destructive: #d33;
-	--color-destructive-foreground: #ffffff;
+	--color-background: var(--background);
+	--color-card: var(--card);
+	--color-foreground: var(--foreground);
+	--color-popover: var(--popover);
+	--color-border: var(--border);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-card-foreground: var(--card-foreground);
+	--color-input: var(--input);
+	--color-ring: var(--ring);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-secondary: var(--secondary);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-accent: var(--accent);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-winner: var(--winner);
+	--color-winner-foreground: var(--winner-foreground);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-destructive: var(--destructive);
+	--color-destructive-foreground: var(--destructive-foreground);
 	--animate-accordion-down: accordion-down 0.2s ease-out;
 	--animate-accordion-up: accordion-up 0.2s ease-out;
+}
+
+:root {
+	color-scheme: light;
+	--background: #ffffff;
+	--card: #ffffff;
+	--foreground: #3f3f46;
+	--popover: #ffffff;
+	--border: #e0e0e0;
+	--popover-foreground: #3f3f46;
+	--card-foreground: #3f3f46;
+	--input: #cccccc;
+	--ring: #f97316;
+	--primary: #111111;
+	--primary-foreground: #ffffff;
+	--secondary: #f0f0f0;
+	--secondary-foreground: #3f3f46;
+	--accent: #f0f0f0;
+	--accent-foreground: #3f3f46;
+	--winner: #c2410c;
+	--winner-foreground: #111111;
+	--muted: #f0f0f0;
+	--muted-foreground: #666666;
+	--destructive: #d33;
+	--destructive-foreground: #ffffff;
+}
+
+.dark {
+	color-scheme: dark;
+	--background: #0f172a;
+	--card: #1e293b;
+	--foreground: #e2e8f0;
+	--popover: #1e293b;
+	--border: #334155;
+	--popover-foreground: #e2e8f0;
+	--card-foreground: #e2e8f0;
+	--input: #334155;
+	--ring: #fb923c;
+	--primary: #fafafa;
+	--primary-foreground: #111111;
+	--secondary: #334155;
+	--secondary-foreground: #e2e8f0;
+	--accent: #334155;
+	--accent-foreground: #e2e8f0;
+	--winner: #fb923c;
+	--winner-foreground: #111111;
+	--muted: #1e293b;
+	--muted-foreground: #94a3b8;
+	--destructive: #ef4444;
+	--destructive-foreground: #ffffff;
+}
+
+html {
+	background: var(--background);
+	color: var(--foreground);
+	transition:
+		background-color 150ms ease,
+		color 150ms ease;
 }
 
 .rdp-root {
@@ -50,6 +109,24 @@ html {
 }
 .rdp-selected {
 	font-size: 0.875rem !important;
+}
+.dark .rdp-root {
+	color: var(--foreground);
+}
+.dark .rdp-weekday {
+	color: var(--muted-foreground);
+}
+.dark .rdp-day_button {
+	color: var(--foreground);
+}
+.dark .rdp-day_disabled {
+	color: var(--muted-foreground);
+}
+.dark .rdp-range_middle {
+	color: #1c1917;
+}
+.dark .rdp-range_middle .rdp-day_button {
+	color: #1c1917;
 }
 
 @keyframes accordion-down {
