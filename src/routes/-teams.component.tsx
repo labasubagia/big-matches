@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { LoadError } from "../components/LoadError";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -30,8 +31,7 @@ function groupLabel(name: string): string {
 }
 
 function Teams() {
-	const { status, fixtures, error } = useFixtures();
-	if (status === "error" && error) throw error;
+	const { status, fixtures, error, reload } = useFixtures();
 	const matches = fixtures?.matches ?? [];
 	const teams = fixtures?.teams ?? [];
 	const { selected, ready, toggle, reset, resetToDefault } =
@@ -71,6 +71,17 @@ function Teams() {
 					a.name.localeCompare(b.name),
 			);
 	}, [candidates]);
+
+	if (status === "error" && error) {
+		return (
+			<main className="mx-auto w-full max-w-[760px] p-4 font-sans">
+				<h1 className="text-2xl font-semibold tracking-tight">
+					Select Big Teams
+				</h1>
+				<LoadError message={error.message} onRetry={reload} />
+			</main>
+		);
+	}
 
 	return (
 		<main

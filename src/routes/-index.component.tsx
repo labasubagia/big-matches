@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { LoadError } from "../components/LoadError";
 import { MatchFilters } from "../components/MatchFilters";
 import { MatchList } from "../components/MatchList";
 
@@ -13,14 +14,22 @@ function isoToDate(iso: string): Date | undefined {
 		: undefined;
 }
 function Home() {
-	const { status, fixtures, error } = useFixtures();
-	if (status === "error" && error) throw error;
+	const { status, fixtures, error, reload } = useFixtures();
 	const teams = fixtures?.teams ?? [];
 	const matches = fixtures?.matches ?? [];
 	const { selected, ready } = useSelection(teams);
 	const filters = useMatchFilters(teams, selected, matches);
 	const shownMatches = useFilteredMatches(matches, selected, ready, filters);
 	const loading = status === "loading";
+
+	if (status === "error" && error) {
+		return (
+			<main className="mx-auto w-full max-w-[760px] p-4 font-sans">
+				<h1 className="text-2xl font-semibold tracking-tight">Big Matches</h1>
+				<LoadError message={error.message} onRetry={reload} />
+			</main>
+		);
+	}
 
 	return (
 		<main className="mx-auto w-full max-w-[760px] p-4 font-sans">
