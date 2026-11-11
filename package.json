@@ -24,7 +24,7 @@
 		"clsx": "^2.1.1",
 		"cmdk": "^1.1.1",
 		"date-fns": "^4.4.0",
-		"lucide-react": "^1.68.0",
+		"lucide-react": "^1.70.0",
 		"minisearch": "^7.2.0",
 		"react": "^19.0.0",
 		"react-day-picker": "^10.0.2",
@@ -46,7 +46,7 @@
 		"lint-staged": "^17.6.0",
 		"sharp": "^0.35.5",
 		"typescript": "^7.0.2",
-		"vite": "^8.0.14",
+		"vite": "^8.3.6",
 		"vitest": "^5.1.0",
 		"workbox-build": "^7.4.1"
 	},
