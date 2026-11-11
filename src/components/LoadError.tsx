@@ -11,7 +11,11 @@ export function LoadError({
 	onRetry: () => void;
 }) {
 	return (
-		<section className="mt-6 rounded-lg border border-border p-4 text-sm">
+		<section
+			className="mt-6 rounded-lg border border-border p-4 text-sm"
+			role="alert"
+			aria-live="polite"
+		>
 			<p className="font-medium">Couldn't load match data.</p>
 			{message ? <p className="mt-1 text-muted-foreground">{message}</p> : null}
 			<Button

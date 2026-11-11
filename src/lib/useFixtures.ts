@@ -75,6 +75,11 @@ export function useFixtures(): FixturesState & { reload: () => void } {
 
 	useEffect(() => runLoad(nonce), [nonce, runLoad]);
 
-	const reload = useCallback(() => setNonce((n) => n + 1), []);
+	const reload = useCallback(() => {
+		// Flip back to loading so Retry gives immediate feedback instead of
+		// keeping the stale error panel visible until the new load settles.
+		setState({ status: "loading", fixtures: null, error: null });
+		setNonce((n) => n + 1);
+	}, []);
 	return { ...state, reload };
 }
