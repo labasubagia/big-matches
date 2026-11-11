@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { type Fixtures, loadFixturesOrThrow } from "./loadFixtures";
 
 export type FixturesState =
@@ -53,20 +53,33 @@ export function retryAsyncLoad(
 
 // Loads the static fixtures after first paint. Keeps the multi-megabyte match
 // dataset off the critical path of the initial render (see loadFixtures.ts).
-export function useFixtures(): FixturesState {
+export function useFixtures(): FixturesState & { reload: () => void } {
 	const [state, setState] = useState<FixturesState>({
 		status: "loading",
 		fixtures: null,
 		error: null,
 	});
+	// Bump to re-run the load (user-triggered retry after a load error).
+	const [nonce, setNonce] = useState(0);
 
-	useEffect(() => {
-		return retryAsyncLoad(
-			loadFixturesOrThrow,
-			(fixtures) => setState({ status: "ready", fixtures, error: null }),
-			(error) => setState({ status: "error", fixtures: null, error }),
-		);
+	// `nonce` re-creates the loader so the effect re-runs on user retry.
+	const runLoad = useCallback(
+		(_nonce: number) =>
+			retryAsyncLoad(
+				loadFixturesOrThrow,
+				(fixtures) => setState({ status: "ready", fixtures, error: null }),
+				(error) => setState({ status: "error", fixtures: null, error }),
+			),
+		[],
+	);
+
+	useEffect(() => runLoad(nonce), [nonce, runLoad]);
+
+	const reload = useCallback(() => {
+		// Flip back to loading so Retry gives immediate feedback instead of
+		// keeping the stale error panel visible until the new load settles.
+		setState({ status: "loading", fixtures: null, error: null });
+		setNonce((n) => n + 1);
 	}, []);
-
-	return state;
+	return { ...state, reload };
 }

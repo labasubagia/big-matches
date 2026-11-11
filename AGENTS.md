@@ -37,7 +37,7 @@ Setup: copy `.env.example` to `.env` and set the Football-Data.org API key.
 - **React**: functional components with typed props; interactive controls use shadcn-style components (`src/components/ui/`, plus `react-day-picker` + `cmdk` + radix popover) and all styling uses Tailwind CSS v4 utilities (theme tokens in `src/styles.css`, incl. `text-winner` for the winner/TBD orange). No CSS modules, no inline style objects.
 - **Routing**: TanStack Router file routes; the route loads static `fixtures.json` (no server functions).
 - **Naming**: constants in UPPER_CASE; small module-level helpers, camelCase.
-- **Error handling**: fail loudly on API errors (throw); tolerate/ignore non-critical failures (e.g. localStorage, a single failed competition); log a dev warning for suspicious data.
+- **Error handling**: fail loudly on API errors (throw); tolerate/ignore non-critical failures (e.g. localStorage, a single failed competition); log a dev warning for suspicious data. Route-level fixture-load failures render an inline retryable error state (via `LoadError`) instead of throwing into the router's dead-end error boundary.
 - **Patterns**: derive filtered view with memoization; keep pure logic separate from UI and unit-test it.
 - **Commits**: Conventional Commits enforced by commitlint via the husky commit-msg hook (types: `feat`, `fix`, `chore`, `docs`, `test`, `refactor`, `style`, `perf`, `ci`, `build`, `revert`).
 
